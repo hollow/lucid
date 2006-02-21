@@ -20,7 +20,6 @@
 
 size_t fmt_fill(char *dest, size_t srclen, size_t padlen)
 {
-	size_t len;
 	int i;
 	
 	char *dorig = dest;
