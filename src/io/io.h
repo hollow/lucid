@@ -1,5 +1,4 @@
-// Copyright 2005 Felix von Leitner <felix-libowfat@fefe.de>
-//           2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,30 +15,12 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/mman.h>
+#ifndef _LUCID_IO_H
+#define _LUCID_IO_H
 
-#include "open/open.h"
-#include "mmap/mmap.h"
+#define CHUNKSIZE 64
 
-char *mmap_private(const char *filename, size_t *len)
-{
-	int fd = open_read(filename);
-	char *map;
-	
-	if (fd >= 0) {
-		*len = lseek(fd, 0, SEEK_END);
-		
-		map = mmap(0, *len, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
-		
-		if (map == MAP_FAILED)
-			map = NULL;
-		
-		close(fd);
-		
-		return map;
-	}
-	
-	return NULL;
-}
+int io_read_eol(int fd, char **line);
+int io_read_eof(int fd, char **file);
+
+#endif

@@ -52,6 +52,10 @@ FMT_C = fmt/fmt_8long.c \
         fmt/fmt_xlong.c \
         fmt/fmt_xlonglong.c
 
+IO_H = io/io.h
+IO_C = io/io_read_eof.c \
+       io/io_read_eol.c
+
 MMAP_H = mmap/mmap.h
 MMAP_C = mmap/mmap_private.c \
          mmap/mmap_read.c \
@@ -89,6 +93,7 @@ TST_C = tst/tst_cleanup.c \
 pkginclude_HEADERS = $(ARGV_H) \
                      $(FLIST_H) \
                      $(FMT_H) \
+                     $(IO_H) \
                      $(MMAP_H) \
                      $(OPEN_H) \
                      $(PRINTF_H) \
@@ -100,6 +105,7 @@ lib_LIBRARIES = libucid.a
 libucid_a_SOURCES = $(ARGV_C) \
                     $(FLIST_C) \
                     $(FMT_C) \
+                    $(IO_C) \
                     $(MMAP_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \

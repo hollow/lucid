@@ -20,6 +20,8 @@
 #include "sys/sys.h"
 #include "syscall.h"
 
+#ifndef __NR_clone
 #define __NR_clone 120
+#endif
 
 _syscall2(int, clone, int, flags, void *, child_stack)
