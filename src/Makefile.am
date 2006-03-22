@@ -100,14 +100,16 @@ pkginclude_HEADERS = $(ARGV_H) \
                      $(SYS_H) \
                      $(TST_H)
 
-lib_LIBRARIES = libucid.a
+lib_LTLIBRARIES = libucid.la
 
-libucid_a_SOURCES = $(ARGV_C) \
-                    $(FLIST_C) \
-                    $(FMT_C) \
-                    $(IO_C) \
-                    $(MMAP_C) \
-                    $(OPEN_C) \
-                    $(PRINTF_C) \
-                    $(SYS_C) \
-                    $(TST_C)
+libucid_la_SOURCES = $(ARGV_C) \
+                     $(FLIST_C) \
+                     $(FMT_C) \
+                     $(IO_C) \
+                     $(MMAP_C) \
+                     $(OPEN_C) \
+                     $(PRINTF_C) \
+                     $(SYS_C) \
+                     $(TST_C)
+
+libucid_la_LDFLAGS = -version-info 0:0:0

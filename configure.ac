@@ -31,13 +31,12 @@ AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 # Checks for libraries.
-AC_LUCID_DIETLIBC
 
 # Checks for header files.
 AC_HEADER_STDC

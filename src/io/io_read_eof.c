@@ -1,5 +1,4 @@
-// Copyright 2005 Felix von Leitner <felix-libowfat@fefe.de>
-//           2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,30 +15,38 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <sys/types.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <sys/mman.h>
+#include <string.h>
 
-#include "open/open.h"
-#include "mmap/mmap.h"
+#include "io.h"
 
-char *mmap_read(const char *filename, size_t *len)
+int io_read_eof(int fd, char **file)
 {
-	int fd = open_read(filename);
-	char *map;
-	
-	if (fd >= 0) {
-		*len = lseek(fd, 0, SEEK_END);
-		
-		map = mmap(0, *len, PROT_READ, MAP_SHARED, fd, 0);
-		
-		if (map == MAP_FAILED)
-			map = NULL;
-		
-		close(fd);
-		
-		return map;
+	int chunks = 1, idx = 0;
+	char *buf = malloc(chunks * CHUNKSIZE + 1);
+	char c;
+
+	for (;;) {
+		switch(read(fd, &c, 1)) {
+			case -1:
+				return -1;
+			
+			case 0:
+				goto out;
+			
+			default:
+				if (idx >= chunks * CHUNKSIZE) {
+					chunks++;
+					buf = realloc(buf, chunks * CHUNKSIZE + 1);
+				}
+				
+				buf[idx++] = c;
+		}
 	}
 	
-	return 0;
+out:
+	buf[idx] = '\0';
+	*file = buf;
+	return strlen(buf);
 }

@@ -23,7 +23,7 @@
 #include "open/open.h"
 #include "mmap/mmap.h"
 
-char *mmap_private(const char *filename, size_t *len)
+char *mmap_shared(const char *filename, size_t *len)
 {
 	int fd = open_read(filename);
 	char *map;
