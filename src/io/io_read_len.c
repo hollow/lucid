@@ -23,7 +23,7 @@
 
 int io_read_len(int fd, char **file, size_t len)
 {
-	int chunks = 1, idx = 0;
+	size_t chunks = 1, idx = 0;
 	char *buf = malloc(chunks * CHUNKSIZE + 1);
 	char c;
 

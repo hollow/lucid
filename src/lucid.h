@@ -27,6 +27,6 @@
 #include "open/open.h"
 #include "printf/printf.h"
 #include "sys/sys.h"
-#include "tst.tst.h"
+#include "tst/tst.h"
 
 #endif
