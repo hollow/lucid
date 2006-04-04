@@ -15,13 +15,38 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_IO_H
-#define _LUCID_IO_H
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
-#define CHUNKSIZE 64
+#include "io.h"
 
-int io_read_eol(int fd, char **line);
-int io_read_eof(int fd, char **file);
-int io_read_len(int fd, char **file, size_t len);
+int io_read_len(int fd, char **file, size_t len)
+{
+	int chunks = 1, idx = 0;
+	char *buf = malloc(chunks * CHUNKSIZE + 1);
+	char c;
 
-#endif
+	for (; idx < len;) {
+		switch(read(fd, &c, 1)) {
+			case -1:
+				return -1;
+			
+			case 0:
+				goto out;
+			
+			default:
+				if (idx >= chunks * CHUNKSIZE) {
+					chunks++;
+					buf = realloc(buf, chunks * CHUNKSIZE + 1);
+				}
+				
+				buf[idx++] = c;
+		}
+	}
+	
+out:
+	buf[idx] = '\0';
+	*file = buf;
+	return strlen(buf);
+}
