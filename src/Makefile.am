@@ -54,7 +54,8 @@ FMT_C = fmt/fmt_8long.c \
 
 IO_H = io/io.h
 IO_C = io/io_read_eof.c \
-       io/io_read_eol.c
+       io/io_read_eol.c \
+       io/io_read_len.c
 
 MMAP_H = mmap/mmap.h
 MMAP_C = mmap/mmap_private.c \
@@ -90,26 +91,25 @@ TST_C = tst/tst_cleanup.c \
         tst/tst_insert.c \
         tst/tst_search.c
 
-pkginclude_HEADERS = $(ARGV_H) \
-                     $(FLIST_H) \
-                     $(FMT_H) \
-                     $(IO_H) \
-                     $(MMAP_H) \
-                     $(OPEN_H) \
-                     $(PRINTF_H) \
-                     $(SYS_H) \
-                     $(TST_H)
+noinst_HEADERS = $(ARGV_H) \
+                 $(FLIST_H) \
+                 $(FMT_H) \
+                 $(IO_H) \
+                 $(MMAP_H) \
+                 $(OPEN_H) \
+                 $(PRINTF_H) \
+                 $(SYS_H) \
+                 $(TST_H) \
+                 lucid.h
 
-lib_LTLIBRARIES = libucid.la
+noinst_LIBRARIES = libucid.a
 
-libucid_la_SOURCES = $(ARGV_C) \
-                     $(FLIST_C) \
-                     $(FMT_C) \
-                     $(IO_C) \
-                     $(MMAP_C) \
-                     $(OPEN_C) \
-                     $(PRINTF_C) \
-                     $(SYS_C) \
-                     $(TST_C)
-
-libucid_la_LDFLAGS = -version-info 0:0:0
+libucid_a_SOURCES = $(ARGV_C) \
+                    $(FLIST_C) \
+                    $(FMT_C) \
+                    $(IO_C) \
+                    $(MMAP_C) \
+                    $(OPEN_C) \
+                    $(PRINTF_C) \
+                    $(SYS_C) \
+                    $(TST_C)

@@ -15,8 +15,8 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LIBUCID_FLIST_H
-#define _LIBUCID_FLIST_H
+#ifndef _LUCID_FLIST_H
+#define _LUCID_FLIST_H
 
 #include <stdint.h>
 
