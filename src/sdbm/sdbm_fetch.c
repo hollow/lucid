@@ -1,4 +1,5 @@
-// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright ???? oz@nexus.yorku.ca
+//           2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,18 +16,23 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
-
-#include "argv/argv.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "io/io.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sdbm/sdbm.h"
-#include "sys/sys.h"
-#include "tst/tst.h"
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
+
+#include <stdlib.h>
+#include <errno.h>
+
+#define SDBM_INTERNAL
+#include "sdbm.h"
+
+DATUM sdbm_fetch(SDBM *db, DATUM key)
+{
+	if (db == NULL || bad(key))
+		return errno = EINVAL, nullDATUM;
+	
+	if (getpage(db, exhash(key)))
+		return getpair(db->pagbuf, key);
+	
+	return ioerr(db), nullDATUM;
+}

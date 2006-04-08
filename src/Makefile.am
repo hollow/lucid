@@ -80,6 +80,16 @@ PRINTF_C = printf/asprintf.c \
            printf/vprintf.c \
            printf/vsnprintf.c
 
+SDBM_H = sdbm/sdbm.h
+SDBM_C = sdbm/internal.c \
+         sdbm/sdbm_close.c \
+         sdbm/sdbm_delete.c \
+         sdbm/sdbm_fetch.c \
+         sdbm/sdbm_firstkey.c \
+         sdbm/sdbm_nextkey.c \
+         sdbm/sdbm_open.c \
+         sdbm/sdbm_store.c
+
 SYS_H = sys/sys.h \
         sys/syscall.h
 SYS_C = sys/sys_clone.c
@@ -98,6 +108,7 @@ noinst_HEADERS = $(ARGV_H) \
                  $(MMAP_H) \
                  $(OPEN_H) \
                  $(PRINTF_H) \
+                 $(SDBM_H) \
                  $(SYS_H) \
                  $(TST_H) \
                  lucid.h
@@ -111,5 +122,6 @@ libucid_a_SOURCES = $(ARGV_C) \
                     $(MMAP_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \
+                    $(SDBM_C) \
                     $(SYS_C) \
                     $(TST_C)
