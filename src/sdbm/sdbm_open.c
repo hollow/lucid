@@ -32,6 +32,7 @@
 
 SDBM *sdbm_open(char *file, int flags, int mode)
 {
+	int errno_orig;
 	SDBM *db;
 	char *dirname, *pagname;
 	struct stat sb;
@@ -52,32 +53,43 @@ SDBM *sdbm_open(char *file, int flags, int mode)
 	else if ((flags & 03) == O_RDONLY)
 		db->flags = SDBM_RDONLY;
 	
-	if ((db->pagf = open(pagname, flags, mode)) > -1) {
-		if (sdbm_lock(db->pagf, sdbm_rdonly(db)) > -1 ) {
-			if ((db->dirf = open(dirname, flags, mode)) > -1) {
-				if (fstat(db->dirf, &sb) == 0) {
-					db->dirbno = (!sb.st_size) ? 0 : -1;
-					db->pagbno = -1;
-					db->maxbno = sb.st_size * BYTESIZ;
-					
-					bzero(db->pagbuf, SDBM_PBLKSIZ);
-					bzero(db->dirbuf, SDBM_DBLKSIZ);
-					
-					goto out;
-				}
-				
-				close(db->dirf);
-			}
-			
-			sdbm_unlock(db->pagf);
-		}
-		
+	if ((db->pagf = open(pagname, flags, mode)) == -1)
+		goto err;
+	
+	if (sdbm_lock(db->pagf, sdbm_rdonly(db)) == -1 )
+		goto err;
+	
+	if ((db->dirf = open(dirname, flags, mode)) == -1)
+		goto err;
+	
+	if (fstat(db->dirf, &sb) == -1)
+		goto err;
+	
+	db->dirbno = (!sb.st_size) ? 0 : -1;
+	db->pagbno = -1;
+	db->maxbno = sb.st_size * BYTESIZ;
+	
+	bzero(db->pagbuf, SDBM_PBLKSIZ);
+	bzero(db->dirbuf, SDBM_DBLKSIZ);
+	
+	return db;
+	
+err:
+	errno_orig = errno;
+	
+	if (db->dirf > 0)
+		close(db->dirf);
+	
+	if (db->pagf > 0) {
+		sdbm_unlock(db->pagf);
 		close(db->pagf);
 	}
 	
 	free(db);
 	db = NULL;
 	
+	errno = errno_orig;
+
 out:
 	free(dirname);
 	free(pagname);

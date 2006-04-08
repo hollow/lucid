@@ -83,6 +83,12 @@ void putpair(char *pag, DATUM key, DATUM val)
 	ino[0] += 2;
 }
 
+int duppair(char *pag, DATUM key)
+{
+	short *ino = (short *) pag;
+	return ino[0] > 0 && seepair(pag, ino[0], key.dptr, key.dsize) > 0;
+}
+
 DATUM getpair(char *pag, DATUM key)
 {
 	int i, n;

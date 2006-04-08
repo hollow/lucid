@@ -46,6 +46,8 @@ int sdbm_store(SDBM *db, DATUM key, DATUM val, int flags)
 	if (getpage(db, (hash = exhash(key)))) {
 		if (flags == SDBM_REPLACE)
 			delpair(db->pagbuf, key);
+		else if (duppair(db->pagbuf, key))
+			return errno = EEXIST, -1;
 		
 		if (!fitpair(db->pagbuf, need))
 			if (!makroom(db, hash, need))

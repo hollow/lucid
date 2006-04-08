@@ -85,6 +85,7 @@ extern DATUM nullDATUM;
 int   seepair(char *pag, int n, char *key, int siz);
 int   fitpair(char *pag, int need);
 void  putpair(char *pag, DATUM key, DATUM val);
+int   duppair(char *pag, DATUM key);
 DATUM getpair(char *pag, DATUM key);
 DATUM getnkey(char *pag, int num);
 int   delpair(char *pag, DATUM key);
