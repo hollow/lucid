@@ -81,7 +81,7 @@ PRINTF_C = printf/asprintf.c \
            printf/vsnprintf.c
 
 SDBM_H = sdbm/sdbm.h
-SDBM_C = sdbm/internal.c \
+SDBM_C = sdbm/sdbm_internal.c \
          sdbm/sdbm_close.c \
          sdbm/sdbm_delete.c \
          sdbm/sdbm_fetch.c \
