@@ -35,11 +35,11 @@ int flist64_tostr(const flist64_t list[], uint64_t val, char **str, char delim)
 	if (p == NULL)
 		return -1;
 	
-	memset(p, '\0', len+1);
+	bzero(p, len + 1);
 	
 	for (i = 0; list[i].key; i++)
 		if (list[i].val & val)
-			idx += _lucid_snprintf(p+idx, len-idx, "%s%c", list[i].key, delim);
+			idx += _lucid_snprintf(p+idx, len-idx-1, "%s%c", list[i].key, delim);
 	
 	*str = p;
 	

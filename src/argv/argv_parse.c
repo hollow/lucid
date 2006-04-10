@@ -52,7 +52,7 @@ int argv_parse(char *str, int *argc, char ***argv)
 		if (!av[i])
 			goto err;
 		
-		memset(av[i], '\0', len + 1);
+		bzero(av[i], len + 1);
 		memcpy(av[i], p, len);
 		
 		p = strtok(NULL, " ");

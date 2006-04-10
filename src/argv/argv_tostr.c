@@ -42,7 +42,7 @@ int argv_tostr(int argc, char **argv, char **str)
 		return -1;
 	
 	memset(buf, ' ', len);
-	memset(buf + len - 1, '\0', 1);
+	bzero(buf + len - 1, 1);
 	
 	*str = buf;
 	

@@ -168,8 +168,8 @@ void splpage(char *pag, char *new, long sbit)
 	short *ino = (short *) cur;
 	
 	memcpy(cur, pag, SDBM_PBLKSIZ);
-	memset(pag, 0, SDBM_PBLKSIZ);
-	memset(new, 0, SDBM_PBLKSIZ);
+	bzero(pag, SDBM_PBLKSIZ);
+	bzero(new, SDBM_PBLKSIZ);
 	
 	n = ino[0];
 	

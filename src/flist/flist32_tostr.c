@@ -30,12 +30,12 @@ int flist32_tostr(const flist32_t list[], uint32_t val, char **str, char delim)
 		if (list[i].val & val)
 			len += _lucid_snprintf(NULL, 0, "%s%c", list[i].key, delim);
 	
-	p = malloc(len+1);
+	p = malloc(len + 1);
 	
 	if (p == NULL)
 		return -1;
 	
-	memset(p, '\0', len+1);
+	bzero(p, len + 1);
 	
 	for (i = 0; list[i].key; i++)
 		if (list[i].val & val)
