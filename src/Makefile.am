@@ -90,6 +90,21 @@ SDBM_C = sdbm/sdbm_internal.c \
          sdbm/sdbm_open.c \
          sdbm/sdbm_store.c
 
+STRALLOC_H = stralloc/stralloc.h
+STRALLOC_C = stralloc/stralloc_catb.c \
+             stralloc/stralloc_cat.c \
+             stralloc/stralloc_catm.c \
+             stralloc/stralloc_cats.c \
+             stralloc/stralloc_cmp.c \
+             stralloc/stralloc_copyb.c \
+             stralloc/stralloc_copy.c \
+             stralloc/stralloc_copys.c \
+             stralloc/stralloc_free.c \
+             stralloc/stralloc_init.c \
+             stralloc/stralloc_ready.c \
+             stralloc/stralloc_readyplus.c \
+             stralloc/stralloc_zero.c
+
 SYS_H = sys/sys.h \
         sys/syscall.h
 SYS_C = sys/sys_clone.c
@@ -109,6 +124,7 @@ noinst_HEADERS = $(ARGV_H) \
                  $(OPEN_H) \
                  $(PRINTF_H) \
                  $(SDBM_H) \
+                 $(STRALLOC_H) \
                  $(SYS_H) \
                  $(TST_H) \
                  lucid.h
@@ -123,5 +139,6 @@ libucid_a_SOURCES = $(ARGV_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \
                     $(SDBM_C) \
+                    $(STRALLOC_C) \
                     $(SYS_C) \
                     $(TST_C)

@@ -1,4 +1,5 @@
-// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright 2005 Felix von Leitner <felix-libowfat@fefe.de>
+//           2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,19 +16,11 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <string.h>
 
-#include "argv/argv.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "io/io.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sdbm/sdbm.h"
 #include "stralloc/stralloc.h"
-#include "sys/sys.h"
-#include "tst/tst.h"
 
-#endif
+int stralloc_copys(STRALLOC *dst, char *src)
+{
+	return stralloc_copyb(dst, src, strlen(src));
+}
