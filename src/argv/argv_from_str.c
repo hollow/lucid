@@ -15,10 +15,30 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_ARGV_H
-#define _LUCID_ARGV_H
+#include <ctype.h>
 
-int argv_from_str(char *str, char **argv, int max_argc);
-int argv_to_str(int argc, char **argv, char **str);
+#include "argv/argv.h"
 
-#endif
+int argv_from_str(char *str, char **argv, int max_argc)
+{
+	int argc = 0;
+	
+	while (*str) {
+		if (argc >= max_argc)
+			return argc;
+		
+		while (isspace(*str))
+			*(str++) = '\0';
+		
+		if (!*str)
+			return argc;
+		
+		argv[argc] = str;
+		argc++;
+		
+		while (*str && !isspace(*str))
+			str++;
+	}
+	
+	return argc;
+}

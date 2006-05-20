@@ -15,10 +15,12 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_ARGV_H
-#define _LUCID_ARGV_H
+#ifndef _LUCID_ADDR_H
+#define _LUCID_ADDR_H
 
-int argv_from_str(char *str, char **argv, int max_argc);
-int argv_to_str(int argc, char **argv, char **str);
+#include <stdint.h>
+
+int addr_from_str(char *str, uint32_t *ip, uint32_t *mask);
+int addr_to_str(char **str, uint32_t ip, uint32_t mask);
 
 #endif

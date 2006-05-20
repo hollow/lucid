@@ -15,10 +15,57 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_ARGV_H
-#define _LUCID_ARGV_H
-
-int argv_from_str(char *str, char **argv, int max_argc);
-int argv_to_str(int argc, char **argv, char **str);
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <errno.h>
+#include <sys/wait.h>
+
+#include "argv/argv.h"
+#include "exec/exec.h"
+
+int exec_fork_background(char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	
+	char *cmd;
+	vasprintf(&cmd, fmt, ap);
+	
+	va_end(ap);
+	
+	int argc;
+	char *argv[32];
+	
+	argc = argv_from_str(cmd, argv, 32);
+	
+	if (argc < 1)
+		return errno = EINVAL, -1;
+	
+	pid_t pid;
+	int i, status;
+	
+	switch ((pid = fork())) {
+	case -1:
+		return -1;
+	
+	case 0:
+		usleep(200);
+		
+		for (i = 0; i < 100; i++)
+			close(i);
+		
+		if (execvp(argv[0], argv) == -1)
+			exit(EXIT_FAILURE);
+	
+	default:
+		signal(SIGCHLD, SIG_IGN);
+	}
+	
+	return 0;
+}

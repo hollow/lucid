@@ -16,10 +16,22 @@
 ## Free Software Foundation, Inc.,
 ## 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+ADDR_H = addr/addr.h
+ADDR_C = addr/addr_from_str.c \
+         addr/addr_to_str.c
+
 ARGV_H = argv/argv.h
-ARGV_C = argv/argv_free.c \
-         argv/argv_parse.c \
-         argv/argv_tostr.c
+ARGV_C = argv/argv_from_str.c \
+         argv/argv_to_str.c
+
+CHROOT_H = chroot/chroot.h
+CHROOT_C = chroot/chroot_fd.c \
+           chroot/chroot_secure_chdir.c
+
+EXEC_H = exec/exec.h
+EXEC_C = exec/exec_fork.c \
+         exec/exec_fork_background.c \
+         exec/exec_replace.c
 
 FLIST_H = flist/flist.h
 FLIST_C = flist/flist32_getkey.c \
@@ -116,7 +128,10 @@ TST_C = tst/tst_cleanup.c \
         tst/tst_insert.c \
         tst/tst_search.c
 
-noinst_HEADERS = $(ARGV_H) \
+noinst_HEADERS = $(ADDR_H) \
+                 $(ARGV_H) \
+                 $(CHROOT_H) \
+                 $(EXEC_H) \
                  $(FLIST_H) \
                  $(FMT_H) \
                  $(IO_H) \
@@ -131,7 +146,10 @@ noinst_HEADERS = $(ARGV_H) \
 
 noinst_LIBRARIES = libucid.a
 
-libucid_a_SOURCES = $(ARGV_C) \
+libucid_a_SOURCES = $(ADDR_C) \
+                    $(ARGV_C) \
+                    $(CHROOT_C) \
+                    $(EXEC_C) \
                     $(FLIST_C) \
                     $(FMT_C) \
                     $(IO_C) \

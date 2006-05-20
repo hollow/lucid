@@ -15,10 +15,32 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_ARGV_H
-#define _LUCID_ARGV_H
+#include <arpa/inet.h>
 
-int argv_from_str(char *str, char **argv, int max_argc);
-int argv_to_str(int argc, char **argv, char **str);
+#include "addr/addr.h"
+#include "stralloc/stralloc.h"
 
-#endif
+int addr_to_str(char **str, uint32_t ip, uint32_t mask)
+{
+	struct in_addr ib;
+	char *addr_ip, *addr_mask;
+	STRALLOC addr;
+	
+	stralloc_init(&addr);
+	
+	ib.s_addr = ip;
+	addr_ip = inet_ntoa(ib);
+	stralloc_cats(&addr, addr_ip);
+	
+	stralloc_cats(&addr, "/");
+	
+	ib.s_addr = mask;
+	addr_mask = inet_ntoa(ib);
+	stralloc_cats(&addr, addr_mask);
+	
+	addr.s[addr.len] = '\0';
+	
+	*str = addr.s;
+	
+	return 0;
+}

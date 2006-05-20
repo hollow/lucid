@@ -18,7 +18,10 @@
 #ifndef _LUCID_H
 #define _LUCID_H
 
+#include "addr/addr.h"
 #include "argv/argv.h"
+#include "chroot/chroot.h"
+#include "exec/exec.h"
 #include "flist/flist.h"
 #include "fmt/fmt.h"
 #include "io/io.h"

@@ -38,6 +38,7 @@ int  stralloc_copys    (STRALLOC *dst, char *src);
 int  stralloc_copy     (STRALLOC *dst, STRALLOC *src);
 
 int  stralloc_catb     (STRALLOC *dst, char *src, size_t len);
+int  stralloc_catm     (STRALLOC *dst, ...);
 int  stralloc_cats     (STRALLOC *dst, char *src);
 int  stralloc_cat      (STRALLOC *dst, STRALLOC *src);
 

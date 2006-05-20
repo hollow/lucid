@@ -16,57 +16,53 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
+#include <ctype.h>
+#include <arpa/inet.h>
 
-#include "argv/argv.h"
+#include "addr/addr.h"
 
-int argv_parse(char *str, int *argc, char ***argv)
+int addr_from_str(char *str, uint32_t *ip, uint32_t *mask)
 {
-	int ac = 1;
-	char **av;
+	struct in_addr ib;
+	char *addr_ip, *addr_mask;
 	
-	if (strlen(str) < 1) {
-		errno = EINVAL;
-		return -1;
-	}
+	*ip   = 0;
+	*mask = 0;
 	
-	char *p;
+	addr_ip   = strtok(str, "/");
+	addr_mask = strtok(NULL, "/");
 	
-	/* count number of arguments */
-	for (p = str; (p = strchr(p, ' ')); p++)
-		ac++;
-	
-	av = (char **) calloc(ac + 1, sizeof(char *));
-	
-	if (!av)
+	if (addr_ip == 0)
 		return -1;
 	
-	int len, i = 0;
+	if (inet_aton(addr_ip, &ib) == -1)
+		return -1;
 	
-	for (p = strtok(str, " "); p != NULL && i < ac; i++) {
-		len = strlen(p);
-		
-		av[i] = malloc(len + 1);
-		
-		if (!av[i])
-			goto err;
-		
-		bzero(av[i], len + 1);
-		memcpy(av[i], p, len);
-		
-		p = strtok(NULL, " ");
+	*ip = ib.s_addr;
+	
+	if (addr_mask == 0) {
+		/* default to /24 */
+		*mask = ntohl(0xffffff00);
+	} else {
+		if (strchr(addr_mask, '.') == 0) {
+			/* We have CIDR notation */
+			int sz = atoi(addr_mask);
+			
+			for (*mask = 0; sz > 0; --sz) {
+				*mask >>= 1;
+				*mask  |= 0x80000000;
+			}
+			
+			*mask = ntohl(*mask);
+		} else {
+			/* Standard netmask notation */
+			if (inet_aton(addr_mask, &ib) == -1)
+				return -1;
+			
+			*mask = ib.s_addr;
+		}
 	}
-	
-	*argc = ac;
-	*argv = av;
 	
 	return 0;
-	
-err:
-	while (i > 0)
-		free(av[i--]);
-	
-	free(av);
-	return -1;
 }

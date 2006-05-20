@@ -15,16 +15,24 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
+#include <errno.h>
 
 #include "argv/argv.h"
+#include "stralloc/stralloc.h"
 
-void argv_free(int argc, char **argv)
+int argv_to_str(int argc, char **argv, char **str)
 {
 	int i;
+	STRALLOC buf;
+	
+	stralloc_init(&buf);
 	
 	for (i = 0; i < argc; i++)
-		free(argv[i]);
+		stralloc_catm(&buf, argv[i], " ");
 	
-	free(argv);
+	buf.s[buf.len-1] = '\0';
+	
+	*str = buf.s;
+	
+	return 0;
 }

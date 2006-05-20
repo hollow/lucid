@@ -15,42 +15,44 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <errno.h>
+#include <sys/wait.h>
 
 #include "argv/argv.h"
-#include "printf/printf.h"
+#include "exec/exec.h"
 
-int argv_tostr(int argc, char **argv, char **str)
+int exec_replace(char *fmt, ...)
 {
-	int i, l;
-	int len = 0;
-	char *buf;
+	va_list ap;
+	va_start(ap, fmt);
 	
-	if (argc < 1) {
-		errno = EINVAL;
+	char *cmd;
+	vasprintf(&cmd, fmt, ap);
+	
+	va_end(ap);
+	
+	int argc;
+	char *argv[32];
+	
+	argc = argv_from_str(cmd, argv, 32);
+	
+	if (argc < 1)
+		return errno = EINVAL, -1;
+	
+	pid_t pid;
+	int i, status;
+	
+	if (execvp(argv[0], argv) == -1)
 		return -1;
-	}
 	
-	for (i = 0; i < argc; i++)
-		len += strlen(argv[i]) + 1;
-	
-	buf = malloc(len);
-	
-	if (!buf)
-		return -1;
-	
-	memset(buf, ' ', len);
-	bzero(buf + len - 1, 1);
-	
-	*str = buf;
-	
-	for (i = 0; i < argc; i++) {
-		l = strlen(argv[i]);
-		memcpy(buf, argv[i], l);
-		buf += l + 1;
-	}
-	
+	/* never get here */
 	return 0;
 }
