@@ -18,10 +18,10 @@
 #ifndef _LUCID_IO_H
 #define _LUCID_IO_H
 
-#define CHUNKSIZE 64
+#define CHUNKSIZE 128
 
 int io_read_eol(int fd, char **line);
 int io_read_eof(int fd, char **file);
-int io_read_len(int fd, char **file, size_t len);
+int io_read_len(int fd, char **str, size_t len);
 
 #endif

@@ -23,30 +23,28 @@
 
 int io_read_eof(int fd, char **file)
 {
-	int chunks = 1, idx = 0;
+	int chunks = 1, len = 0;
 	char *buf = malloc(chunks * CHUNKSIZE + 1);
-	char c;
 
 	for (;;) {
-		switch(read(fd, &c, 1)) {
-			case -1:
-				return -1;
-			
-			case 0:
-				goto out;
-			
-			default:
-				if (idx >= chunks * CHUNKSIZE) {
-					chunks++;
-					buf = realloc(buf, chunks * CHUNKSIZE + 1);
-				}
-				
-				buf[idx++] = c;
+		int bytes_read = read(fd, buf+len, CHUNKSIZE);
+		
+		if (bytes_read == -1)
+			return -1;
+		
+		len += bytes_read;
+		buf[len] = '\0';
+		
+		if (bytes_read == 0)
+			goto out;
+		
+		if (bytes_read == CHUNKSIZE) {
+			chunks++;
+			buf = realloc(buf, chunks * CHUNKSIZE + 1);
 		}
 	}
 	
 out:
-	buf[idx] = '\0';
 	*file = buf;
 	return strlen(buf);
 }
