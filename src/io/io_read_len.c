@@ -21,32 +21,16 @@
 
 #include "io.h"
 
-int io_read_len(int fd, char **file, size_t len)
+int io_read_len(int fd, char **str, size_t len)
 {
-	size_t chunks = 1, idx = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
-	char c;
+	char *buf = malloc(len + 1);
+	bzero(buf, len);
 
-	for (; idx < len;) {
-		switch(read(fd, &c, 1)) {
-			case -1:
-				return -1;
-			
-			case 0:
-				goto out;
-			
-			default:
-				if (idx >= chunks * CHUNKSIZE) {
-					chunks++;
-					buf = realloc(buf, chunks * CHUNKSIZE + 1);
-				}
-				
-				buf[idx++] = c;
-		}
-	}
+	int buflen = read(fd, buf, len);
 	
-out:
-	buf[idx] = '\0';
-	*file = buf;
-	return strlen(buf);
+	if (buflen == -1)
+		return -1;
+	
+	*str = buf;
+	return buflen;
 }
