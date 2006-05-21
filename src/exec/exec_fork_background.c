@@ -60,8 +60,7 @@ int exec_fork_background(char *fmt, ...)
 		for (i = 0; i < 100; i++)
 			close(i);
 		
-		if (execvp(argv[0], argv) == -1)
-			exit(EXIT_FAILURE);
+		execvp(argv[0], argv);
 	
 	default:
 		signal(SIGCHLD, SIG_IGN);

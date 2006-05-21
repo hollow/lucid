@@ -15,13 +15,17 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <stdlib.h>
 #include <ctype.h>
 
 #include "argv/argv.h"
 
 int argv_from_str(char *str, char **argv, int max_argc)
 {
-	int argc = 0;
+	int i, argc = 0;
+	
+	for (i = 0; i < max_argc; i++)
+		argv[i] = NULL;
 	
 	while (*str) {
 		if (argc >= max_argc)
