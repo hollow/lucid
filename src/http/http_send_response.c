@@ -19,24 +19,52 @@
 #include <config.h>
 #endif
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
-#include "argv/argv.h"
+#include "http/http.h"
+#include "list/list.h"
 #include "stralloc/stralloc.h"
 
-int argv_to_str(int argc, char **argv, char **str)
+int http_send_response(void *dst, http_response_t *response,
+                       http_header_t *headers, char *body, http_write_t cb)
 {
-	int i;
+	char *line;
+	char *reason = http_status_to_str(response->status);
+	
 	STRALLOC buf;
+	http_header_t *tmp;
+	
+	if (!reason)
+		return errno = EINVAL, -1;
 	
 	stralloc_init(&buf);
 	
-	for (i = 0; i < argc; i++)
-		stralloc_catm(&buf, argv[i], " ");
+	asprintf(&line, "HTTP/%u.%u %u %s\r\n",
+	         response->vmajor, response->vminor, response->status, reason);
 	
-	*str = strndup(buf.s, buf.len - 1);
+	stralloc_cats(&buf, line);
+	free(line);
+	
+	list_for_each_entry(tmp, &(headers->list), list) {
+		stralloc_cats(&buf, tmp->key);
+		stralloc_cats(&buf, ": ");
+		stralloc_cats(&buf, tmp->val);
+		stralloc_cats(&buf, "\r\n");
+	}
+	
+	stralloc_cats(&buf, "\r\n");
+	
+	if (body)
+		stralloc_cats(&buf, body);
+	
+	if (cb(dst, buf.s, buf.len) != buf.len) {
+		stralloc_free(&buf);
+		return errno = EIO, -1;
+	}
+	
 	stralloc_free(&buf);
-	
 	return 0;
 }

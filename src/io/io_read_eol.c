@@ -15,6 +15,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -23,34 +27,36 @@
 
 int io_read_eol(int fd, char **line)
 {
-	int chunks = 1, idx = 0;
+	int chunks = 1, len = 0;
 	char *buf = malloc(chunks * CHUNKSIZE + 1);
 	char c;
 
 	for (;;) {
 		switch(read(fd, &c, 1)) {
-			case -1:
-				return -1;
+		case -1:
+			return -1;
+		
+		case 0:
+			goto out;
+		
+		default:
+			if (c == '\r')
+				continue;
 			
-			case 0:
-				return -2;
+			if (c == '\n')
+				goto out;
 			
-			default:
-				if (c == '\n' || c == '\r')
-					goto out;
-				
-				if (idx >= chunks * CHUNKSIZE) {
-					chunks++;
-					buf = realloc(buf, chunks * CHUNKSIZE + 1);
-				}
-				
-				buf[idx++] = c;
-				break;
+			if (len >= chunks * CHUNKSIZE) {
+				chunks++;
+				buf = realloc(buf, chunks * CHUNKSIZE + 1);
+			}
+			
+			buf[len++] = c;
+			break;
 		}
 	}
 	
 out:
-	buf[idx] = '\0';
-	*line = buf;
-	return strlen(buf);
+	*line = strndup(buf, len);
+	return len;
 }

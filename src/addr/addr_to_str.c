@@ -15,6 +15,11 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <string.h>
 #include <arpa/inet.h>
 
 #include "addr/addr.h"
@@ -38,9 +43,8 @@ int addr_to_str(char **str, uint32_t ip, uint32_t mask)
 	addr_mask = inet_ntoa(ib);
 	stralloc_cats(&addr, addr_mask);
 	
-	addr.s[addr.len] = '\0';
-	
-	*str = addr.s;
+	*str = strndup(addr.s, addr.len);
+	stralloc_free(&addr);
 	
 	return 0;
 }

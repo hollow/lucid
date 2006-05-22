@@ -15,28 +15,18 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <string.h>
-#include <errno.h>
 
-#include "argv/argv.h"
-#include "stralloc/stralloc.h"
+#include "http/http.h"
+#include "tst/tst.h"
 
-int argv_to_str(int argc, char **argv, char **str)
+http_method_t http_str_to_method(char *str)
 {
 	int i;
-	STRALLOC buf;
 	
-	stralloc_init(&buf);
+	for (i = 0; _http_method_map[i].name; i++)
+		if (strcmp(_http_method_map[i].name, str) == 0)
+			return _http_method_map[i].method;
 	
-	for (i = 0; i < argc; i++)
-		stralloc_catm(&buf, argv[i], " ");
-	
-	*str = strndup(buf.s, buf.len - 1);
-	stralloc_free(&buf);
-	
-	return 0;
+	return HTTP_METHOD_INVALID;
 }

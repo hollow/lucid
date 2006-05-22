@@ -30,7 +30,7 @@ int flist64_tostr(const flist64_t list[], uint64_t val, char **str, char delim)
 		if (list[i].val & val)
 			len += _lucid_snprintf(NULL, 0, "%s%c", list[i].key, delim);
 	
-	p = malloc(len+1);
+	p = malloc(len + 1);
 	
 	if (p == NULL)
 		return -1;

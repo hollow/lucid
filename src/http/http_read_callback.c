@@ -15,28 +15,12 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include <unistd.h>
 
-#include <string.h>
-#include <errno.h>
+#include "http/http.h"
 
-#include "argv/argv.h"
-#include "stralloc/stralloc.h"
-
-int argv_to_str(int argc, char **argv, char **str)
+size_t http_read_callback(void *src, char *data, size_t len)
 {
-	int i;
-	STRALLOC buf;
-	
-	stralloc_init(&buf);
-	
-	for (i = 0; i < argc; i++)
-		stralloc_catm(&buf, argv[i], " ");
-	
-	*str = strndup(buf.s, buf.len - 1);
-	stralloc_free(&buf);
-	
-	return 0;
+	int fd = *(int *) src;
+	return read(fd, data, len);
 }
