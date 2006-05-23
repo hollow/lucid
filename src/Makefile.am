@@ -134,6 +134,10 @@ SYS_H = sys/sys.h \
         sys/syscall.h
 SYS_C = sys/sys_clone.c
 
+TCP_H = tcp/tcp.h
+TCP_C = tcp/tcp_connect.c \
+        tcp/tcp_listen.c
+
 TST_H = tst/tst.h
 TST_C = tst/tst_cleanup.c \
         tst/tst_delete.c \
@@ -155,6 +159,7 @@ noinst_HEADERS = $(ADDR_H) \
                  $(SDBM_H) \
                  $(STRALLOC_H) \
                  $(SYS_H) \
+                 $(TCP_H) \
                  $(TST_H) \
                  lucid.h
 
@@ -174,4 +179,5 @@ libucid_a_SOURCES = $(ADDR_C) \
                     $(SDBM_C) \
                     $(STRALLOC_C) \
                     $(SYS_C) \
+                    $(TCP_C) \
                     $(TST_C)

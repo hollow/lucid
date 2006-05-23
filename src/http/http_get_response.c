@@ -71,8 +71,6 @@ int http_get_response(void *src, http_response_t *response,
 	char *key, *val;
 	size_t clen = 0;
 	
-	INIT_LIST_HEAD(list);
-	
 	for (line = NULL;;) {
 		if (line)
 			free(line);

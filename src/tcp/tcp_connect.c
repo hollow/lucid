@@ -15,25 +15,32 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <errno.h>
+#include <string.h>
+#include <arpa/inet.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sdbm/sdbm.h"
-#include "stralloc/stralloc.h"
-#include "sys/sys.h"
 #include "tcp/tcp.h"
-#include "tst/tst.h"
 
-#endif
+int tcp_connect(char *ip, int port)
+{
+	int fd;
+	struct sockaddr_in inaddr;
+	
+	if (port < 1)
+		return errno = EINVAL, -1;
+	
+	bzero(&inaddr, sizeof(inaddr));
+	inaddr.sin_family = AF_INET;
+	inaddr.sin_port   = htons(port);
+	
+	if (inet_pton(AF_INET, ip, &inaddr.sin_addr) == 0)
+		return errno = EINVAL, -1;
+	
+	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		return -1;
+	
+	if (connect(fd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) == -1)
+		return -1;
+	
+	return fd;
+}
