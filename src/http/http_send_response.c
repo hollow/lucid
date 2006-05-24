@@ -48,11 +48,13 @@ int http_send_response(void *dst, http_response_t *response,
 	stralloc_cats(&buf, line);
 	free(line);
 	
-	list_for_each_entry(tmp, &(headers->list), list) {
-		stralloc_cats(&buf, tmp->key);
-		stralloc_cats(&buf, ": ");
-		stralloc_cats(&buf, tmp->val);
-		stralloc_cats(&buf, "\r\n");
+	if (headers) {
+		list_for_each_entry(tmp, &(headers->list), list) {
+			stralloc_cats(&buf, tmp->key);
+			stralloc_cats(&buf, ": ");
+			stralloc_cats(&buf, tmp->val);
+			stralloc_cats(&buf, "\r\n");
+		}
 	}
 	
 	stralloc_cats(&buf, "\r\n");
