@@ -15,40 +15,65 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
-#include <string.h>
-#include <arpa/inet.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
-#include "tcp/tcp.h"
+#include "misc/misc.h"
 
-int tcp_listen(char *ip, int port, int backlog)
+int runlink(char *path)
 {
-	int fd;
-	struct sockaddr_in inaddr;
+	struct stat sb;
 	
-	if (port < 1)
-		return errno = EINVAL, -1;
+	DIR *dp;
+	struct dirent *d;
 	
-	bzero(&inaddr, sizeof(inaddr));
-	inaddr.sin_family = AF_INET;
-	inaddr.sin_port   = htons(port);
+	int status = 0;
+	char *p, *new_path;
 	
-	if (inet_pton(AF_INET, ip, &inaddr.sin_addr) == 0)
-		return errno = EINVAL, -1;
-	
-	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-		return -1;
-	
-	if (bind(fd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) == -1) {
-		close(fd);
-		return -1;
+	if (lstat(path, &sb) == -1) {
+		if (errno == ENOENT)
+			return 0;
+		else
+			return -1;
 	}
 	
-	if (listen(fd, backlog) == -1) {
-		close(fd);
-		return -1;
+	if (S_ISDIR(sb.st_mode)) {
+		if (!(dp = opendir(path)))
+			return -1;
+		
+		while ((d = readdir(dp))) {
+			p = d->d_name;
+			
+			if (p && p[0] == '.' && (!p[1] || (p[1] == '.' && !p[2])))
+				continue;
+			
+			asprintf(&new_path, "%s/%s", path, d->d_name);
+			
+			if (runlink(new_path) == -1)
+				status = -1;
+			
+			free(new_path);
+		}
+		
+		if (closedir(dp) == -1)
+			return -1;
+		
+		if (rmdir(path) == -1)
+			return -1;
+		
+		return status;
 	}
 	
-	return fd;
+	if (unlink(path) == -1)
+		return -1;
+	
+	return 0;
 }

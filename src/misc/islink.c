@@ -15,26 +15,12 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <sys/stat.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
 #include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sdbm/sdbm.h"
-#include "stralloc/stralloc.h"
-#include "sys/sys.h"
-#include "tcp/tcp.h"
-#include "tst/tst.h"
 
-#endif
+int islink(char *path)
+{
+	struct stat stats;
+	return stat(path, &stats) == 0 && S_ISLNK(stats.st_mode);
+}

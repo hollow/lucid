@@ -15,26 +15,52 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <errno.h>
+#include <sys/stat.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
 #include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sdbm/sdbm.h"
-#include "stralloc/stralloc.h"
-#include "sys/sys.h"
-#include "tcp/tcp.h"
-#include "tst/tst.h"
 
-#endif
+int mkdirp(char *path, mode_t mode)
+{
+	char *s = path;
+	char c;
+	struct stat sb;
+	
+	do {
+		c = 0;
+		
+		while (*s) {
+			if (*s == '/') {
+				do { ++s; } while (*s == '/');
+				c  = *s;
+				*s = '\0';
+				break;
+			}
+			
+			else
+				++s;
+		}
+		
+		if (mkdir(path, 0777) == -1) {
+			if (errno != EEXIST || stat(path, &sb) == -1)
+				return -1;
+			
+			if (!S_ISDIR(sb.st_mode))
+				return errno = ENOTDIR, -1;
+			
+			if (!c)
+				return 0;
+		}
+		
+		if (!c) {
+			if (chmod(path, mode) == -1)
+				return -1;
+			
+			return 0;
+		}
+		
+		*s = c;
+	} while (1);
+	
+	return -1;
+}

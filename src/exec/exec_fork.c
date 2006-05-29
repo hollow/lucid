@@ -61,17 +61,10 @@ int exec_fork(char *fmt, ...)
 			exit(errno);
 	
 	default:
-		switch (waitpid(pid, &status, 0)) {
-		case -1:
+		if (waitpid(pid, &status, 0) == -1)
 			return -1;
 		
-		default:
-			if (WIFEXITED(status) && WEXITSTATUS(status) != EXIT_SUCCESS)
-				return errno = WEXITSTATUS(status), -1;
-			
-			if (WIFSIGNALED(status))
-				kill(getpid(), WTERMSIG(status));
-		}
+		return status;
 	}
 	
 	return 0;

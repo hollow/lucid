@@ -15,26 +15,46 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
 #include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
 #include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sdbm/sdbm.h"
-#include "stralloc/stralloc.h"
-#include "sys/sys.h"
-#include "tcp/tcp.h"
-#include "tst/tst.h"
 
-#endif
+/* go to <dir> in <root> as root
+** going into the chroot before doing chdir(dir) prevents symlink attacks
+** and hence is safer */
+int chroot_mkdirp(char *root, char *dir, mode_t mode)
+{
+	int orig_root, new_root;
+	int errno_orig;
+	
+	if ((orig_root = open("/",  O_RDONLY)) == -1)
+		return -1;
+	
+	if (chdir(root) == -1)
+		return -1;
+	
+	if ((new_root = open(".",  O_RDONLY)) == -1)
+		return -1;
+	
+	/* check cwdfd */
+	if (chroot_fd(new_root) == -1)
+		return -1;
+	
+	/* now create the dir in the chroot */
+	if (mkdirp(dir, mode) == -1)
+		goto err;
+	
+	/* break out of the chroot */
+	chroot_fd(orig_root);
+	
+	return 0;
+	
+err:
+	errno_orig = errno;
+	chroot_fd(orig_root);
+	errno = errno_orig;
+	return -1;
+}

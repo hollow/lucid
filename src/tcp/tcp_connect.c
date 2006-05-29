@@ -15,6 +15,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -39,8 +40,10 @@ int tcp_connect(char *ip, int port)
 	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		return -1;
 	
-	if (connect(fd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) == -1)
+	if (connect(fd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) == -1) {
+		close(fd);
 		return -1;
+	}
 	
 	return fd;
 }

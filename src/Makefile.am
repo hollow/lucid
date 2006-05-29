@@ -26,6 +26,7 @@ ARGV_C = argv/argv_from_str.c \
 
 CHROOT_H = chroot/chroot.h
 CHROOT_C = chroot/chroot_fd.c \
+           chroot/chroot_mkdirp.c \
            chroot/chroot_secure_chdir.c
 
 EXEC_H = exec/exec.h
@@ -81,6 +82,15 @@ IO_H = io/io.h
 IO_C = io/io_read_eof.c \
        io/io_read_eol.c \
        io/io_read_len.c
+
+LIST_H = list/list.h
+
+MISC_H = misc/misc.h
+MISC_C = misc/isdir.c \
+         misc/isfile.c \
+         misc/islink.c \
+         misc/mkdirp.c \
+         misc/runlink.c
 
 MMAP_H = mmap/mmap.h
 MMAP_C = mmap/mmap_private.c \
@@ -153,6 +163,8 @@ noinst_HEADERS = $(ADDR_H) \
                  $(FMT_H) \
                  $(HTTP_H) \
                  $(IO_H) \
+                 $(LIST_H) \
+                 $(MISC_H) \
                  $(MMAP_H) \
                  $(OPEN_H) \
                  $(PRINTF_H) \
@@ -173,6 +185,7 @@ libucid_a_SOURCES = $(ADDR_C) \
                     $(FMT_C) \
                     $(HTTP_C) \
                     $(IO_C) \
+                    $(MISC_C) \
                     $(MMAP_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \
