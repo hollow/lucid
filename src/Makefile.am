@@ -125,6 +125,21 @@ SDBM_C = sdbm/sdbm_internal.c \
          sdbm/sdbm_open.c \
          sdbm/sdbm_store.c
 
+STR_H = str/str.h
+STR_C = str/str_isalnum.c \
+        str/str_isalpha.c \
+        str/str_isascii.c \
+        str/str_isblank.c \
+        str/str_isdigit.c \
+        str/str_isempty.c \
+        str/str_isgraph.c \
+        str/str_islower.c \
+        str/str_isprint.c \
+        str/str_ispunct.c \
+        str/str_isspace.c \
+        str/str_isupper.c \
+        str/str_isxdigit.c
+
 STRALLOC_H = stralloc/stralloc.h
 STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_cat.c \
@@ -139,10 +154,6 @@ STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_ready.c \
              stralloc/stralloc_readyplus.c \
              stralloc/stralloc_zero.c
-
-SYS_H = sys/sys.h \
-        sys/syscall.h
-SYS_C = sys/sys_clone.c
 
 TCP_H = tcp/tcp.h
 TCP_C = tcp/tcp_connect.c \
@@ -169,8 +180,8 @@ noinst_HEADERS = $(ADDR_H) \
                  $(OPEN_H) \
                  $(PRINTF_H) \
                  $(SDBM_H) \
+                 $(STR_H) \
                  $(STRALLOC_H) \
-                 $(SYS_H) \
                  $(TCP_H) \
                  $(TST_H) \
                  lucid.h
@@ -190,7 +201,7 @@ libucid_a_SOURCES = $(ADDR_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \
                     $(SDBM_C) \
+                    $(STR_C) \
                     $(STRALLOC_C) \
-                    $(SYS_C) \
                     $(TCP_C) \
                     $(TST_C)

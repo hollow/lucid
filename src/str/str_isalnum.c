@@ -15,13 +15,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <errno.h>
+#include "str/str.h"
 
-#include "sys/sys.h"
-#include "syscall.h"
-
-#ifndef __NR_clone
-#define __NR_clone 120
-#endif
-
-_syscall2(int, clone, int, flags, void *, child_stack)
+int str_isalnum(const char *str)
+{
+	while (char_isalnum(*str++));
+	return *str == 0 ? 1 : 0;
+}

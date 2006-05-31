@@ -15,9 +15,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_SYS_H
-#define _LUCID_SYS_H
+#include "str/str.h"
 
-int sys_clone(int flags, void *child_stack);
-
-#endif
+int str_islower(const char *str)
+{
+	while (char_islower(*str++));
+	return *str == 0 ? 1 : 0;
+}
