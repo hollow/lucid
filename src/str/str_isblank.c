@@ -19,6 +19,6 @@
 
 int str_isblank(const char *str)
 {
-	while (char_isblank(*str++));
+	while (char_isblank(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

@@ -19,6 +19,6 @@
 
 int str_isxdigit(const char *str)
 {
-	while (char_isxdigit(*str++));
+	while (char_isxdigit(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

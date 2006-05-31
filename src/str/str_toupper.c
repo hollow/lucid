@@ -17,8 +17,9 @@
 
 #include "str/str.h"
 
-int str_isprint(const char *str)
+char *str_toupper(char *str)
 {
-	while (char_isprint(*str)) *str++;
-	return *str == 0 ? 1 : 0;
+	char *p = str;
+	while (*p) char_toupper(*p++);
+	return str;
 }

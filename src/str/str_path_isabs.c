@@ -15,10 +15,33 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "str/str.h"
 
-int str_isprint(const char *str)
+int str_path_isabs(const char *str)
 {
-	while (char_isprint(*str)) *str++;
-	return *str == 0 ? 1 : 0;
+	char *p, *path, *o;
+	
+	if (str_isempty(str))
+		return 0;
+	
+	if (*str != '/')
+		return 0;
+	
+	if (str_path_isdot(str))
+		return 0;
+	
+	path = o = strdup(str);
+	
+	for (p = strtok(path, "/"); p; p = strtok(NULL, "/")) {
+		if (!str_isgraph(p)) {
+			free(o);
+			return 0;
+		}
+	}
+	
+	free(o);
+	return 1;
 }

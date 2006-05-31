@@ -19,6 +19,6 @@
 
 int str_ispunct(const char *str)
 {
-	while (char_ispunct(*str++));
+	while (char_ispunct(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

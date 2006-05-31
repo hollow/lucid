@@ -19,6 +19,6 @@
 
 int str_isalnum(const char *str)
 {
-	while (char_isalnum(*str++));
+	while (char_isalnum(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

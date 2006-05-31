@@ -19,6 +19,6 @@
 
 int str_islower(const char *str)
 {
-	while (char_islower(*str++));
+	while (char_islower(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

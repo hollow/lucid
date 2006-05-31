@@ -19,6 +19,6 @@
 
 int str_isalpha(const char *str)
 {
-	while (char_isalpha(*str++));
+	while (char_isalpha(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

@@ -19,6 +19,6 @@
 
 int str_isgraph(const char *str)
 {
-	while (char_isgraph(*str++));
+	while (char_isgraph(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

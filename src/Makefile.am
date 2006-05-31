@@ -138,7 +138,11 @@ STR_C = str/str_isalnum.c \
         str/str_ispunct.c \
         str/str_isspace.c \
         str/str_isupper.c \
-        str/str_isxdigit.c
+        str/str_isxdigit.c \
+        str/str_path_isabs.c \
+        str/str_path_isdot.c \
+        str/str_tolower.c \
+        str/str_toupper.c
 
 STRALLOC_H = stralloc/stralloc.h
 STRALLOC_C = stralloc/stralloc_catb.c \

@@ -19,6 +19,6 @@
 
 int str_isdigit(const char *str)
 {
-	while (char_isdigit(*str++));
+	while (char_isdigit(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

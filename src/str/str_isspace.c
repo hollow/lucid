@@ -19,6 +19,6 @@
 
 int str_isspace(const char *str)
 {
-	while (char_isspace(*str++));
+	while (char_isspace(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

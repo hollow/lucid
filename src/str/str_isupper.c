@@ -19,6 +19,6 @@
 
 int str_isupper(const char *str)
 {
-	while (char_isupper(*str++));
+	while (char_isupper(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

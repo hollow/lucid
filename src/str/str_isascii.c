@@ -19,6 +19,6 @@
 
 int str_isascii(const char *str)
 {
-	while (char_isascii(*str++));
+	while (char_isascii(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

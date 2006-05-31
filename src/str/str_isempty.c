@@ -22,6 +22,6 @@ int str_isempty(const char *str)
 	if (!str || !*str)
 		return 1;
 	
-	while (char_isspace(*str++));
+	while (char_isspace(*str)) *str++;
 	return *str == 0 ? 1 : 0;
 }

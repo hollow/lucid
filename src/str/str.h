@@ -37,6 +37,9 @@
                          !char_isalnum(ch) && \
                          !char_isspace(ch))
 
+#define char_tolower(ch) do { if (char_isupper(ch)) ch += 32; } while(0)
+#define char_toupper(ch) do { if (char_islower(ch)) ch -= 32; } while(0)
+
 int str_isempty(const char *str);
 
 int str_isalnum(const char *str);
@@ -51,5 +54,11 @@ int str_ispunct(const char *str);
 int str_isspace(const char *str);
 int str_isupper(const char *str);
 int str_isxdigit(const char *str);
+
+int str_path_isdot(const char *str);
+int str_path_isabs(const char *str);
+
+char *str_tolower(char *str);
+char *str_toupper(char *str);
 
 #endif
