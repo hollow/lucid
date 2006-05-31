@@ -20,6 +20,11 @@
 char *str_tolower(char *str)
 {
 	char *p = str;
-	while (*p) char_tolower(*p++);
+	
+	while (*p) {
+		char_tolower(*p);
+		*p++;
+	}
+	
 	return str;
 }
