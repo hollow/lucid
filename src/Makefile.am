@@ -115,30 +115,8 @@ PRINTF_C = printf/asprintf.c \
            printf/vprintf.c \
            printf/vsnprintf.c
 
-SDBM_H = sdbm/sdbm.h
-SDBM_C = sdbm/sdbm_internal.c \
-         sdbm/sdbm_close.c \
-         sdbm/sdbm_delete.c \
-         sdbm/sdbm_fetch.c \
-         sdbm/sdbm_firstkey.c \
-         sdbm/sdbm_nextkey.c \
-         sdbm/sdbm_open.c \
-         sdbm/sdbm_store.c
-
 STR_H = str/str.h
-STR_C = str/str_isalnum.c \
-        str/str_isalpha.c \
-        str/str_isascii.c \
-        str/str_isblank.c \
-        str/str_isdigit.c \
-        str/str_isempty.c \
-        str/str_isgraph.c \
-        str/str_islower.c \
-        str/str_isprint.c \
-        str/str_ispunct.c \
-        str/str_isspace.c \
-        str/str_isupper.c \
-        str/str_isxdigit.c \
+STR_C = str/str_check.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_tolower.c \
@@ -163,13 +141,6 @@ TCP_H = tcp/tcp.h
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
 
-TST_H = tst/tst.h
-TST_C = tst/tst_cleanup.c \
-        tst/tst_delete.c \
-        tst/tst_init.c \
-        tst/tst_insert.c \
-        tst/tst_search.c
-
 noinst_HEADERS = $(ADDR_H) \
                  $(ARGV_H) \
                  $(CHROOT_H) \
@@ -183,11 +154,9 @@ noinst_HEADERS = $(ADDR_H) \
                  $(MMAP_H) \
                  $(OPEN_H) \
                  $(PRINTF_H) \
-                 $(SDBM_H) \
                  $(STR_H) \
                  $(STRALLOC_H) \
                  $(TCP_H) \
-                 $(TST_H) \
                  lucid.h
 
 noinst_LIBRARIES = libucid.a
@@ -204,8 +173,6 @@ libucid_a_SOURCES = $(ADDR_C) \
                     $(MMAP_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \
-                    $(SDBM_C) \
                     $(STR_C) \
                     $(STRALLOC_C) \
-                    $(TCP_C) \
-                    $(TST_C)
+                    $(TCP_C)

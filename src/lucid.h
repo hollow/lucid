@@ -31,10 +31,8 @@
 #include "mmap/mmap.h"
 #include "open/open.h"
 #include "printf/printf.h"
-#include "sdbm/sdbm.h"
 #include "str/str.h"
 #include "stralloc/stralloc.h"
 #include "tcp/tcp.h"
-#include "tst/tst.h"
 
 #endif
