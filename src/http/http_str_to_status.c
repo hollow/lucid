@@ -18,9 +18,8 @@
 #include <string.h>
 
 #include "http/http.h"
-#include "tst/tst.h"
 
-http_status_t http_str_to_status(char *str)
+http_status_t http_str_to_status(const char *str)
 {
 	int i;
 	

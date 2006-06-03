@@ -22,16 +22,16 @@
 
 int stralloc_ready(STRALLOC *sa, size_t len)
 {
-	int wanted = len + (len >> 3) + 30;
+	size_t wanted = len + (len >> 3) + 30;
 	char *tmp;
 	
 	if (!sa->s || sa->a < len) {
 		if (!(tmp = realloc(sa->s, wanted)))
-			return 0;
+			return -1;
 		
 		sa->a = wanted;
 		sa->s = tmp;
 	}
 	
-	return 1;
+	return 0;
 }

@@ -19,11 +19,11 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "io.h"
+#include "io/io.h"
 
 int io_read_eof(int fd, char **file)
 {
-	int chunks = 1, len = 0;
+	size_t chunks = 1, len = 0;
 	char *buf = malloc(chunks * CHUNKSIZE + 1);
 
 	for (;;) {
@@ -45,6 +45,7 @@ int io_read_eof(int fd, char **file)
 	}
 	
 out:
-	*file = buf;
+	*file = strndup(buf, len);
+	free(buf);
 	return strlen(buf);
 }

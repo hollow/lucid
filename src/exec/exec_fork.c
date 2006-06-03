@@ -15,10 +15,6 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -29,20 +25,20 @@
 #include "argv/argv.h"
 #include "exec/exec.h"
 
-int exec_fork(char *fmt, ...)
+int exec_fork(const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
 	
 	char *cmd;
-	vasprintf(&cmd, fmt, ap);
+	vasprintf(&cmd, fmt, ap); /* TODO: free() */
 	
 	va_end(ap);
 	
 	int argc;
-	char *argv[32];
+	char *argv[EXEC_MAX_ARGV];
 	
-	argc = argv_from_str(cmd, argv, 32);
+	argc = argv_from_str(cmd, argv, EXEC_MAX_ARGV);
 	
 	if (argc < 1)
 		return errno = EINVAL, -1;

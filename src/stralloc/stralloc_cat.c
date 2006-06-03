@@ -18,7 +18,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_cat(STRALLOC *dst, STRALLOC *src)
+int stralloc_cat(STRALLOC *dst, const STRALLOC *src)
 {
 	return stralloc_catb(dst, src->s, src->len);
 }

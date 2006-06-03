@@ -18,8 +18,10 @@
 #ifndef _LUCID_EXEC_H
 #define _LUCID_EXEC_H
 
-int exec_fork(char *fmt, ...);
-int exec_fork_background(char *fmt, ...);
-int exec_replace(char *fmt, ...);
+#define EXEC_MAX_ARGV 64
+
+int exec_fork(const char *fmt, ...);
+int exec_fork_background(const char *fmt, ...);
+int exec_replace(const char *fmt, ...);
 
 #endif

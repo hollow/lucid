@@ -18,7 +18,7 @@
 #ifndef _LUCID_ARGV_H
 #define _LUCID_ARGV_H
 
-int argv_from_str(char *str, char **argv, int max_argc);
-int argv_to_str(int argc, char **argv, char **str);
+int   argv_from_str(char *str, char ** const argv, int max_argc);
+char *argv_to_str  (int argc, const char ** const argv);
 
 #endif

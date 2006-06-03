@@ -15,24 +15,19 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <errno.h>
 
 #include "http/http.h"
-#include "list/list.h"
 #include "stralloc/stralloc.h"
 
-int http_send_response(void *dst, http_response_t *response,
-                       http_header_t *headers, char *body, http_write_t cb)
+int http_send_response(const void *dst, const http_response_t *response,
+                       const http_header_t *headers, const char *body,
+                       http_write_t cb)
 {
 	char *line;
-	char *reason = http_status_to_str(response->status);
+	const char *reason = http_status_to_str(response->status);
 	
 	STRALLOC buf;
 	http_header_t *tmp;
@@ -48,14 +43,9 @@ int http_send_response(void *dst, http_response_t *response,
 	stralloc_cats(&buf, line);
 	free(line);
 	
-	if (headers) {
-		list_for_each_entry(tmp, &(headers->list), list) {
-			stralloc_cats(&buf, tmp->key);
-			stralloc_cats(&buf, ": ");
-			stralloc_cats(&buf, tmp->val);
-			stralloc_cats(&buf, "\r\n");
-		}
-	}
+	if (headers)
+		list_for_each_entry(tmp, &(headers->list), list)
+			stralloc_catm(&buf, tmp->key, ": ", tmp->val, "\r\n", NULL);
 	
 	stralloc_cats(&buf, "\r\n");
 	

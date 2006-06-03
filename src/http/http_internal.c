@@ -15,17 +15,13 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 
 #include "http/http.h"
 #include "io/io.h"
 
-struct _http_method _http_method_map[] = {
+const struct _http_method _http_method_map[] = {
 	{ HTTP_METHOD_OPTIONS, "OPTIONS" },
 	{ HTTP_METHOD_GET,     "GET" },
 	{ HTTP_METHOD_HEAD,    "HEAD" },
@@ -37,7 +33,7 @@ struct _http_method _http_method_map[] = {
 	{ 0, NULL }
 };
 
-struct _http_status _http_status_map[] = {
+const struct _http_status _http_status_map[] = {
 	{ HTTP_STATUS_CONTINUE,  "Continue" },
 	{ HTTP_STATUS_SWITCHING, "Switching Protocols" },
 	{ HTTP_STATUS_OK,        "OK" },
@@ -95,9 +91,10 @@ void http_headers_free(http_header_t *headers)
 	}
 }
 
-char *http_read_line(void *src, http_read_t cb)
+char *http_read_line(const void *src, http_read_t cb)
 {
-	int rc, chunks = 1, len = 0;
+	int rc;
+	size_t chunks = 1, len = 0;
 	char *line, *buf = malloc(chunks * CHUNKSIZE + 1);
 	char c;
 	
@@ -132,7 +129,7 @@ out:
 	return line;
 }
 
-char *http_read_len(void *src, size_t len, http_read_t cb)
+char *http_read_len(const void *src, size_t len, http_read_t cb)
 {
 	char *buf = malloc(len + 1);
 	bzero(buf, len + 1);

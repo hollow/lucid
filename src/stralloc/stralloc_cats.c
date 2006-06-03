@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_cats(STRALLOC *dst, char *src)
+int stralloc_cats(STRALLOC *dst, const char *src)
 {
 	return stralloc_catb(dst, src, strlen(src));
 }

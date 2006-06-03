@@ -19,7 +19,7 @@
 
 #include "misc/misc.h"
 
-int islink(char *path)
+int islink(const char *path)
 {
 	struct stat stats;
 	return stat(path, &stats) == 0 && S_ISLNK(stats.st_mode);

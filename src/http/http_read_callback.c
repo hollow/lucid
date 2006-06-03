@@ -19,8 +19,8 @@
 
 #include "http/http.h"
 
-size_t http_read_callback(void *src, char *data, size_t len)
+size_t http_read_callback(const void *src, char *data, size_t len)
 {
-	int fd = *(int *) src;
+	int fd = *(const int *) src;
 	return read(fd, data, len);
 }

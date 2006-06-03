@@ -19,7 +19,7 @@
 #ifndef _LUCID_STRALLOC_H
 #define _LUCID_STRALLOC_H
 
-#include <stdlib.h>
+#include <sys/types.h>
 
 typedef struct {
 	char *s;
@@ -33,15 +33,15 @@ int  stralloc_ready    (STRALLOC *sa, size_t len);
 int  stralloc_readyplus(STRALLOC *sa, size_t len);
 void stralloc_free     (STRALLOC *sa);
 
-int  stralloc_copyb    (STRALLOC *dst, char *src, size_t len);
-int  stralloc_copys    (STRALLOC *dst, char *src);
-int  stralloc_copy     (STRALLOC *dst, STRALLOC *src);
+int  stralloc_copyb    (STRALLOC *dst, const char *src, size_t len);
+int  stralloc_copys    (STRALLOC *dst, const char *src);
+int  stralloc_copy     (STRALLOC *dst, const STRALLOC *src);
 
-int  stralloc_catb     (STRALLOC *dst, char *src, size_t len);
+int  stralloc_catb     (STRALLOC *dst, const char *src, size_t len);
 int  stralloc_catm     (STRALLOC *dst, ...);
-int  stralloc_cats     (STRALLOC *dst, char *src);
-int  stralloc_cat      (STRALLOC *dst, STRALLOC *src);
+int  stralloc_cats     (STRALLOC *dst, const char *src);
+int  stralloc_cat      (STRALLOC *dst, const STRALLOC *src);
 
-int  stralloc_cmp      (STRALLOC *a, STRALLOC *b);
+int  stralloc_cmp      (const STRALLOC *a, const STRALLOC *b);
 
 #endif

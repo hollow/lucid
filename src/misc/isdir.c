@@ -19,7 +19,7 @@
 
 #include "misc/misc.h"
 
-int isdir(char *path)
+int isdir(const char *path)
 {
 	struct stat stats;
 	return stat(path, &stats) == 0 && S_ISDIR(stats.st_mode);

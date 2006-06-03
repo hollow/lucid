@@ -28,12 +28,12 @@ int stralloc_catm(STRALLOC *dst, ...)
 	va_start(ap, dst);
 	
 	while ((s = va_arg(ap, char *))) {
-		if (stralloc_cats(dst, s) == 0) {
+		if (stralloc_cats(dst, s) == -1) {
 			va_end(ap);
-			return 0;
+			return -1;
 		}
 	}
 	
 	va_end(ap);
-	return 1;
+	return 0;
 }

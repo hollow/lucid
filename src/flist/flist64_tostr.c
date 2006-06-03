@@ -15,33 +15,30 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "flist/flist.h"
-#include "printf/printf.h"
+#include "stralloc/stralloc.h"
 
-int flist64_tostr(const flist64_t list[], uint64_t val, char **str, char delim)
+char *flist64_tostr(const flist64_t list[], uint64_t val, char delim)
 {
-	int i, len = 0, idx = 0;
-	char *p;
+	int i;
+	size_t len;
+	char *str;
+	STRALLOC buf;
+	
+	stralloc_init(&buf);
 	
 	for (i = 0; list[i].key; i++)
-		if (list[i].val & val)
-			len += _lucid_snprintf(NULL, 0, "%s%c", list[i].key, delim);
+		if (val & list[i].val)
+			stralloc_catm(&buf, list[i].key, delim, NULL);
 	
-	p = malloc(len + 1);
+	if (buf.len == 0)
+		len = 0;
+	else
+		len = buf.len - 1;
 	
-	if (p == NULL)
-		return -1;
-	
-	bzero(p, len + 1);
-	
-	for (i = 0; list[i].key; i++)
-		if (list[i].val & val)
-			idx += _lucid_snprintf(p+idx, len-idx-1, "%s%c", list[i].key, delim);
-	
-	*str = p;
-	
-	return 0;
+	str = strndup(buf.s, len);
+	stralloc_free(&buf);
+	return str;
 }

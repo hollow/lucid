@@ -97,45 +97,47 @@ typedef struct {
 	unsigned int vminor;
 } http_response_t;
 
-typedef size_t (*http_read_t) (void *, char *, size_t);
-typedef size_t (*http_write_t)(void *, char *, size_t);
+typedef size_t (*http_read_t) (const void *, char *, size_t);
+typedef size_t (*http_write_t)(const void *, const char *, size_t);
 
-char *http_method_to_str(http_method_t method);
-char *http_status_to_str(http_status_t status);
+const char *http_method_to_str(http_method_t method);
+const char *http_status_to_str(http_status_t status);
 
-http_method_t http_str_to_method(char *str);
-http_status_t http_str_to_status(char *str);
+http_method_t http_str_to_method(const char *str);
+http_status_t http_str_to_status(const char *str);
 
-int http_get_request (void *src, http_request_t *request,
+int http_get_request (const void *src, http_request_t *request,
                       http_header_t *headers, char **body, http_read_t cb);
-int http_get_response(void *src, http_response_t *response,
+int http_get_response(const void *src, http_response_t *response,
                       http_header_t *headers, char **body, http_read_t cb);
 
-int http_send_request (void *dst, http_request_t *request,
-                       http_header_t *headers, char *body, http_write_t cb);
-int http_send_response(void *dst, http_response_t *response,
-                       http_header_t *headers, char *body, http_write_t cb);
+int http_send_request (const void *dst, const http_request_t *request,
+                       const http_header_t *headers, const char *body,
+                       http_write_t cb);
+int http_send_response(const void *dst, const http_response_t *response,
+                       const http_header_t *headers, const char *body,
+                       http_write_t cb);
 
-size_t http_read_callback (void *src, char *data, size_t len);
-size_t http_write_callback(void *dst, char *data, size_t len);
+size_t http_read_callback (const void *src, char *data, size_t len);
+size_t http_write_callback(const void *dst, const char *data, size_t len);
 
 void http_headers_free(http_header_t *headers);
 
 /* private interface */
 struct _http_method {
 	http_method_t method;
-	char *name;
+	const char *name;
 };
 
 struct _http_status {
 	http_status_t status;
-	char *desc;
+	const char *desc;
 };
 
-extern struct _http_method _http_method_map[];
-extern struct _http_status _http_status_map[];
+extern const struct _http_method _http_method_map[];
+extern const struct _http_status _http_status_map[];
 
-char *http_read_line(void *src, http_read_t cb);
-char *http_read_len(void *src, size_t len, http_read_t cb);
+char *http_read_line(const void *src, http_read_t cb);
+char *http_read_len(const void *src, size_t len, http_read_t cb);
 
 #endif

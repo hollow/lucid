@@ -22,7 +22,7 @@
 
 #include "tcp/tcp.h"
 
-int tcp_connect(char *ip, int port)
+int tcp_connect(const char *ip, int port)
 {
 	int fd;
 	struct sockaddr_in inaddr;

@@ -18,9 +18,8 @@
 #include <stdlib.h>
 
 #include "http/http.h"
-#include "tst/tst.h"
 
-char *http_method_to_str(http_method_t method)
+const char *http_method_to_str(http_method_t method)
 {
 	int i;
 	

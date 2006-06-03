@@ -22,5 +22,5 @@
 
 int open_write(const char *filename)
 {
-	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT, 0600);
+	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT, 0666);
 }

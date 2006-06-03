@@ -15,52 +15,69 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/stat.h>
 
 #include "misc/misc.h"
+#include "str/str.h"
 
-int mkdirp(char *path, mode_t mode)
+int mkdirp(const char *path, mode_t mode)
 {
-	char *s = path;
+	char *p, *buf;
 	char c;
 	struct stat sb;
+	
+	if (str_isempty(path))
+		return errno = EINVAL, -1;
+	
+	buf = p = strdup(path);
 	
 	do {
 		c = 0;
 		
-		while (*s) {
-			if (*s == '/') {
-				do { ++s; } while (*s == '/');
-				c  = *s;
-				*s = '\0';
+		while (*p) {
+			if (*p == '/') {
+				do { ++p; } while (*p == '/');
+				c  = *p;
+				*p = '\0';
 				break;
 			}
 			
 			else
-				++s;
+				++p;
 		}
 		
-		if (mkdir(path, 0777) == -1) {
-			if (errno != EEXIST || stat(path, &sb) == -1)
-				return -1;
+		if (mkdir(buf, 0777) == -1) {
+			if (errno != EEXIST || stat(buf, &sb) == -1)
+				goto err;
 			
-			if (!S_ISDIR(sb.st_mode))
-				return errno = ENOTDIR, -1;
+			if (!S_ISDIR(sb.st_mode)) {
+				errno = ENOTDIR;
+				goto err;
+			}
 			
 			if (!c)
-				return 0;
+				goto out;
 		}
 		
 		if (!c) {
-			if (chmod(path, mode) == -1)
-				return -1;
+			if (chmod(buf, mode) == -1)
+				goto err;
 			
-			return 0;
+			goto out;
 		}
 		
-		*s = c;
+		*p = c;
 	} while (1);
 	
+	return -1;
+	
+out:
+	free(buf);
+	return 0;
+err:
+	free(buf);
 	return -1;
 }

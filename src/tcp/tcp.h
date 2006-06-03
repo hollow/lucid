@@ -18,7 +18,7 @@
 #ifndef _LUCID_TCP_H
 #define _LUCID_TCP_H
 
-int tcp_listen(char *ip, int port, int backlog);
-int tcp_connect(char *ip, int port);
+int tcp_listen(const char *ip, int port, int backlog);
+int tcp_connect(const char *ip, int port);
 
 #endif

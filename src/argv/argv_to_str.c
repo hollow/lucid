@@ -15,28 +15,29 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <string.h>
-#include <errno.h>
 
 #include "argv/argv.h"
 #include "stralloc/stralloc.h"
 
-int argv_to_str(int argc, char **argv, char **str)
+char *argv_to_str(int argc, const char ** const argv)
 {
 	int i;
+	size_t len;
+	char *str;
 	STRALLOC buf;
 	
 	stralloc_init(&buf);
 	
 	for (i = 0; i < argc; i++)
-		stralloc_catm(&buf, argv[i], " ");
+		stralloc_catm(&buf, argv[i], " ", NULL);
 	
-	*str = strndup(buf.s, buf.len - 1);
+	if (buf.len < 1)
+		len = 0;
+	else
+		len = buf.len - 1;
+	
+	str = strndup(buf.s, len);
 	stralloc_free(&buf);
-	
-	return 0;
+	return str;
 }

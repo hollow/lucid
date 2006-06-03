@@ -20,26 +20,31 @@
 #include <errno.h>
 
 #include "flist/flist.h"
+#include "str/str.h"
 
-int flist32_parse(char *str, const flist32_t list[],
-                 uint32_t *flags, uint32_t *mask,
-                 char clmod, char delim)
+int flist32_parse(const char *str, const flist32_t list[],
+                  uint32_t *flags, uint32_t *mask,
+                  char clmod, char delim)
 {
-	char *p;
+	char *p, *o, *buf;
 	int clear = 0;
 	uint32_t cur_flag;
 	
-	if (str == NULL) {
-		errno = EINVAL;
-		return -1;
-	}
+	if (str_isempty(str))
+		return errno = EINVAL, -1;
 	
-	for (p = strtok(str, &delim); p != NULL;) {
+	buf = o = strdup(str);
+	
+	for (p = strtok(buf, &delim); p; p = strtok(NULL, &delim), clear = 0) {
 		if (*p == clmod)
 			clear = 1;
 		
-		if (flist32_getval(list, p+clear, &cur_flag) == -1)
-			return -1;
+		cur_flag = flist32_getval(list, p+clear);
+		
+		if (!cur_flag) {
+			free(o);
+			return errno = ENOENT, -1;
+		}
 		
 		if (clear) {
 			*flags &= ~cur_flag;
@@ -48,9 +53,8 @@ int flist32_parse(char *str, const flist32_t list[],
 			*flags |=  cur_flag;
 			*mask  |=  cur_flag;
 		}
-		
-		p = strtok(NULL, &delim);
 	}
 	
+	free(o);
 	return 0;
 }

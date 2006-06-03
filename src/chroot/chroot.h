@@ -21,7 +21,7 @@
 #include <sys/types.h>
 
 int chroot_fd(int fd);
-int chroot_mkdirp(char *root, char *dir, mode_t mode);
-int chroot_secure_chdir(char *root, char *dir);
+int chroot_mkdirp(const char *root, const char *dir, mode_t mode);
+int chroot_secure_chdir(const char *root, const char *dir);
 
 #endif

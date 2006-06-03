@@ -20,13 +20,12 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_catb(STRALLOC *dst, char *src, size_t len)
+int stralloc_catb(STRALLOC *dst, const char *src, size_t len)
 {
-	if (stralloc_readyplus(dst, len)) {
-		memcpy(dst->s + dst->len, src, len);
-		dst->len += len;
-		return 1;
-	}
+	if (stralloc_readyplus(dst, len) == -1)
+		return -1;
 	
+	memcpy(dst->s + dst->len, src, len);
+	dst->len += len;
 	return 0;
 }

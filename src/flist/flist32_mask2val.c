@@ -21,9 +21,6 @@ int flist32_mask2val(uint32_t mask)
 {
 	int val = 0;
 	
-	if (mask == 0)
-		return -1;
-	
 	while ((mask /= 2) != 0)
 		val++;
 	

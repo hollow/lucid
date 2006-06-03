@@ -40,20 +40,32 @@
 #define char_tolower(ch) do { if (char_isupper(ch)) ch += 32; } while(0)
 #define char_toupper(ch) do { if (char_islower(ch)) ch -= 32; } while(0)
 
-int str_isempty(const char *str);
+#define CC_ALNUM  (1 <<  1)
+#define CC_ALPHA  (1 <<  2)
+#define CC_ASCII  (1 <<  3)
+#define CC_BLANK  (1 <<  4)
+#define CC_CNTRL  (1 <<  5)
+#define CC_DIGIT  (1 <<  6)
+#define CC_GRAPH  (1 <<  7)
+#define CC_LOWER  (1 <<  8)
+#define CC_PRINT  (1 <<  9)
+#define CC_PUNCT  (1 << 10)
+#define CC_SPACE  (1 << 11)
+#define CC_UPPER  (1 << 12)
+#define CC_XDIGIT (1 << 13)
 
-int str_isalnum(const char *str);
-int str_isalpha(const char *str);
-int str_isascii(const char *str);
-int str_isblank(const char *str);
-int str_isdigit(const char *str);
-int str_isgraph(const char *str);
-int str_islower(const char *str);
-int str_isprint(const char *str);
-int str_ispunct(const char *str);
-int str_isspace(const char *str);
-int str_isupper(const char *str);
-int str_isxdigit(const char *str);
+int str_check(const char *str, int allowed);
+
+#define str_isempty(str)  str_check(str, CC_SPACE)
+#define str_isalnum(str)  str_check(str, CC_ALNUM)
+#define str_isalpha(str)  str_check(str, CC_ALPHA)
+#define str_isascii(str)  str_check(str, CC_ASCII)
+#define str_isdigit(str)  str_check(str, CC_DIGIT)
+#define str_isgraph(str)  str_check(str, CC_GRAPH)
+#define str_islower(str)  str_check(str, CC_LOWER)
+#define str_isprint(str)  str_check(str, CC_PRINT)
+#define str_isupper(str)  str_check(str, CC_UPPER)
+#define str_isxdigit(str) str_check(str, CC_XDIGIT)
 
 int str_path_isdot(const char *str);
 int str_path_isabs(const char *str);

@@ -22,5 +22,5 @@
 
 int open_rw(const char *filename)
 {
-	return open(filename, O_RDWR|O_NONBLOCK|O_CREAT, 0600);
+	return open(filename, O_RDWR|O_NONBLOCK|O_CREAT, 0666);
 }

@@ -16,7 +16,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
+#include <errno.h>
 
 #include "stralloc/stralloc.h"
 
@@ -24,7 +24,7 @@ int stralloc_readyplus(STRALLOC *sa, size_t len)
 {
 	if (sa->s) {
 		if (sa->len + len < len)
-			return 0;
+			return errno = EINVAL, -1;
 		
 		return stralloc_ready(sa, sa->len + len);
 	}

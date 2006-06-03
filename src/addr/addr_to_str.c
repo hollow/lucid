@@ -15,20 +15,16 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <string.h>
 #include <arpa/inet.h>
 
 #include "addr/addr.h"
 #include "stralloc/stralloc.h"
 
-int addr_to_str(char **str, uint32_t ip, uint32_t mask)
+char *addr_to_str(uint32_t ip, uint32_t mask)
 {
 	struct in_addr ib;
-	char *addr_ip, *addr_mask;
+	char *str, *addr_ip, *addr_mask;
 	STRALLOC addr;
 	
 	stralloc_init(&addr);
@@ -37,14 +33,15 @@ int addr_to_str(char **str, uint32_t ip, uint32_t mask)
 	addr_ip = inet_ntoa(ib);
 	stralloc_cats(&addr, addr_ip);
 	
-	stralloc_cats(&addr, "/");
+	if (mask > 0) {
+		ib.s_addr = mask;
+		addr_mask = inet_ntoa(ib);
+		
+		stralloc_catm(&addr, "/", addr_mask, NULL);
+	}	
 	
-	ib.s_addr = mask;
-	addr_mask = inet_ntoa(ib);
-	stralloc_cats(&addr, addr_mask);
-	
-	*str = strndup(addr.s, addr.len);
+	str = strndup(addr.s, addr.len);
 	stralloc_free(&addr);
 	
-	return 0;
+	return str;
 }

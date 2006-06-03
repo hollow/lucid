@@ -19,6 +19,8 @@
 #ifndef _LUCID_MMAP_H
 #define _LUCID_MMAP_H
 
+#include <sys/types.h>
+
 char *mmap_read   (const char *filename, size_t *len);
 char *mmap_private(const char *filename, size_t *len);
 char *mmap_shared (const char *filename, size_t *len);

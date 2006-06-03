@@ -15,22 +15,19 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <stdlib.h>
 #include <errno.h>
 
 #include "flist/flist.h"
-#include "printf/printf.h"
 
-int flist64_getkey(const flist64_t list[], uint64_t val, char **key)
+const char *flist64_getkey(const flist64_t list[], uint64_t val)
 {
 	int i;
 	
 	for (i = 0; list[i].key; i++) {
-		if (list[i].val == val) {
-			_lucid_asprintf(key, "%s", list[i].key);
-			return 0;
-		}
+		if (list[i].val == val)
+			return list[i].key;
 	}
 	
-	errno = EINVAL;
-	return -1;
+	return errno = ENOENT, NULL;
 }

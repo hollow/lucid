@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-int addr_from_str(char *str, uint32_t *ip, uint32_t *mask);
-int addr_to_str(char **str, uint32_t ip, uint32_t mask);
+int   addr_from_str(const char *str, uint32_t *ip, uint32_t *mask);
+char *addr_to_str  (uint32_t ip, uint32_t mask);
 
 #endif

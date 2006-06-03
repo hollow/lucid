@@ -17,24 +17,24 @@
 
 #include <unistd.h>
 #include <errno.h>
-#include <fcntl.h>
 
 #include "chroot/chroot.h"
+#include "open/open.h"
 
 /* go to <dir> in <root> as root
 ** going into the chroot before doing chdir(dir) prevents symlink attacks
 ** and hence is safer */
-int chroot_secure_chdir(char *root, char *dir)
+int chroot_secure_chdir(const char *root, const char *dir)
 {
 	int orig_root, new_root;
 	
-	if ((orig_root = open("/",  O_RDONLY)) == -1)
+	if ((orig_root = open_read("/")) == -1)
 		return -1;
 	
 	if (chdir(root) == -1)
 		return -1;
 	
-	if ((new_root = open(".",  O_RDONLY)) == -1)
+	if ((new_root = open_read(".")) == -1)
 		return -1;
 	
 	int dirfd;
@@ -49,7 +49,7 @@ int chroot_secure_chdir(char *root, char *dir)
 		goto err;
 	
 	/* save a file descriptor of the target dir */
-	dirfd = open(".", O_RDONLY);
+	dirfd = open_read(".");
 	
 	if (dirfd == -1)
 		goto err;

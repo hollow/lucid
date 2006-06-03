@@ -19,7 +19,7 @@
 #ifndef _LUCID_FMT_H
 #define _LUCID_FMT_H
 
-#include <stdlib.h>
+#include <sys/types.h>
 
 /* enough space to hold -2^127 in decimal, plus \0 */
 #define FMT_LONG  41

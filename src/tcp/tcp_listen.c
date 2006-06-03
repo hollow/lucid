@@ -22,7 +22,7 @@
 
 #include "tcp/tcp.h"
 
-int tcp_listen(char *ip, int port, int backlog)
+int tcp_listen(const char *ip, int port, int backlog)
 {
 	int fd;
 	struct sockaddr_in inaddr;

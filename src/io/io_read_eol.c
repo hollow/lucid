@@ -15,19 +15,15 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 
-#include "io.h"
+#include "io/io.h"
 
 int io_read_eol(int fd, char **line)
 {
-	int chunks = 1, len = 0;
+	size_t chunks = 1, len = 0;
 	char *buf = malloc(chunks * CHUNKSIZE + 1);
 	char c;
 
@@ -58,5 +54,6 @@ int io_read_eol(int fd, char **line)
 	
 out:
 	*line = strndup(buf, len);
+	free(buf);
 	return len;
 }

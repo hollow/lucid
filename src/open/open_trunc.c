@@ -22,5 +22,5 @@
 
 int open_trunc(const char *filename)
 {
-	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT|O_TRUNC, 0600);
+	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT|O_TRUNC, 0666);
 }

@@ -19,5 +19,5 @@
 
 uint64_t flist64_val2mask(int val)
 {
-	return (1UL << val);
+	return (1ULL << val);
 }

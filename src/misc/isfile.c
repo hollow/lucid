@@ -19,7 +19,7 @@
 
 #include "misc/misc.h"
 
-int isfile(char *path)
+int isfile(const char *path)
 {
 	struct stat stats;
 	return stat(path, &stats) == 0 && S_ISREG(stats.st_mode);

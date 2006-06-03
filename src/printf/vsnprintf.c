@@ -15,33 +15,32 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdbool.h>
-#include <ctype.h>
 #include <string.h>
 
-#include "printf/printf.h"
 #include "fmt/fmt.h"
+#include "printf/printf.h"
+#include "str/str.h"
 
 /* format structs */
 typedef struct {
-	bool alt;
-	bool zero;
-	bool left;
-	bool blank;
-	bool sign;
+	int alt;
+	int zero;
+	int left;
+	int blank;
+	int sign;
 } __flags_t;
 
 typedef struct {
-	bool isset;
+	int isset;
 	unsigned int width;
 } __prec_t;
 
 typedef struct {
 	__flags_t f;
-	unsigned int w;
 	__prec_t  p;
-	unsigned char l;
-	unsigned char c;
+	unsigned int w;
+	unsigned int l;
+	unsigned int c;
 } __printf_t;
 
 /* supported formats:
@@ -73,15 +72,15 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 			__printf_t f;
 			
 			/* sanitize struct with default values */
-			f.f.alt   = false;
-			f.f.zero  = false;
-			f.f.left  = false;
-			f.f.blank = false;
-			f.f.sign  = false;
+			f.f.alt   = 0;
+			f.f.zero  = 0;
+			f.f.left  = 0;
+			f.f.blank = 0;
+			f.f.sign  = 0;
 			
 			f.w = 0;
 			
-			f.p.isset = false;
+			f.p.isset = 0;
 			f.p.width = 1;
 			
 			f.l = '\0';
@@ -90,11 +89,11 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 			/* parse flags */
 			while (*fmt == '0' || *fmt == '-' || *fmt == '+' || *fmt == ' ' || *fmt == '#') {
 				switch (*fmt) {
-					case '#': f.f.alt   = true; break;
-					case '0': f.f.zero  = true; break;
-					case '-': f.f.left  = true; break;
-					case ' ': f.f.blank = true; break;
-					case '+': f.f.sign  = true; break;
+					case '#': f.f.alt   = 1; break;
+					case '0': f.f.zero  = 1; break;
+					case '-': f.f.left  = 1; break;
+					case ' ': f.f.blank = 1; break;
+					case '+': f.f.sign  = 1; break;
 				}
 				
 				*fmt++;
@@ -110,12 +109,12 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					f.w = arg;
 				else {
 					f.w = -arg;
-					f.f.left = true;
+					f.f.left = 1;
 				}
-			} else if (isdigit(*fmt)) {
+			} else if (char_isdigit(*fmt)) {
 				f.w = *fmt++ - '0';
 				
-				while (isdigit(*fmt))
+				while (char_isdigit(*fmt))
 					f.w = 10 * f.w + (unsigned int)(*fmt++ - '0');
 			}
 			
@@ -123,7 +122,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 			if (*fmt == '.') {
 				*fmt++;
 				
-				f.p.isset = true;
+				f.p.isset = 1;
 				f.p.width = 0;
 				
 				if (*fmt == '*') {
@@ -133,10 +132,10 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					
 					if (arg >= 0)
 						f.p.width = arg;
-				} else if (isdigit(*fmt)) {
+				} else if (char_isdigit(*fmt)) {
 					f.p.width = *fmt++ - '0';
 					
-					while (isdigit(*fmt))
+					while (char_isdigit(*fmt))
 						f.p.width = 10 * f.p.width + (unsigned int)(*fmt++ - '0');
 				}
 			}
@@ -203,19 +202,19 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 			
 			/* sign overrides blank */
 			if (f.f.sign)
-				f.f.blank = false;
+				f.f.blank = 0;
 			
 			/* left overrides zero */
 			if (f.f.left)
-				f.f.zero = false;
+				f.f.zero = 0;
 			
 			/* no zero padding if precision is specified */
 			if (f.p.isset && f.w > 0)
-				f.f.zero = false;
+				f.f.zero = 0;
 			
 			/* no zero padding for string conversions */
 			if (f.c == 'c' || f.c == 's')
-				f.f.zero = false;
+				f.f.zero = 0;
 			
 			/* signed long argument */
 			signed long darg; signed long long ldarg;

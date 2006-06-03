@@ -15,10 +15,6 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,11 +23,10 @@
 #include "http/http.h"
 #include "list/list.h"
 
-int http_get_request (void *src, http_request_t *request,
+int http_get_request (const void *src, http_request_t *request,
                       http_header_t *headers, char **body, http_read_t cb)
 {
 	char *line;
-	struct list_head *pos, *q;
 	
 	/* 1) read request line */
 	for (line = NULL;;) {

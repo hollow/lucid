@@ -20,17 +20,14 @@
 
 #include "flist/flist.h"
 
-int flist32_getval(const flist32_t list[], char *key, uint32_t *val)
+uint32_t flist32_getval(const flist32_t list[], const char *key)
 {
 	int i;
 	
 	for (i = 0; list[i].key; i++) {
-		if (strcasecmp(list[i].key, key) == 0) {
-			if (val) *val = list[i].val;
-			return 0;
-		}
+		if (strcasecmp(list[i].key, key) == 0)
+			return list[i].val;
 	}
 	
-	errno = EINVAL;
-	return -1;
+	return errno = ENOENT, 0;
 }

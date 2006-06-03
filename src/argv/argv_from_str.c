@@ -16,11 +16,11 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <ctype.h>
 
+#include "str/str.h"
 #include "argv/argv.h"
 
-int argv_from_str(char *str, char **argv, int max_argc)
+int argv_from_str(char *str, char ** const argv, int max_argc)
 {
 	int i, argc = 0;
 	
@@ -31,7 +31,7 @@ int argv_from_str(char *str, char **argv, int max_argc)
 		if (argc >= max_argc)
 			return argc;
 		
-		while (isspace(*str))
+		while (char_isspace(*str))
 			*(str++) = '\0';
 		
 		if (!*str)
@@ -40,7 +40,7 @@ int argv_from_str(char *str, char **argv, int max_argc)
 		argv[argc] = str;
 		argc++;
 		
-		while (*str && !isspace(*str))
+		while (*str && !char_isspace(*str))
 			str++;
 	}
 	

@@ -16,12 +16,11 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <sys/types.h>
 #include <unistd.h>
 #include <sys/mman.h>
 
-#include "open/open.h"
 #include "mmap/mmap.h"
+#include "open/open.h"
 
 char *mmap_shared(const char *filename, size_t *len)
 {

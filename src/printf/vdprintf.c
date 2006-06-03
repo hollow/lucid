@@ -16,13 +16,14 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "printf/printf.h"
 
 int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
 {
 	char *buf;
-	int buflen, len;
+	size_t buflen, len;
 	
 	buflen = _lucid_vasprintf(&buf, fmt, ap);
 	len = write(fd, buf, buflen);

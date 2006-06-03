@@ -19,8 +19,8 @@
 
 #include "http/http.h"
 
-size_t http_write_callback(void *dst, char *data, size_t len)
+size_t http_write_callback(const void *dst, const char *data, size_t len)
 {
-	int fd = *(int *) dst;
+	int fd = *(const int *) dst;
 	return write(fd, data, len);
 }

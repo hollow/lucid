@@ -20,10 +20,10 @@
 
 #include <sys/types.h>
 
-int isdir  (char *path);
-int isfile (char *path);
-int islink (char *path);
-int mkdirp (char *path, mode_t mode);
-int runlink(char *path);
+int isdir  (const char *path);
+int isfile (const char *path);
+int islink (const char *path);
+int mkdirp (const char *path, mode_t mode);
+int runlink(const char *path);
 
 #endif

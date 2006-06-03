@@ -24,8 +24,5 @@ int chroot_fd(int fd)
 	if (fchdir(fd) == -1)
 		return -1;
 	
-	if (chroot(".") == -1)
-		return -1;
-	
-	return 0;
+	return chroot(".");
 }

@@ -19,7 +19,7 @@
 #define _LUCID_PRINTF_H
 
 #include <stdarg.h>
-#include <stdlib.h>
+#include <sys/types.h>
 
 int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 int _lucid_snprintf (char *str, size_t size, const char *fmt, /*args*/ ...);

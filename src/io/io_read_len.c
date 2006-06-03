@@ -19,18 +19,19 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "io.h"
+#include "io/io.h"
 
 int io_read_len(int fd, char **str, size_t len)
 {
 	char *buf = malloc(len + 1);
 	bzero(buf, len);
 
-	int buflen = read(fd, buf, len);
+	ssize_t buflen = read(fd, buf, len);
 	
 	if (buflen == -1)
 		return -1;
 	
-	*str = buf;
+	*str = strndup(buf, buflen);
+	free(buf);
 	return buflen;
 }
