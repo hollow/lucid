@@ -37,16 +37,16 @@ EXEC_C = exec/exec_fork.c \
 FLIST_H = flist/flist.h
 FLIST_C = flist/flist32_getkey.c \
           flist/flist32_getval.c \
-          flist/flist32_mask2val.c \
+          flist/flist32_index2val.c \
           flist/flist32_parse.c \
           flist/flist32_tostr.c \
-          flist/flist32_val2mask.c \
+          flist/flist32_val2index.c \
           flist/flist64_getkey.c \
           flist/flist64_getval.c \
-          flist/flist64_mask2val.c \
+          flist/flist64_index2val.c \
           flist/flist64_parse.c \
           flist/flist64_tostr.c \
-          flist/flist64_val2mask.c
+          flist/flist64_val2index.c
 
 FMT_H = fmt/fmt.h
 FMT_C = fmt/fmt_8long.c \
