@@ -16,6 +16,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <errno.h>
@@ -30,7 +31,7 @@ int exec_fork_background(const char *fmt, ...)
 	va_start(ap, fmt);
 	
 	char *cmd;
-	vasprintf(&cmd, fmt, ap); /* TODO: free() */
+	vasprintf(&cmd, fmt, ap);
 	
 	va_end(ap);
 	
@@ -39,8 +40,10 @@ int exec_fork_background(const char *fmt, ...)
 	
 	argc = argv_from_str(cmd, argv, EXEC_MAX_ARGV);
 	
-	if (argc < 1)
+	if (argc < 1) {
+		free(cmd);
 		return errno = EINVAL, -1;
+	}
 	
 	pid_t pid;
 	int i;
@@ -61,5 +64,6 @@ int exec_fork_background(const char *fmt, ...)
 		signal(SIGCHLD, SIG_IGN);
 	}
 	
+	free(cmd);
 	return 0;
 }

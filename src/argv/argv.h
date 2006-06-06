@@ -15,10 +15,38 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+/*!
+ * @defgroup argv Argument vector conversion
+ * @{
+ */
+
 #ifndef _LUCID_ARGV_H
 #define _LUCID_ARGV_H
 
-int   argv_from_str(char *str, char ** const argv, int max_argc);
+/*!
+ * @brief convert string to argument vector
+ *
+ * @param str  space seperated string to convert
+ * @param argv argument vector to fill
+ * @param argc size of argv
+ *
+ * @return number of arguments found/converted
+ *
+ * @note the caller is responsible to alloc memory for argv
+ * @note this function modifies its first argument, use with caution
+ */
+int   argv_from_str(char *str, char ** const argv, int argc);
+
+/*!
+ * @brief convert an argument vector to a string
+ *
+ * @param argc size of argv
+ * @param argv argument vector to convert
+ *
+ * @return space seperated string (obtained by malloc(3))
+ */
 char *argv_to_str  (int argc, const char ** const argv);
 
 #endif
+
+/*! @} argv */

@@ -15,10 +15,35 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+/*!
+ * @defgroup tcp TCP sockets
+ * @{
+ */
+
 #ifndef _LUCID_TCP_H
 #define _LUCID_TCP_H
 
+/*!
+ * @brief listen for incomming connections
+ *
+ * @param ip      IP to listen on
+ * @param port    port to listen on
+ * @param backlog queue backlog
+ *
+ * @return filedescriptor for the newly allocated socket, -1 on error with errno set
+ */
 int tcp_listen(const char *ip, int port, int backlog);
+
+/*!
+ * @brief connect to TCP socket
+ *
+ * @param ip      IP to connect to
+ * @param port    port to connect to
+ *
+ * @return filedescriptor for the newly allocated connection, -1 on error with errno set
+ */
 int tcp_connect(const char *ip, int port);
 
 #endif
+
+/*! @} tcp */

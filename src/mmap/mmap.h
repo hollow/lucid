@@ -16,13 +16,46 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+/*!
+ * @defgroup mmap Map files into memory
+ * @{
+ */
+
 #ifndef _LUCID_MMAP_H
 #define _LUCID_MMAP_H
 
 #include <sys/types.h>
 
-char *mmap_read   (const char *filename, size_t *len);
+/*!
+ * @brief map file into memory read-only
+ *
+ * @param filename path to file to be mapped
+ * @param len      bytes to be mapped
+ *
+ * @return pointer to mapped memory
+ */
+char *mmap_read(const char *filename, size_t *len);
+
+/*!
+ * @brief map file into a private memory copy
+ *
+ * @param filename path to file to be mapped
+ * @param len      bytes to be mapped
+ *
+ * @return pointer to mapped memory
+ */
 char *mmap_private(const char *filename, size_t *len);
-char *mmap_shared (const char *filename, size_t *len);
+
+/*!
+ * @brief map file into memory read-write
+ *
+ * @param filename path to file to be mapped
+ * @param len      bytes to be mapped
+ *
+ * @return pointer to mapped memory
+ */
+char *mmap_shared(const char *filename, size_t *len);
 
 #endif
+
+/*! @} mmap */

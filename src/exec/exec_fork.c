@@ -31,7 +31,7 @@ int exec_fork(const char *fmt, ...)
 	va_start(ap, fmt);
 	
 	char *cmd;
-	vasprintf(&cmd, fmt, ap); /* TODO: free() */
+	vasprintf(&cmd, fmt, ap);
 	
 	va_end(ap);
 	
@@ -40,28 +40,33 @@ int exec_fork(const char *fmt, ...)
 	
 	argc = argv_from_str(cmd, argv, EXEC_MAX_ARGV);
 	
-	if (argc < 1)
+	if (argc < 1) {
+		free(cmd);
 		return errno = EINVAL, -1;
+	}
 	
 	pid_t pid;
 	int status;
 	
 	switch ((pid = fork())) {
 	case -1:
+		free(cmd);
 		return -1;
 	
 	case 0:
 		usleep(200);
 		
-		if (execvp(argv[0], argv) == -1)
-			exit(errno);
+		execvp(argv[0], argv);
+		
+		/* never get here */
+		exit(errno);
 	
 	default:
+		free(cmd);
+		
 		if (waitpid(pid, &status, 0) == -1)
 			return -1;
-		
-		return status;
 	}
 	
-	return 0;
+	return status;
 }
