@@ -35,7 +35,7 @@
  * @note the caller is responsible to alloc memory for argv
  * @note this function modifies its first argument, use with caution
  */
-int   argv_from_str(char *str, char ** const argv, int argc);
+int argv_from_str(char *str, char ** const argv, int argc);
 
 /*!
  * @brief convert an argument vector to a string
@@ -45,7 +45,7 @@ int   argv_from_str(char *str, char ** const argv, int argc);
  *
  * @return space seperated string (obtained by malloc(3))
  */
-char *argv_to_str  (int argc, const char ** const argv);
+char *argv_to_str(int argc, const char ** const argv);
 
 #endif
 

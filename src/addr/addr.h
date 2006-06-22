@@ -34,7 +34,7 @@
  *
  * @return 0 on success, -1 on error with errno set
  */
-int   addr_from_str(const char *str, uint32_t *ip, uint32_t *mask);
+int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask);
 
 /*!
  * @brief convert IP and netmask to string
@@ -44,7 +44,7 @@ int   addr_from_str(const char *str, uint32_t *ip, uint32_t *mask);
  *
  * @return string in netmask notation (obtained with malloc(3))
  */
-char *addr_to_str  (uint32_t ip, uint32_t mask);
+char *addr_to_str(uint32_t ip, uint32_t mask);
 
 #endif
 
