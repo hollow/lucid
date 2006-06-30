@@ -21,7 +21,12 @@
 
 int str_check(const char *str, int allowed)
 {
-	int i, n = strlen(str);
+	int i, n;
+	
+	if (!str)
+		return 1;
+	
+	n = strlen(str);
 	
 	for (i = 0; i < n; i++) {
 		if (allowed & CC_ALNUM  && char_isalnum (str[i])) continue;

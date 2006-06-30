@@ -124,7 +124,7 @@
  */
 int str_check(const char *str, int allowed);
 
-#define str_isempty(str)  str_check(str, CC_SPACE)
+#define str_isempty(str)  (!str || str_check(str, CC_SPACE))
 #define str_isalnum(str)  str_check(str, CC_ALNUM)
 #define str_isalpha(str)  str_check(str, CC_ALPHA)
 #define str_isascii(str)  str_check(str, CC_ASCII)

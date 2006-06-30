@@ -141,6 +141,8 @@ TCP_H = tcp/tcp.h
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
 
+EXTRA_DIST = Doxyfile
+
 noinst_HEADERS = $(ADDR_H) \
                  $(ARGV_H) \
                  $(CHROOT_H) \
