@@ -23,7 +23,7 @@ char *str_tolower(char *str)
 	
 	while (*p) {
 		char_tolower(*p);
-		*p++;
+		p++;
 	}
 	
 	return str;

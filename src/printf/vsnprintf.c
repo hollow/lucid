@@ -60,13 +60,13 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 				str[idx++] = *fmt++;
 			else {
 				idx++;
-				*fmt++;
+				fmt++;
 			}
 		}
 		
 		else {
 			/* skip % */
-			*fmt++;
+			fmt++;
 			
 			/* format struct */
 			__printf_t f;
@@ -96,12 +96,12 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					case '+': f.f.sign  = 1; break;
 				}
 				
-				*fmt++;
+				fmt++;
 			}
 			
 			/* parse field width */
 			if (*fmt == '*') {
-				*fmt++;
+				fmt++;
 				
 				int arg = va_arg(ap, int);
 				
@@ -112,31 +112,39 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					f.f.left = 1;
 				}
 			} else if (char_isdigit(*fmt)) {
-				f.w = *fmt++ - '0';
+				f.w = *fmt - '0';
 				
-				while (char_isdigit(*fmt))
-					f.w = 10 * f.w + (unsigned int)(*fmt++ - '0');
+				fmt ++;
+				
+				while (char_isdigit(*fmt)) {
+					f.w = 10 * f.w + (unsigned int)(*fmt - '0');
+					fmt++;
+				}
 			}
 			
 			/* parse precision */
 			if (*fmt == '.') {
-				*fmt++;
+				fmt++;
 				
 				f.p.isset = 1;
 				f.p.width = 0;
 				
 				if (*fmt == '*') {
-					*fmt++;
+					fmt++;
 					
 					int arg = va_arg(ap, int);
 					
 					if (arg >= 0)
 						f.p.width = arg;
 				} else if (char_isdigit(*fmt)) {
-					f.p.width = *fmt++ - '0';
+					f.p.width = *fmt - '0';
 					
-					while (char_isdigit(*fmt))
-						f.p.width = 10 * f.p.width + (unsigned int)(*fmt++ - '0');
+					fmt++;
+					
+					while (char_isdigit(*fmt)) {
+						f.p.width = 10 * f.p.width + (unsigned int)(*fmt - '0');
+						fmt++;
+					}
 				}
 			}
 			
@@ -149,7 +157,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					f.l = 'l';
 					
 					if (*(fmt+1) == 'h')
-						*fmt++;
+						fmt++;
 					
 					break;
 				
@@ -158,7 +166,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					
 					if (*(fmt+1) == 'l') {
 						f.l = '2';
-						*fmt++;
+						fmt++;
 					}
 					
 					break;
@@ -171,7 +179,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 			}
 			
 			if (f.l != '\0')
-				*fmt++;
+				fmt++;
 			
 			/* parse conversion specifier */
 			switch (*fmt) {
@@ -198,7 +206,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 				default: break;
 			}
 			
-			*fmt++;
+			fmt++;
 			
 			/* sign overrides blank */
 			if (f.f.sign)

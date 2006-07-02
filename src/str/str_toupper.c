@@ -23,7 +23,7 @@ char *str_toupper(char *str)
 	
 	while (*p) {
 		char_toupper(*p);
-		*p++;
+		p++;
 	}
 	
 	return str;
