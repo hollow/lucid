@@ -125,6 +125,7 @@ STR_C = str/str_check.c \
 STRALLOC_H = stralloc/stralloc.h
 STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_cat.c \
+             stralloc/stralloc_catf.c \
              stralloc/stralloc_catm.c \
              stralloc/stralloc_cats.c \
              stralloc/stralloc_cmp.c \
