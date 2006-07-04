@@ -28,7 +28,7 @@ int argv_from_str(char *str, char ** const argv, int max_argc)
 		argv[i] = NULL;
 	
 	while (*str) {
-		if (argc >= max_argc)
+		if (argc >= max_argc - 1)
 			return argc;
 		
 		while (char_isspace(*str))

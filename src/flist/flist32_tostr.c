@@ -31,7 +31,7 @@ char *flist32_tostr(const flist32_t list[], uint32_t val, char delim)
 	
 	for (i = 0; list[i].key; i++)
 		if (val & list[i].val)
-			stralloc_catm(&buf, list[i].key, delim, NULL);
+			stralloc_catf(&buf, "%s%c", list[i].key, delim);
 	
 	if (buf.len == 0)
 		len = 0;
