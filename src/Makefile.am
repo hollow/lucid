@@ -90,6 +90,7 @@ MISC_C = misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
          misc/mkdirp.c \
+         misc/path_concat.c \
          misc/runlink.c
 
 MMAP_H = mmap/mmap.h
