@@ -15,25 +15,40 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <stdlib.h>
+#include <string.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
-#include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
 #include "sha1/sha1.h"
-#include "str/str.h"
 #include "stralloc/stralloc.h"
-#include "tcp/tcp.h"
 
-#endif
+char *sha1_digest(const char *str)
+{
+	SHA1 ctx;
+	STRALLOC sa;
+	char *buf;
+	unsigned char digest[20], *dat;
+	unsigned int i, j, len;
+	
+	len = strlen(str);
+	dat = malloc(len + 1);
+	
+	bzero(dat, len + 1);
+	memcpy(dat, str, len);
+	
+	sha1_init(&ctx);
+	sha1_update(&ctx, dat, len);
+	sha1_final(digest, &ctx);
+	
+	stralloc_init(&sa);
+	
+	for (i = 0; i < 5; i++)
+		for (j = 0; j < 4; j++)
+			stralloc_catf(&sa, "%02X", digest[i*4+j]);
+	
+	buf = strndup(sa.s, sa.len);
+	
+	stralloc_free(&sa);
+	free(dat);
+	
+	return buf;
+}

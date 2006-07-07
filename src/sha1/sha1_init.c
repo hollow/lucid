@@ -15,25 +15,15 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
-
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
-#include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
 #include "sha1/sha1.h"
-#include "str/str.h"
-#include "stralloc/stralloc.h"
-#include "tcp/tcp.h"
 
-#endif
+void sha1_init(SHA1* context)
+{
+	/* SHA1 initialization constants */
+	context->state[0] = 0x67452301;
+	context->state[1] = 0xEFCDAB89;
+	context->state[2] = 0x98BADCFE;
+	context->state[3] = 0x10325476;
+	context->state[4] = 0xC3D2E1F0;
+	context->count[0] = context->count[1] = 0;
+}

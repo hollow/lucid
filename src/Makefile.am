@@ -116,6 +116,13 @@ PRINTF_C = printf/asprintf.c \
            printf/vprintf.c \
            printf/vsnprintf.c
 
+SHA1_H = sha1/sha1.h
+SHA1_C = sha1/sha1_digest.c \
+         sha1/sha1_final.c \
+         sha1/sha1_init.c \
+         sha1/sha1_transform.c \
+         sha1/sha1_update.c
+
 STR_H = str/str.h
 STR_C = str/str_check.c \
         str/str_path_isabs.c \
@@ -158,6 +165,7 @@ noinst_HEADERS = $(ADDR_H) \
                  $(MMAP_H) \
                  $(OPEN_H) \
                  $(PRINTF_H) \
+                 $(SHA1_H) \
                  $(STR_H) \
                  $(STRALLOC_H) \
                  $(TCP_H) \
@@ -177,6 +185,7 @@ libucid_a_SOURCES = $(ADDR_C) \
                     $(MMAP_C) \
                     $(OPEN_C) \
                     $(PRINTF_C) \
+                    $(SHA1_C) \
                     $(STR_C) \
                     $(STRALLOC_C) \
                     $(TCP_C)

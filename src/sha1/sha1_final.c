@@ -15,25 +15,34 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <string.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
-#include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
 #include "sha1/sha1.h"
-#include "str/str.h"
-#include "stralloc/stralloc.h"
-#include "tcp/tcp.h"
 
-#endif
+void sha1_final(unsigned char digest[20], SHA1* context)
+{
+	unsigned long i, j;
+	unsigned char finalcount[8];
+	
+	for (i = 0; i < 8; i++)
+		finalcount[i] = (unsigned char)((context->count[(i >= 4 ? 0 : 1)] >> ((3-(i & 3)) * 8) ) & 255);
+	
+	sha1_update(context, (unsigned char *)"\200", 1);
+	
+	while ((context->count[0] & 504) != 448)
+		sha1_update(context, (unsigned char *)"\0", 1);
+	
+	sha1_update(context, finalcount, 8);
+	
+	for (i = 0; i < 20; i++)
+		digest[i] = (unsigned char)((context->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
+	
+	/* Wipe variables */
+	i = j = 0;
+	memset(context->buffer, 0, 64);
+	memset(context->state, 0, 20);
+	memset(context->count, 0, 8);
+	memset(&finalcount, 0, 8);
+	
+	sha1_transform(context->state, context->buffer);
+}

@@ -15,25 +15,20 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#ifndef _LUCID_SHA1_H
+#define _LUCID_SHA1_H
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
-#include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
-#include "sha1/sha1.h"
-#include "str/str.h"
-#include "stralloc/stralloc.h"
-#include "tcp/tcp.h"
+typedef struct {
+	unsigned long state[5];
+	unsigned long count[2];
+	unsigned char buffer[64];
+} SHA1;
+
+char *sha1_digest(const char *str);
+
+void sha1_final(unsigned char digest[20], SHA1* context);
+void sha1_init(SHA1* context);
+void sha1_transform(unsigned long state[5], unsigned char buffer[64]);
+void sha1_update(SHA1* context, unsigned char* data, unsigned int len);
 
 #endif

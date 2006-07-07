@@ -15,25 +15,34 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#ifndef _LUCID_H
-#define _LUCID_H
+#include <string.h>
 
-#include "addr/addr.h"
-#include "argv/argv.h"
-#include "chroot/chroot.h"
-#include "exec/exec.h"
-#include "flist/flist.h"
-#include "fmt/fmt.h"
-#include "http/http.h"
-#include "io/io.h"
-#include "misc/misc.h"
-#include "list/list.h"
-#include "mmap/mmap.h"
-#include "open/open.h"
-#include "printf/printf.h"
 #include "sha1/sha1.h"
-#include "str/str.h"
-#include "stralloc/stralloc.h"
-#include "tcp/tcp.h"
 
-#endif
+void sha1_update(SHA1* context, unsigned char *data, unsigned int len)
+{
+	unsigned int i, j;
+	
+	j = (context->count[0] >> 3) & 63;
+	
+	if ((context->count[0] += len << 3) < (len << 3))
+		context->count[1]++;
+	
+	context->count[1] += (len >> 29);
+	
+	if ((j + len) > 63) {
+		memcpy(&context->buffer[j], data, (i = 64-j));
+		
+		sha1_transform(context->state, context->buffer);
+		
+		for (; i + 63 < len; i += 64)
+			sha1_transform(context->state, &data[i]);
+		
+		j = 0;
+	}
+	
+	else
+		i = 0;
+	
+	memcpy(&context->buffer[j], &data[i], len - i);
+}
