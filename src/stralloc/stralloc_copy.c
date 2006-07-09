@@ -18,7 +18,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_copy(STRALLOC *dst, const STRALLOC *src)
+int stralloc_copy(stralloc_t *dst, const stralloc_t *src)
 {
 	return stralloc_copyb(dst, src->s, src->len);
 }

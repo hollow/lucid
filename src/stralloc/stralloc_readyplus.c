@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_readyplus(STRALLOC *sa, size_t len)
+int stralloc_readyplus(stralloc_t *sa, size_t len)
 {
 	if (sa->s) {
 		if (sa->len + len < len)

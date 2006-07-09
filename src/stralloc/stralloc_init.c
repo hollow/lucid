@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-void stralloc_init(STRALLOC *sa)
+void stralloc_init(stralloc_t *sa)
 {
 	sa->s   = NULL;
 	sa->len = sa->a = 0;

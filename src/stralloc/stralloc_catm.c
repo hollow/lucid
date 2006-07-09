@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_catm(STRALLOC *dst, ...)
+int stralloc_catm(stralloc_t *dst, ...)
 {
 	va_list ap;
 	char *s;

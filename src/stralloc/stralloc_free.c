@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-void stralloc_free(STRALLOC *sa)
+void stralloc_free(stralloc_t *sa)
 {
 	if (sa->s)
 		free(sa->s);

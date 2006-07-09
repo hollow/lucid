@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_ready(STRALLOC *sa, size_t len)
+int stralloc_ready(stralloc_t *sa, size_t len)
 {
 	size_t wanted = len + (len >> 3) + 30;
 	char *tmp;

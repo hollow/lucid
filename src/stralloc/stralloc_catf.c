@@ -22,7 +22,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_catf(STRALLOC *dst, const char *fmt, ...)
+int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 {
 	va_list ap;
 	char *buf;

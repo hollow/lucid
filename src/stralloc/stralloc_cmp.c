@@ -18,7 +18,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_cmp(const STRALLOC *a, const STRALLOC *b)
+int stralloc_cmp(const stralloc_t *a, const stralloc_t *b)
 {
 	size_t i, j;
 	

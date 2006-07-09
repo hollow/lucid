@@ -20,7 +20,7 @@
 
 #include "stralloc/stralloc.h"
 
-int stralloc_copyb(STRALLOC *dst, const char *src, size_t len)
+int stralloc_copyb(stralloc_t *dst, const char *src, size_t len)
 {
 	if (stralloc_ready(dst, len) == -1)
 		return -1;

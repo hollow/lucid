@@ -18,7 +18,7 @@
 
 #include "stralloc/stralloc.h"
 
-void stralloc_zero(STRALLOC *sa)
+void stralloc_zero(stralloc_t *sa)
 {
 	sa->len = 0;
 }

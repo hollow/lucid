@@ -25,24 +25,24 @@ typedef struct {
 	char *s;
 	size_t len;
 	size_t a;
-} STRALLOC;
+} stralloc_t;
 
-void stralloc_init     (STRALLOC *sa);
-void stralloc_zero     (STRALLOC *sa);
-int  stralloc_ready    (STRALLOC *sa, size_t len);
-int  stralloc_readyplus(STRALLOC *sa, size_t len);
-void stralloc_free     (STRALLOC *sa);
+void stralloc_init     (stralloc_t *sa);
+void stralloc_zero     (stralloc_t *sa);
+int  stralloc_ready    (stralloc_t *sa, size_t len);
+int  stralloc_readyplus(stralloc_t *sa, size_t len);
+void stralloc_free     (stralloc_t *sa);
 
-int  stralloc_copyb    (STRALLOC *dst, const char *src, size_t len);
-int  stralloc_copys    (STRALLOC *dst, const char *src);
-int  stralloc_copy     (STRALLOC *dst, const STRALLOC *src);
+int  stralloc_copyb    (stralloc_t *dst, const char *src, size_t len);
+int  stralloc_copys    (stralloc_t *dst, const char *src);
+int  stralloc_copy     (stralloc_t *dst, const stralloc_t *src);
 
-int  stralloc_catb     (STRALLOC *dst, const char *src, size_t len);
-int  stralloc_catf     (STRALLOC *dst, const char *fmt, ...);
-int  stralloc_catm     (STRALLOC *dst, ...);
-int  stralloc_cats     (STRALLOC *dst, const char *src);
-int  stralloc_cat      (STRALLOC *dst, const STRALLOC *src);
+int  stralloc_catb     (stralloc_t *dst, const char *src, size_t len);
+int  stralloc_catf     (stralloc_t *dst, const char *fmt, ...);
+int  stralloc_catm     (stralloc_t *dst, ...);
+int  stralloc_cats     (stralloc_t *dst, const char *src);
+int  stralloc_cat      (stralloc_t *dst, const stralloc_t *src);
 
-int  stralloc_cmp      (const STRALLOC *a, const STRALLOC *b);
+int  stralloc_cmp      (const stralloc_t *a, const stralloc_t *b);
 
 #endif
