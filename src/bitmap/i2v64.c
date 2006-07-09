@@ -15,12 +15,9 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <unistd.h>
+#include "flist/flist.h"
 
-#include "http/http.h"
-
-size_t http_write_callback(const void *dst, const char *data, size_t len)
+uint64_t i2v64(int index)
 {
-	int fd = *(const int *) dst;
-	return write(fd, data, len);
+	return (1ULL << index);
 }

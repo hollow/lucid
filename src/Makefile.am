@@ -24,6 +24,12 @@ ARGV_H = argv/argv.h
 ARGV_C = argv/argv_from_str.c \
          argv/argv_to_str.c
 
+BITMAP_H = bitmap/bitmap.h
+BITMAP_C = bitmap/i2v32.c \
+           bitmap/i2v64.c \
+           bitmap/v2i32.c \
+           bitmap/v2i64.c
+
 CHROOT_H = chroot/chroot.h
 CHROOT_C = chroot/chroot_fd.c \
            chroot/chroot_mkdirp.c \
@@ -35,18 +41,14 @@ EXEC_C = exec/exec_fork.c \
          exec/exec_replace.c
 
 FLIST_H = flist/flist.h
-FLIST_C = flist/flist32_getkey.c \
+FLIST_C = flist/flist32_from_str.c \
+          flist/flist32_getkey.c \
           flist/flist32_getval.c \
-          flist/flist32_index2val.c \
-          flist/flist32_parse.c \
-          flist/flist32_tostr.c \
-          flist/flist32_val2index.c \
+          flist/flist32_to_str.c \
+          flist/flist64_from_str.c \
           flist/flist64_getkey.c \
           flist/flist64_getval.c \
-          flist/flist64_index2val.c \
-          flist/flist64_parse.c \
-          flist/flist64_tostr.c \
-          flist/flist64_val2index.c
+          flist/flist64_to_str.c
 
 FMT_H = fmt/fmt.h
 FMT_C = fmt/fmt_8long.c \
@@ -155,6 +157,7 @@ EXTRA_DIST = Doxyfile
 noinst_HEADERS = $(ADDR_H) \
                  $(ARGV_H) \
                  $(CHROOT_H) \
+                 $(BITMAP_H) \
                  $(EXEC_H) \
                  $(FLIST_H) \
                  $(FMT_H) \
@@ -175,6 +178,7 @@ noinst_LIBRARIES = libucid.a
 
 libucid_a_SOURCES = $(ADDR_C) \
                     $(ARGV_C) \
+                    $(BITMAP_H) \
                     $(CHROOT_C) \
                     $(EXEC_C) \
                     $(FLIST_C) \

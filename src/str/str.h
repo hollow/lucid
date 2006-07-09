@@ -24,13 +24,13 @@
 #define _LUCID_STR_H
 
 /*! @brief check for an ASCII character */
-#define char_isascii(ch) ((unsigned int)(ch      ) < 128u)
+#define char_isascii(ch) ((unsigned int)(ch) < 128u)
 
 /*! @brief check for a blank character (space, horizontal tab) */
 #define char_isblank(ch) (ch == ' ' || ch == '\t')
 
 /*! @brief check for an ASCII control character */
-#define char_iscntrl(ch) ((unsigned int)(ch      ) < 32u || ch == 127)
+#define char_iscntrl(ch) ((unsigned int)(ch) < 32u || ch == 127)
 
 /*! @brief check for a digit character (0-9) */
 #define char_isdigit(ch) ((unsigned int)(ch - '0') < 10u)

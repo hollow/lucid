@@ -20,6 +20,7 @@
 
 #include "addr/addr.h"
 #include "argv/argv.h"
+#include "bitmap/bitmap.h"
 #include "chroot/chroot.h"
 #include "exec/exec.h"
 #include "flist/flist.h"

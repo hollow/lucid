@@ -15,14 +15,30 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "flist/flist.h"
+#include <string.h>
 
-int flist32_val2index(uint32_t val)
+#include "flist/flist.h"
+#include "stralloc/stralloc.h"
+
+char *flist32_to_str(const flist32_t list[], uint32_t val, char delim)
 {
-	int index = 0;
+	int i;
+	size_t len;
+	char *str;
+	STRALLOC buf;
 	
-	while ((val /= 2) != 0)
-		index++;
+	stralloc_init(&buf);
 	
-	return index;
+	for (i = 0; list[i].key; i++)
+		if (val & list[i].val)
+			stralloc_catf(&buf, "%s%c", list[i].key, delim);
+	
+	if (buf.len == 0)
+		len = 0;
+	else
+		len = buf.len - 1;
+	
+	str = strndup(buf.s, len);
+	stralloc_free(&buf);
+	return str;
 }

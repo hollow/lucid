@@ -17,7 +17,7 @@
 
 #include "flist/flist.h"
 
-uint32_t flist32_index2val(int index)
+uint32_t i2v32(int index)
 {
 	return (1UL << index);
 }

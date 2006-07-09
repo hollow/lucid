@@ -15,17 +15,14 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
+#include "flist/flist.h"
 
-#include "http/http.h"
-
-const char *http_method_to_str(http_method_t method)
+int v2i64(uint64_t val)
 {
-	int i;
+	int index = 0;
 	
-	for (i = 0; _http_method_map[i].name; i++)
-		if (_http_method_map[i].method == method)
-			return _http_method_map[i].name;
+	while ((val /= 2) != 0)
+		index++;
 	
-	return NULL;
+	return index;
 }

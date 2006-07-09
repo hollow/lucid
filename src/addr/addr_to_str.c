@@ -25,7 +25,7 @@ char *addr_to_str(uint32_t ip, uint32_t mask)
 {
 	struct in_addr ib;
 	char *str, *addr_ip, *addr_mask;
-	STRALLOC addr;
+	stralloc_t addr;
 	
 	stralloc_init(&addr);
 	

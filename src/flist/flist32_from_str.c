@@ -15,14 +15,46 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "flist/flist.h"
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
-int flist64_val2index(uint64_t val)
+#include "flist/flist.h"
+#include "str/str.h"
+
+int flist32_from_str(const char *str, const flist32_t list[],
+                  uint32_t *flags, uint32_t *mask,
+                  char clmod, char delim)
 {
-	int index = 0;
+	char *p, *o, *buf;
+	int clear = 0;
+	uint32_t cur_flag;
 	
-	while ((val /= 2) != 0)
-		index++;
+	if (str_isempty(str))
+		return errno = EINVAL, -1;
 	
-	return index;
+	buf = o = strdup(str);
+	
+	for (p = strtok(buf, &delim); p; p = strtok(NULL, &delim), clear = 0) {
+		if (*p == clmod)
+			clear = 1;
+		
+		cur_flag = flist32_getval(list, p+clear);
+		
+		if (!cur_flag) {
+			free(o);
+			return errno = ENOENT, -1;
+		}
+		
+		if (clear) {
+			*flags &= ~cur_flag;
+			*mask  |=  cur_flag;
+		} else {
+			*flags |=  cur_flag;
+			*mask  |=  cur_flag;
+		}
+	}
+	
+	free(o);
+	return 0;
 }

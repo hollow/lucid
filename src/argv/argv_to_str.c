@@ -25,7 +25,7 @@ char *argv_to_str(int argc, const char ** const argv)
 	int i;
 	size_t len;
 	char *str;
-	STRALLOC buf;
+	stralloc_t buf;
 	
 	stralloc_init(&buf);
 	

@@ -21,12 +21,13 @@
 #include <string.h>
 
 #include "misc/misc.h"
+#include "str/str.h"
 
 char *path_concat(char *dirname, char *basename)
 {
 	char *path;
 	
-	if (strcmp(basename, ".") == 0 || strcmp(basename, "..") == 0)
+	if (str_path_isdot(basename))
 		return errno = EINVAL, NULL;
 	
 	asprintf(&path, "%s/%s", dirname, basename);
