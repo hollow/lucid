@@ -25,7 +25,6 @@
 #include "exec/exec.h"
 #include "flist/flist.h"
 #include "fmt/fmt.h"
-#include "http/http.h"
 #include "io/io.h"
 #include "misc/misc.h"
 #include "list/list.h"

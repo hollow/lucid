@@ -25,7 +25,7 @@ char *flist32_to_str(const flist32_t list[], uint32_t val, char delim)
 	int i;
 	size_t len;
 	char *str;
-	STRALLOC buf;
+	stralloc_t buf;
 	
 	stralloc_init(&buf);
 	

@@ -25,7 +25,7 @@ char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
 	int i;
 	size_t len;
 	char *str;
-	STRALLOC buf;
+	stralloc_t buf;
 	
 	stralloc_init(&buf);
 	

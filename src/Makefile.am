@@ -67,19 +67,6 @@ FMT_C = fmt/fmt_8long.c \
         fmt/fmt_xlong.c \
         fmt/fmt_xlonglong.c
 
-HTTP_H = http/http.h
-HTTP_C = http/http_get_request.c \
-         http/http_get_response.c \
-         http/http_internal.c \
-         http/http_method_to_str.c \
-         http/http_read_callback.c \
-         http/http_send_request.c \
-         http/http_send_response.c \
-         http/http_status_to_str.c \
-         http/http_str_to_method.c \
-         http/http_str_to_status.c \
-         http/http_write_callback.c
-
 IO_H = io/io.h
 IO_C = io/io_read_eof.c \
        io/io_read_eol.c \
@@ -161,7 +148,6 @@ noinst_HEADERS = $(ADDR_H) \
                  $(EXEC_H) \
                  $(FLIST_H) \
                  $(FMT_H) \
-                 $(HTTP_H) \
                  $(IO_H) \
                  $(LIST_H) \
                  $(MISC_H) \
@@ -178,12 +164,11 @@ noinst_LIBRARIES = libucid.a
 
 libucid_a_SOURCES = $(ADDR_C) \
                     $(ARGV_C) \
-                    $(BITMAP_H) \
+                    $(BITMAP_C) \
                     $(CHROOT_C) \
                     $(EXEC_C) \
                     $(FLIST_C) \
                     $(FMT_C) \
-                    $(HTTP_C) \
                     $(IO_C) \
                     $(MISC_C) \
                     $(MMAP_C) \
