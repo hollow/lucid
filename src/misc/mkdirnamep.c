@@ -16,39 +16,24 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <unistd.h>
+#include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <libgen.h>
 
-#include "io/io.h"
+#include "misc/misc.h"
+#include "str/str.h"
 
-int io_read_eof(int fd, char **file)
+int mkdirnamep(const char *path, mode_t mode)
 {
-	int rc = -1;
-	size_t chunks = 1, len = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
-
-	for (;;) {
-		int bytes_read = read(fd, buf+len, CHUNKSIZE);
-		
-		if (bytes_read == -1)
-			goto err;
-		
-		len += bytes_read;
-		buf[len] = '\0';
-		
-		if (bytes_read == 0)
-			goto out;
-		
-		if (bytes_read == CHUNKSIZE) {
-			chunks++;
-			buf = realloc(buf, chunks * CHUNKSIZE + 1);
-		}
-	}
+	char *buf, *dname;
+	int rc;
 	
-out:
-	*file = strndup(buf, len);
-	rc = strlen(*file);
-err:
+	buf = strdup(path);
+	dname = dirname(buf);
+	
+	rc = mkdirp(dname, mode);
+	
 	free(buf);
 	return rc;
 }

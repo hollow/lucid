@@ -78,6 +78,7 @@ MISC_H = misc/misc.h
 MISC_C = misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
+         misc/mkdirnamep.c \
          misc/mkdirp.c \
          misc/path_concat.c \
          misc/runlink.c

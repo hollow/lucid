@@ -53,6 +53,16 @@ int isfile (const char *path);
 int islink (const char *path);
 
 /*!
+ * @brief recursive mkdir(2) with dirname(3)
+ *
+ * @param path path to create
+ * @param mode file permissions
+ *
+ * @return 0 on success, -1 on error with errno set
+ */
+int mkdirnamep(const char *path, mode_t mode);
+
+/*!
  * @brief recursive mkdir(2)
  *
  * @param path path to create
