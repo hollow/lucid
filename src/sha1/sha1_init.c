@@ -17,7 +17,7 @@
 
 #include "sha1/sha1.h"
 
-void sha1_init(SHA1* context)
+void sha1_init(sha1_t* context)
 {
 	/* SHA1 initialization constants */
 	context->state[0] = 0x67452301;

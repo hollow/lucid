@@ -19,7 +19,7 @@
 
 #include "sha1/sha1.h"
 
-void sha1_update(SHA1* context, unsigned char *data, unsigned int len)
+void sha1_update(sha1_t* context, unsigned char *data, unsigned int len)
 {
 	unsigned int i, j;
 	

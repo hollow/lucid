@@ -23,8 +23,8 @@
 
 char *sha1_digest(const char *str)
 {
-	SHA1 ctx;
-	STRALLOC sa;
+	sha1_t ctx;
+	stralloc_t sa;
 	char *buf;
 	unsigned char digest[20], *dat;
 	unsigned int i, j, len;

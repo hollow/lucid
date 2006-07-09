@@ -19,7 +19,7 @@
 
 #include "sha1/sha1.h"
 
-void sha1_final(unsigned char digest[20], SHA1* context)
+void sha1_final(unsigned char digest[20], sha1_t* context)
 {
 	unsigned long i, j;
 	unsigned char finalcount[8];

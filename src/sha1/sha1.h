@@ -22,13 +22,13 @@ typedef struct {
 	unsigned long state[5];
 	unsigned long count[2];
 	unsigned char buffer[64];
-} SHA1;
+} sha1_t;
 
 char *sha1_digest(const char *str);
 
-void sha1_final(unsigned char digest[20], SHA1* context);
-void sha1_init(SHA1* context);
+void sha1_final(unsigned char digest[20], sha1_t* context);
+void sha1_init(sha1_t* context);
 void sha1_transform(unsigned long state[5], unsigned char buffer[64]);
-void sha1_update(SHA1* context, unsigned char* data, unsigned int len);
+void sha1_update(sha1_t* context, unsigned char* data, unsigned int len);
 
 #endif
