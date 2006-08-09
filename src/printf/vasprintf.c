@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "printf/printf.h"
-#include "fmt/fmt.h"
+#include "printf.h"
+#include "fmt.h"
 
 int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
 {

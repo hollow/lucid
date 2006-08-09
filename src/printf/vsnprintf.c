@@ -17,9 +17,9 @@
 
 #include <string.h>
 
-#include "fmt/fmt.h"
-#include "printf/printf.h"
-#include "str/str.h"
+#include "fmt.h"
+#include "printf.h"
+#include "str.h"
 
 /* format structs */
 typedef struct {

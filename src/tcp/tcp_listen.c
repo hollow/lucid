@@ -20,7 +20,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#include "tcp/tcp.h"
+#include "tcp.h"
 
 int tcp_listen(const char *ip, int port, int backlog)
 {

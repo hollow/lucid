@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "sha1/sha1.h"
-#include "stralloc/stralloc.h"
+#include "sha1.h"
+#include "stralloc.h"
 
 char *sha1_digest(const char *str)
 {

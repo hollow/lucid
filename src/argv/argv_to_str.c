@@ -17,8 +17,8 @@
 
 #include <string.h>
 
-#include "argv/argv.h"
-#include "stralloc/stralloc.h"
+#include "argv.h"
+#include "stralloc.h"
 
 char *argv_to_str(int argc, const char ** const argv)
 {

@@ -17,7 +17,7 @@
 
 #include <unistd.h>
 
-#include "chroot/chroot.h"
+#include "chroot.h"
 
 int chroot_fd(int fd)
 {

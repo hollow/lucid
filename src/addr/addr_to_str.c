@@ -18,8 +18,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#include "addr/addr.h"
-#include "stralloc/stralloc.h"
+#include "addr.h"
+#include "stralloc.h"
 
 char *addr_to_str(uint32_t ip, uint32_t mask)
 {

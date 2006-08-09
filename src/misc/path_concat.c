@@ -20,8 +20,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include "misc/misc.h"
-#include "str/str.h"
+#include "misc.h"
+#include "str.h"
 
 char *path_concat(char *dirname, char *basename)
 {

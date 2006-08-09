@@ -17,8 +17,8 @@
 
 #include <string.h>
 
-#include "flist/flist.h"
-#include "stralloc/stralloc.h"
+#include "flist.h"
+#include "stralloc.h"
 
 char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
 {

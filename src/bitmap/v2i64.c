@@ -15,7 +15,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "flist/flist.h"
+#include "flist.h"
 
 int v2i64(uint64_t val)
 {

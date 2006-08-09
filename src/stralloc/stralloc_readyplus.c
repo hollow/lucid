@@ -18,7 +18,7 @@
 
 #include <errno.h>
 
-#include "stralloc/stralloc.h"
+#include "stralloc.h"
 
 int stralloc_readyplus(stralloc_t *sa, size_t len)
 {

@@ -18,8 +18,8 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "chroot/chroot.h"
-#include "open/open.h"
+#include "chroot.h"
+#include "open.h"
 
 /* go to <dir> in <root> as root
 ** going into the chroot before doing chdir(dir) prevents symlink attacks

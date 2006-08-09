@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "stralloc/stralloc.h"
+#include "stralloc.h"
 
 int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 {

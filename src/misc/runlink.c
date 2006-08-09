@@ -22,7 +22,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "misc/misc.h"
+#include "misc.h"
 
 int runlink(const char *path)
 {

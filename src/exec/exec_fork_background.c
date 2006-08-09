@@ -22,8 +22,8 @@
 #include <errno.h>
 #include <signal.h>
 
-#include "argv/argv.h"
-#include "exec/exec.h"
+#include "argv.h"
+#include "exec.h"
 
 int exec_fork_background(const char *fmt, ...)
 {

@@ -17,7 +17,7 @@
 
 #include <sys/stat.h>
 
-#include "misc/misc.h"
+#include "misc.h"
 
 int islink(const char *path)
 {

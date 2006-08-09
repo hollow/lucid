@@ -18,7 +18,7 @@
 
 #include <fcntl.h>
 
-#include "open/open.h"
+#include "open.h"
 
 int open_rw(const char *filename)
 {

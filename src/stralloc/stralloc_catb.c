@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "stralloc/stralloc.h"
+#include "stralloc.h"
 
 int stralloc_catb(stralloc_t *dst, const char *src, size_t len)
 {

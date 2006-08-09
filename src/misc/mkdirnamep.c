@@ -21,8 +21,8 @@
 #include <sys/stat.h>
 #include <libgen.h>
 
-#include "misc/misc.h"
-#include "str/str.h"
+#include "misc.h"
+#include "str.h"
 
 int mkdirnamep(const char *path, mode_t mode)
 {

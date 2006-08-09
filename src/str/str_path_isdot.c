@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "str/str.h"
+#include "str.h"
 
 int str_path_isdot(const char *str)
 {

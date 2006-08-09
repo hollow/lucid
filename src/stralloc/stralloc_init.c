@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 
-#include "stralloc/stralloc.h"
+#include "stralloc.h"
 
 void stralloc_init(stralloc_t *sa)
 {

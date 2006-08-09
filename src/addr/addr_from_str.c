@@ -20,8 +20,8 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#include "addr/addr.h"
-#include "str/str.h"
+#include "addr.h"
+#include "str.h"
 
 int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 {

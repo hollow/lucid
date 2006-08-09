@@ -18,7 +18,7 @@
 
 #include <stdarg.h>
 
-#include "stralloc/stralloc.h"
+#include "stralloc.h"
 
 int stralloc_catm(stralloc_t *dst, ...)
 {

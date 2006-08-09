@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-#include "str/str.h"
+#include "str.h"
 
 int str_check(const char *str, int allowed)
 {

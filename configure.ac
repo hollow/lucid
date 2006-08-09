@@ -1,8 +1,7 @@
-# Copyright 2005 The vserver-utils Developers
-# See AUTHORS for details
+# Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 #
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by  *
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 #
@@ -20,10 +19,11 @@
 AC_PREREQ(2.59)
 AC_INIT(lucid, 0.1, hollow@gentoo.org)
 AC_CONFIG_HEADER([config.h])
+AC_GNU_SOURCE
+
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AC_GNU_SOURCE
 
 # Automake
 AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2])
@@ -48,7 +48,10 @@ AC_C_INLINE
 # Checks for library functions.
 
 # Compiler settings
-CFLAGS="${CFLAGS} -fno-omit-frame-pointer -W -Wall -std=gnu99 -pedantic"
+CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE"
+CFLAGS="${CFLAGS} -std=gnu99 -pedantic"
+CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-qual -Winline"
+CFLAGS="${CFLAGS} -Wredundant-decls -Wcast-align -Wno-unused-parameter"
 
 # Site settings
 

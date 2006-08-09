@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "flist/flist.h"
+#include "flist.h"
 
 const char *flist32_getkey(const flist32_t list[], uint32_t val)
 {

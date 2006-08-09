@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-#include "sha1/sha1.h"
+#include "sha1.h"
 
 void sha1_final(unsigned char digest[20], sha1_t* context)
 {

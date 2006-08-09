@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-#include "sha1/sha1.h"
+#include "sha1.h"
 
 void sha1_update(sha1_t* context, unsigned char *data, unsigned int len)
 {

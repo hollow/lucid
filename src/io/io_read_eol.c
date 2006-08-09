@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "io/io.h"
+#include "io.h"
 
 int io_read_eol(int fd, char **line)
 {

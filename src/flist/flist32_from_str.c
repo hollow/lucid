@@ -19,8 +19,8 @@
 #include <string.h>
 #include <errno.h>
 
-#include "flist/flist.h"
-#include "str/str.h"
+#include "flist.h"
+#include "str.h"
 
 int flist32_from_str(const char *str, const flist32_t list[],
                   uint32_t *flags, uint32_t *mask,

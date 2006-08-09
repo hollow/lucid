@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "flist/flist.h"
+#include "flist.h"
 
 const char *flist64_getkey(const flist64_t list[], uint64_t val)
 {

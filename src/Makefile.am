@@ -16,31 +16,45 @@
 ## Free Software Foundation, Inc.,
 ## 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-ADDR_H = addr/addr.h
+EXTRA_DIST = Doxyfile
+
+pkginclude_HEADERS = addr.h \
+                     argv.h \
+                     chroot.h \
+                     bitmap.h \
+                     exec.h \
+                     flist.h \
+                     fmt.h \
+                     io.h \
+                     list.h \
+                     misc.h \
+                     mmap.h \
+                     open.h \
+                     printf.h \
+                     sha1.h \
+                     str.h \
+                     stralloc.h \
+                     tcp.h
+
 ADDR_C = addr/addr_from_str.c \
          addr/addr_to_str.c
 
-ARGV_H = argv/argv.h
 ARGV_C = argv/argv_from_str.c \
          argv/argv_to_str.c
 
-BITMAP_H = bitmap/bitmap.h
 BITMAP_C = bitmap/i2v32.c \
            bitmap/i2v64.c \
            bitmap/v2i32.c \
            bitmap/v2i64.c
 
-CHROOT_H = chroot/chroot.h
 CHROOT_C = chroot/chroot_fd.c \
            chroot/chroot_mkdirp.c \
            chroot/chroot_secure_chdir.c
 
-EXEC_H = exec/exec.h
 EXEC_C = exec/exec_fork.c \
          exec/exec_fork_background.c \
          exec/exec_replace.c
 
-FLIST_H = flist/flist.h
 FLIST_C = flist/flist32_from_str.c \
           flist/flist32_getkey.c \
           flist/flist32_getval.c \
@@ -50,7 +64,6 @@ FLIST_C = flist/flist32_from_str.c \
           flist/flist64_getval.c \
           flist/flist64_to_str.c
 
-FMT_H = fmt/fmt.h
 FMT_C = fmt/fmt_8long.c \
         fmt/fmt_8longlong.c \
         fmt/fmt_double.c \
@@ -67,14 +80,10 @@ FMT_C = fmt/fmt_8long.c \
         fmt/fmt_xlong.c \
         fmt/fmt_xlonglong.c
 
-IO_H = io/io.h
 IO_C = io/io_read_eof.c \
        io/io_read_eol.c \
        io/io_read_len.c
 
-LIST_H = list/list.h
-
-MISC_H = misc/misc.h
 MISC_C = misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
@@ -83,12 +92,10 @@ MISC_C = misc/isdir.c \
          misc/path_concat.c \
          misc/runlink.c
 
-MMAP_H = mmap/mmap.h
 MMAP_C = mmap/mmap_private.c \
          mmap/mmap_read.c \
          mmap/mmap_shared.c
 
-OPEN_H = open/open.h
 OPEN_C = open/open_append.c \
          open/open_excl.c \
          open/open_read.c \
@@ -96,7 +103,6 @@ OPEN_C = open/open_append.c \
          open/open_trunc.c \
          open/open_write.c
 
-PRINTF_H = printf/printf.h
 PRINTF_C = printf/asprintf.c \
            printf/dprintf.c \
            printf/printf.c \
@@ -106,21 +112,18 @@ PRINTF_C = printf/asprintf.c \
            printf/vprintf.c \
            printf/vsnprintf.c
 
-SHA1_H = sha1/sha1.h
 SHA1_C = sha1/sha1_digest.c \
          sha1/sha1_final.c \
          sha1/sha1_init.c \
          sha1/sha1_transform.c \
          sha1/sha1_update.c
 
-STR_H = str/str.h
 STR_C = str/str_check.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_tolower.c \
         str/str_toupper.c
 
-STRALLOC_H = stralloc/stralloc.h
 STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_cat.c \
              stralloc/stralloc_catf.c \
@@ -136,46 +139,26 @@ STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_readyplus.c \
              stralloc/stralloc_zero.c
 
-TCP_H = tcp/tcp.h
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
 
-EXTRA_DIST = Doxyfile
+lib_LTLIBRARIES = libucid.la
 
-noinst_HEADERS = $(ADDR_H) \
-                 $(ARGV_H) \
-                 $(CHROOT_H) \
-                 $(BITMAP_H) \
-                 $(EXEC_H) \
-                 $(FLIST_H) \
-                 $(FMT_H) \
-                 $(IO_H) \
-                 $(LIST_H) \
-                 $(MISC_H) \
-                 $(MMAP_H) \
-                 $(OPEN_H) \
-                 $(PRINTF_H) \
-                 $(SHA1_H) \
-                 $(STR_H) \
-                 $(STRALLOC_H) \
-                 $(TCP_H) \
-                 lucid.h
+libucid_la_SOURCES = $(ADDR_C) \
+                     $(ARGV_C) \
+                     $(BITMAP_C) \
+                     $(CHROOT_C) \
+                     $(EXEC_C) \
+                     $(FLIST_C) \
+                     $(FMT_C) \
+                     $(IO_C) \
+                     $(MISC_C) \
+                     $(MMAP_C) \
+                     $(OPEN_C) \
+                     $(PRINTF_C) \
+                     $(SHA1_C) \
+                     $(STR_C) \
+                     $(STRALLOC_C) \
+                     $(TCP_C)
 
-noinst_LIBRARIES = libucid.a
-
-libucid_a_SOURCES = $(ADDR_C) \
-                    $(ARGV_C) \
-                    $(BITMAP_C) \
-                    $(CHROOT_C) \
-                    $(EXEC_C) \
-                    $(FLIST_C) \
-                    $(FMT_C) \
-                    $(IO_C) \
-                    $(MISC_C) \
-                    $(MMAP_C) \
-                    $(OPEN_C) \
-                    $(PRINTF_C) \
-                    $(SHA1_C) \
-                    $(STR_C) \
-                    $(STRALLOC_C) \
-                    $(TCP_C)
+libucid_la_LDFLAGS = -version-info 0:0:0

@@ -19,8 +19,8 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-#include "mmap/mmap.h"
-#include "open/open.h"
+#include "mmap.h"
+#include "open.h"
 
 char *mmap_shared(const char *filename, size_t *len)
 {

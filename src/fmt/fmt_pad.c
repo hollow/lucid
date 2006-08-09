@@ -16,7 +16,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "fmt/fmt.h"
+#include "fmt.h"
 
 size_t fmt_pad(char *dest, const char *src, size_t srclen, size_t padlen)
 {

@@ -21,8 +21,8 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "argv/argv.h"
-#include "exec/exec.h"
+#include "argv.h"
+#include "exec.h"
 
 int exec_replace(const char *fmt, ...)
 {

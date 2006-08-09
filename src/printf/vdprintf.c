@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "printf/printf.h"
+#include "printf.h"
 
 int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
 {

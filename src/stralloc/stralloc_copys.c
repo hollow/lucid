@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "stralloc/stralloc.h"
+#include "stralloc.h"
 
 int stralloc_copys(stralloc_t *dst, const char *src)
 {
