@@ -15,34 +15,32 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <stdlib.h>
 #include <string.h>
 
-#include "sha1.h"
+#include "whirlpool.h"
+#include "stralloc.h"
 
-void sha1_final(unsigned char digest[20], sha1_t* context)
+char *whirlpool_digest(const char *str)
 {
-	unsigned long i, j;
-	unsigned char finalcount[8];
+	whirlpool_t ctx;
+	stralloc_t sa;
+	char *buf;
+	uint8_t digest[DIGESTBYTES];
+	int i;
 	
-	for (i = 0; i < 8; i++)
-		finalcount[i] = (unsigned char)((context->count[(i >= 4 ? 0 : 1)] >> ((3-(i & 3)) * 8) ) & 255);
+	whirlpool_init(&ctx);
+	whirlpool_add(&ctx, (const unsigned char * const) str, strlen(str)*8);
+	whirlpool_finalize(&ctx, digest);
 	
-	sha1_update(context, (unsigned char *)"\200", 1);
+	stralloc_init(&sa);
 	
-	while ((context->count[0] & 504) != 448)
-		sha1_update(context, (unsigned char *)"\0", 1);
+	for (i = 0; i < DIGESTBYTES; i++)
+		stralloc_catf(&sa, "%02X", digest[i]);
 	
-	sha1_update(context, finalcount, 8);
+	buf = strndup(sa.s, sa.len);
 	
-	for (i = 0; i < 20; i++)
-		digest[i] = (unsigned char)((context->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
+	stralloc_free(&sa);
 	
-	/* Wipe variables */
-	i = j = 0;
-	memset(context->buffer, 0, 64);
-	memset(context->state, 0, 20);
-	memset(context->count, 0, 8);
-	memset(&finalcount, 0, 8);
-	
-	sha1_transform(context->state, context->buffer);
+	return buf;
 }

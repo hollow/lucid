@@ -31,10 +31,10 @@ pkginclude_HEADERS = addr.h \
                      mmap.h \
                      open.h \
                      printf.h \
-                     sha1.h \
                      str.h \
                      stralloc.h \
-                     tcp.h
+                     tcp.h \
+                     whirlpool.h
 
 ADDR_C = addr/addr_from_str.c \
          addr/addr_to_str.c
@@ -53,6 +53,7 @@ CHROOT_C = chroot/chroot_fd.c \
 
 EXEC_C = exec/exec_fork.c \
          exec/exec_fork_background.c \
+         exec/exec_fork_pipe.c \
          exec/exec_replace.c
 
 FLIST_C = flist/flist32_from_str.c \
@@ -112,12 +113,6 @@ PRINTF_C = printf/asprintf.c \
            printf/vprintf.c \
            printf/vsnprintf.c
 
-SHA1_C = sha1/sha1_digest.c \
-         sha1/sha1_final.c \
-         sha1/sha1_init.c \
-         sha1/sha1_transform.c \
-         sha1/sha1_update.c
-
 STR_C = str/str_check.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
@@ -142,6 +137,15 @@ STRALLOC_C = stralloc/stralloc_catb.c \
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
 
+WHIRLPOOL_C = whirlpool/whirlpool_add.c \
+              whirlpool/whirlpool_digest.c \
+              whirlpool/whirlpool_finalize.c \
+              whirlpool/whirlpool_init.c \
+              whirlpool/whirlpool_internal.h \
+              whirlpool/whirlpool_tables.h \
+              whirlpool/whirlpool_transform.c
+
+
 lib_LTLIBRARIES = libucid.la
 
 libucid_la_SOURCES = $(ADDR_C) \
@@ -156,9 +160,9 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(MMAP_C) \
                      $(OPEN_C) \
                      $(PRINTF_C) \
-                     $(SHA1_C) \
                      $(STR_C) \
                      $(STRALLOC_C) \
-                     $(TCP_C)
+                     $(TCP_C) \
+                     $(WHIRLPOOL_C)
 
 libucid_la_LDFLAGS = -version-info 0:0:0

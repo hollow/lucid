@@ -17,32 +17,17 @@
 
 #include <string.h>
 
-#include "sha1.h"
+#include "whirlpool.h"
 
-void sha1_update(sha1_t* context, unsigned char *data, unsigned int len)
+void whirlpool_init(whirlpool_t * const context)
 {
-	unsigned int i, j;
+	int i;
 	
-	j = (context->count[0] >> 3) & 63;
+	memset(context->bitLength, 0, 32);
 	
-	if ((context->count[0] += len << 3) < (len << 3))
-		context->count[1]++;
+	context->bufferBits = context->bufferPos = 0;
+	context->buffer[0]  = 0;
 	
-	context->count[1] += (len >> 29);
-	
-	if ((j + len) > 63) {
-		memcpy(&context->buffer[j], data, (i = 64-j));
-		
-		sha1_transform(context->state, context->buffer);
-		
-		for (; i + 63 < len; i += 64)
-			sha1_transform(context->state, &data[i]);
-		
-		j = 0;
-	}
-	
-	else
-		i = 0;
-	
-	memcpy(&context->buffer[j], &data[i], len - i);
+	for (i = 0; i < 8; i++)
+		context->hash[i] = 0L;
 }
