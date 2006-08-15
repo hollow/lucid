@@ -1,5 +1,9 @@
 // Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 //
+// The Whirlpool algorithm was developed by
+//                Paulo S. L. M. Barreto <pbarreto@scopus.com.br> and
+//                Vincent Rijmen <vincent.rijmen@cryptomathic.com>
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
