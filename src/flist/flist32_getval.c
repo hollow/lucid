@@ -25,7 +25,7 @@ uint32_t flist32_getval(const flist32_t list[], const char *key)
 	int i;
 	
 	for (i = 0; list[i].key; i++) {
-		if (strcasecmp(list[i].key, key) == 0)
+		if (strcmp(list[i].key, key) == 0)
 			return list[i].val;
 	}
 	

@@ -25,7 +25,7 @@ uint64_t flist64_getval(const flist64_t list[], const char *key)
 	int i;
 	
 	for (i = 0; list[i].key; i++) {
-		if (strcasecmp(list[i].key, key) == 0)
+		if (strcmp(list[i].key, key) == 0)
 			return list[i].val;
 	}
 	
