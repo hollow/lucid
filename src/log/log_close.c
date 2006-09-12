@@ -15,47 +15,18 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
+#include <syslog.h>
 
-#include "io.h"
+#include "log.h"
 
-int io_read_eol(int fd, char **line)
+extern log_options_t *_log_options;
+
+void log_close(void)
 {
-	size_t chunks = 1, len = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
-	char c;
-
-	for (;;) {
-		switch(read(fd, &c, 1)) {
-		case -1:
-			return -1;
-		
-		case 0:
-			goto out;
-		
-		default:
-			if (c == '\r')
-				continue;
-			
-			if (c == '\n')
-				goto out;
-			
-			if (len >= chunks * CHUNKSIZE) {
-				chunks++;
-				buf = realloc(buf, chunks * CHUNKSIZE + 1);
-			}
-			
-			buf[len++] = c;
-			break;
-		}
-	}
+	if (_log_options->syslog)
+		closelog();
 	
-out:
-	if (len > 0)
-		*line = strndup(buf, len);
-	
-	free(buf);
-	return len;
+	if (_log_options->file)
+		close(_log_options->fd);
 }

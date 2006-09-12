@@ -31,7 +31,9 @@ int io_read_len(int fd, char **str, size_t len)
 	if (buflen == -1)
 		return -1;
 	
-	*str = strndup(buf, buflen);
+	if (buflen > 0)
+		*str = strndup(buf, buflen);
+	
 	free(buf);
 	return buflen;
 }

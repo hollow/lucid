@@ -15,47 +15,38 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
+#include <sys/stat.h>
 
-#include "io.h"
+#include "log.h"
 
-int io_read_eol(int fd, char **line)
+log_options_t *_log_options = NULL;
+
+void log_init(log_options_t *options)
 {
-	size_t chunks = 1, len = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
-	char c;
-
-	for (;;) {
-		switch(read(fd, &c, 1)) {
-		case -1:
-			return -1;
-		
-		case 0:
-			goto out;
-		
-		default:
-			if (c == '\r')
-				continue;
-			
-			if (c == '\n')
-				goto out;
-			
-			if (len >= chunks * CHUNKSIZE) {
-				chunks++;
-				buf = realloc(buf, chunks * CHUNKSIZE + 1);
-			}
-			
-			buf[len++] = c;
-			break;
-		}
-	}
+	struct stat sb;
 	
-out:
-	if (len > 0)
-		*line = strndup(buf, len);
+	if (options->file && (options->fd < 0 || fstat(options->fd, &sb)) == -1)
+		options->file = false;
 	
-	free(buf);
-	return len;
+	if (options->stderr && fstat(STDERR_FILENO, &sb) == -1)
+		options->stderr = false;
+	
+	if (options->syslog)
+		openlog(options->ident, options->flags, options->facility);
+	
+	if (options->mask == 0)
+		options->mask = setlogmask(0);
+	else
+		setlogmask(options->mask);
+	
+	if (!options->ident || strlen(options->ident) < 1)
+		options->ident = "(none)";
+	
+	options->flags &= ~LOG_PERROR;
+	
+	_log_options = options;
 }

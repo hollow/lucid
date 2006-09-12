@@ -27,6 +27,7 @@ pkginclude_HEADERS = addr.h \
                      fmt.h \
                      io.h \
                      list.h \
+                     log.h \
                      misc.h \
                      mmap.h \
                      open.h \
@@ -84,6 +85,10 @@ FMT_C = fmt/fmt_8long.c \
 IO_C = io/io_read_eof.c \
        io/io_read_eol.c \
        io/io_read_len.c
+
+LOG_C = log/log_close.c \
+        log/log_init.c \
+        log/log_internal.c
 
 MISC_C = misc/isdir.c \
          misc/isfile.c \
@@ -156,6 +161,7 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(FLIST_C) \
                      $(FMT_C) \
                      $(IO_C) \
+                     $(LOG_C) \
                      $(MISC_C) \
                      $(MMAP_C) \
                      $(OPEN_C) \

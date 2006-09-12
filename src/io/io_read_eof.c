@@ -46,8 +46,11 @@ int io_read_eof(int fd, char **file)
 	}
 	
 out:
-	*file = strndup(buf, len);
-	rc = strlen(*file);
+	if (len > 0)
+		*file = strndup(buf, len);
+	
+	free(buf);
+	return len;
 err:
 	free(buf);
 	return rc;
