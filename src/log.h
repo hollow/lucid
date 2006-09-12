@@ -40,12 +40,16 @@ void log_init(log_options_t *options);
 
 void log_internal(int level, int strerr, const char *fmt, va_list ap);
 
+#define LOG_TRACEME log_debug("[trace] %s (%s:%d)", \
+                          __FUNCTION__, __FILE__, __LINE__);
+
 void log_emerg (const char *fmt, ...);
 void log_alert (const char *fmt, ...);
 void log_crit  (const char *fmt, ...);
 void log_error (const char *fmt, ...);
 void log_warn  (const char *fmt, ...);
 void log_notice(const char *fmt, ...);
+void log_info  (const char *fmt, ...);
 void log_debug (const char *fmt, ...);
 
 void log_emerg_and_die(const char *fmt, ...);
@@ -59,6 +63,7 @@ void log_pcrit  (const char *fmt, ...);
 void log_perror (const char *fmt, ...);
 void log_pwarn  (const char *fmt, ...);
 void log_pnotice(const char *fmt, ...);
+void log_pinfo  (const char *fmt, ...);
 void log_pdebug (const char *fmt, ...);
 
 void log_pemerg_and_die(const char *fmt, ...);

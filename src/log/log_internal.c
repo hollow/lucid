@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <string.h>
+#include <time.h>
 
 #include "log.h"
 
@@ -32,25 +33,32 @@ static int errno_orig = 0;
 static
 void log_fd(int fd, int level, const char *msg)
 {
+	char timebuf[17];
+	time_t curtime = time(NULL);
+	
 	if (!(_log_options->mask & level))
 		return;
 	
-	switch (level) {
-		case LOG_EMERG:   dprintf(fd, "[emerg] "); break;
-		case LOG_ALERT:   dprintf(fd, "[alert] "); break;
-		case LOG_CRIT:    dprintf(fd, "[crit ] "); break;
-		case LOG_ERR:     dprintf(fd, "[error] "); break;
-		case LOG_WARNING: dprintf(fd, "[warn ] "); break;
-		case LOG_NOTICE:  dprintf(fd, "[note ] "); break;
-		case LOG_INFO:    dprintf(fd, "[info ] "); break;
-		case LOG_DEBUG:   dprintf(fd, "[debug] "); break;
-		default:          dprintf(fd, "[none ] "); break;
-	}
+	bzero(timebuf, 17);
+	strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
+	dprintf(fd, "%s", timebuf);
 	
-	dprintf(fd, "%s", _log_options->ident);
+	dprintf(fd, " %s", _log_options->ident);
 	
 	if (_log_options->flags & LOG_PID)
 		dprintf(fd, "[%d]", getpid());
+	
+	switch (level) {
+		case LOG_EMERG:   dprintf(fd, " [emerg]"); break;
+		case LOG_ALERT:   dprintf(fd, " [alert]"); break;
+		case LOG_CRIT:    dprintf(fd, " [crit ]"); break;
+		case LOG_ERR:     dprintf(fd, " [error]"); break;
+		case LOG_WARNING: dprintf(fd, " [warn ]"); break;
+		case LOG_NOTICE:  dprintf(fd, " [note ]"); break;
+		case LOG_INFO:    dprintf(fd, " [info ]"); break;
+		case LOG_DEBUG:   dprintf(fd, " [debug]"); break;
+		default:          dprintf(fd, " [none ]"); break;
+	}
 	
 	dprintf(fd, ": %s\n", msg);
 }
@@ -95,6 +103,7 @@ LOGFUNC(crit,   LOG_CRIT)
 LOGFUNC(error,  LOG_ERR)
 LOGFUNC(warn,   LOG_WARNING)
 LOGFUNC(notice, LOG_NOTICE)
+LOGFUNC(info,   LOG_INFO)
 LOGFUNC(debug,  LOG_DEBUG)
 
 #define LOGFUNCDIE(name, level) \
@@ -124,6 +133,7 @@ LOGPFUNC(crit,   LOG_CRIT)
 LOGPFUNC(error,  LOG_ERR)
 LOGPFUNC(warn,   LOG_WARNING)
 LOGPFUNC(notice, LOG_NOTICE)
+LOGPFUNC(info,   LOG_INFO)
 LOGPFUNC(debug,  LOG_DEBUG)
 
 #define LOGPFUNCDIE(name, level) \
