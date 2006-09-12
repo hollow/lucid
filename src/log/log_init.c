@@ -35,18 +35,20 @@ void log_init(log_options_t *options)
 	if (options->stderr && fstat(STDERR_FILENO, &sb) == -1)
 		options->stderr = false;
 	
-	if (options->syslog)
-		openlog(options->ident, options->flags, options->facility);
-	
 	if (options->mask == 0)
-		options->mask = setlogmask(0);
-	else
-		setlogmask(options->mask);
+		options->mask = LOG_UPTO(LOG_INFO);
 	
 	if (!options->ident || strlen(options->ident) < 1)
 		options->ident = "(none)";
 	
 	options->flags &= ~LOG_PERROR;
 	
-	_log_options = options;
+	if (options->syslog) {
+		openlog(options->ident, options->flags, options->facility);
+		setlogmask(options->mask);
+	}
+	
+	_log_options = (log_options_t *)malloc(sizeof(log_options_t));
+	
+	memcpy(_log_options, options, sizeof(log_options_t));
 }

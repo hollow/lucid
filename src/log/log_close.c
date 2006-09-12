@@ -16,6 +16,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <syslog.h>
 
 #include "log.h"
@@ -24,9 +25,14 @@ extern log_options_t *_log_options;
 
 void log_close(void)
 {
+	if (!_log_options)
+		return;
+	
 	if (_log_options->syslog)
 		closelog();
 	
 	if (_log_options->file)
 		close(_log_options->fd);
+	
+	free(_log_options);
 }

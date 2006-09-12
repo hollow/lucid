@@ -52,6 +52,8 @@ void log_fd(int fd, int level, const char *fmt, va_list ap)
 		dprintf(fd, ": ");
 	
 	vdprintf(fd, fmt, ap);
+	
+	dprintf(fd, "\n");
 }
 
 void log_internal(int level, const char *fmt, va_list ap)
