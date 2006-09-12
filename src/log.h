@@ -38,7 +38,7 @@ typedef struct {
 
 void log_init(log_options_t *options);
 
-void log_internal(int level, const char *fmt, va_list ap);
+void log_internal(int level, int strerr, const char *fmt, va_list ap);
 
 void log_emerg (const char *fmt, ...);
 void log_alert (const char *fmt, ...);
@@ -52,6 +52,19 @@ void log_emerg_and_die(const char *fmt, ...);
 void log_alert_and_die(const char *fmt, ...);
 void log_crit_and_die (const char *fmt, ...);
 void log_error_and_die(const char *fmt, ...);
+
+void log_pemerg (const char *fmt, ...);
+void log_palert (const char *fmt, ...);
+void log_pcrit  (const char *fmt, ...);
+void log_perror (const char *fmt, ...);
+void log_pwarn  (const char *fmt, ...);
+void log_pnotice(const char *fmt, ...);
+void log_pdebug (const char *fmt, ...);
+
+void log_pemerg_and_die(const char *fmt, ...);
+void log_palert_and_die(const char *fmt, ...);
+void log_pcrit_and_die (const char *fmt, ...);
+void log_perror_and_die(const char *fmt, ...);
 
 void log_close(void);
 

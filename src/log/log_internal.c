@@ -17,16 +17,20 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <syslog.h>
+#include <string.h>
 
 #include "log.h"
 
 extern log_options_t *_log_options;
 
+static int errno_orig = 0;
+
 static
-void log_fd(int fd, int level, const char *fmt, va_list ap)
+void log_fd(int fd, int level, const char *msg)
 {
 	if (!(_log_options->mask & level))
 		return;
@@ -46,46 +50,42 @@ void log_fd(int fd, int level, const char *fmt, va_list ap)
 	dprintf(fd, "%s", _log_options->ident);
 	
 	if (_log_options->flags & LOG_PID)
-		dprintf(fd, "[%d]: ", getpid());
+		dprintf(fd, "[%d]", getpid());
 	
-	else
-		dprintf(fd, ": ");
-	
-	vdprintf(fd, fmt, ap);
-	
-	dprintf(fd, "\n");
+	dprintf(fd, ": %s\n", msg);
 }
 
-void log_internal(int level, const char *fmt, va_list ap)
+void log_internal(int level, int strerr, const char *fmt, va_list ap)
 {
-	va_list ap2;
+	char *buf, *msg;
 	
 	if (!_log_options)
 		return;
 	
-	if (_log_options->syslog) {
-		va_copy(ap2, ap);
-		vsyslog(_log_options->facility|level, fmt, ap2);
-		va_end(ap2);
+	vasprintf(&msg, fmt, ap);
+	
+	if (strerr) {
+		buf = msg;
+		asprintf(&msg, "%s: %s", buf, strerror(errno_orig));
+		free(buf);
 	}
 	
-	if (_log_options->stderr) {
-		va_copy(ap2, ap);
-		log_fd(STDERR_FILENO, level, fmt, ap2);
-		va_end(ap2);
-	}
+	if (_log_options->syslog)
+		syslog(_log_options->facility|level, "%s", msg);
 	
-	if (_log_options->file) {
-		va_copy(ap2, ap);
-		log_fd(_log_options->fd, level, fmt, ap2);
-		va_end(ap2);
-	}
+	if (_log_options->stderr)
+		log_fd(STDERR_FILENO, level, msg);
+	
+	if (_log_options->file)
+		log_fd(_log_options->fd, level, msg);
+	
+	free(msg);
 }
 
 #define LOGFUNC(name, level) \
 void log_ ## name (const char *fmt, ...) { \
 	va_list ap; va_start(ap, fmt); \
-	log_internal(level, fmt, ap); \
+	log_internal(level, 0, fmt, ap); \
 	va_end(ap); \
 }
 
@@ -100,7 +100,7 @@ LOGFUNC(debug,  LOG_DEBUG)
 #define LOGFUNCDIE(name, level) \
 void log_ ## name ## _and_die(const char *fmt, ...) { \
 	va_list ap; va_start(ap, fmt); \
-	log_internal(level, fmt, ap); \
+	log_internal(level, 0, fmt, ap); \
 	va_end(ap); \
 	exit(EXIT_FAILURE); \
 }
@@ -109,3 +109,34 @@ LOGFUNCDIE(emerg, LOG_EMERG)
 LOGFUNCDIE(alert, LOG_ALERT)
 LOGFUNCDIE(crit,  LOG_CRIT)
 LOGFUNCDIE(error, LOG_ERR)
+
+#define LOGPFUNC(name, level) \
+void log_p ## name (const char *fmt, ...) { \
+	errno_orig = errno; \
+	va_list ap; va_start(ap, fmt); \
+	log_internal(level, 1, fmt, ap); \
+	va_end(ap); \
+}
+
+LOGPFUNC(emerg,  LOG_EMERG)
+LOGPFUNC(alert,  LOG_ALERT)
+LOGPFUNC(crit,   LOG_CRIT)
+LOGPFUNC(error,  LOG_ERR)
+LOGPFUNC(warn,   LOG_WARNING)
+LOGPFUNC(notice, LOG_NOTICE)
+LOGPFUNC(debug,  LOG_DEBUG)
+
+#define LOGPFUNCDIE(name, level) \
+void log_p ## name ## _and_die(const char *fmt, ...) { \
+	errno_orig = errno; \
+	va_list ap; va_start(ap, fmt); \
+	log_internal(level, 1, fmt, ap); \
+	va_end(ap); \
+	exit(EXIT_FAILURE); \
+}
+
+LOGPFUNCDIE(emerg, LOG_EMERG)
+LOGPFUNCDIE(alert, LOG_ALERT)
+LOGPFUNCDIE(crit,  LOG_CRIT)
+LOGPFUNCDIE(error, LOG_ERR)
+
