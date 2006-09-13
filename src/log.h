@@ -24,12 +24,14 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
+#include <libgen.h>
 
 typedef struct {
 	char *ident;
 	bool  file;
 	int   fd;
 	bool  stderr;
+	bool  time;
 	bool  syslog;
 	int   flags;
 	int   facility;
@@ -41,7 +43,7 @@ void log_init(log_options_t *options);
 void log_internal(int level, int strerr, const char *fmt, va_list ap);
 
 #define LOG_TRACEME log_debug("[trace] %s (%s:%d)", \
-                          __FUNCTION__, __FILE__, __LINE__);
+                          __FUNCTION__, basename(__FILE__), __LINE__);
 
 void log_emerg (const char *fmt, ...);
 void log_alert (const char *fmt, ...);

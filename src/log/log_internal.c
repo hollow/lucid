@@ -39,26 +39,28 @@ void log_fd(int fd, int level, const char *msg)
 	if (!(_log_options->mask & level))
 		return;
 	
-	bzero(timebuf, 17);
-	strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
-	dprintf(fd, "%s", timebuf);
+	switch (level) {
+		case LOG_EMERG:   dprintf(fd, "[emrge]"); break;
+		case LOG_ALERT:   dprintf(fd, "[alert]"); break;
+		case LOG_CRIT:    dprintf(fd, "[crit ]"); break;
+		case LOG_ERR:     dprintf(fd, "[error]"); break;
+		case LOG_WARNING: dprintf(fd, "[warn ]"); break;
+		case LOG_NOTICE:  dprintf(fd, "[note ]"); break;
+		case LOG_INFO:    dprintf(fd, "[info ]"); break;
+		case LOG_DEBUG:   dprintf(fd, "[debug]"); break;
+		default:          dprintf(fd, "[none ]"); break;
+	}
+	
+	if (_log_options->time) {
+		bzero(timebuf, 17);
+		strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
+		dprintf(fd, " %s", timebuf);
+	}
 	
 	dprintf(fd, " %s", _log_options->ident);
 	
 	if (_log_options->flags & LOG_PID)
 		dprintf(fd, "[%d]", getpid());
-	
-	switch (level) {
-		case LOG_EMERG:   dprintf(fd, " [emerg]"); break;
-		case LOG_ALERT:   dprintf(fd, " [alert]"); break;
-		case LOG_CRIT:    dprintf(fd, " [crit ]"); break;
-		case LOG_ERR:     dprintf(fd, " [error]"); break;
-		case LOG_WARNING: dprintf(fd, " [warn ]"); break;
-		case LOG_NOTICE:  dprintf(fd, " [note ]"); break;
-		case LOG_INFO:    dprintf(fd, " [info ]"); break;
-		case LOG_DEBUG:   dprintf(fd, " [debug]"); break;
-		default:          dprintf(fd, " [none ]"); break;
-	}
 	
 	dprintf(fd, ": %s\n", msg);
 }
