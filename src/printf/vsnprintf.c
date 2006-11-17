@@ -15,6 +15,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "fmt.h"
@@ -265,22 +266,19 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 						
 						/* forced sign */
 						if (f.f.sign) {
-							if (f.f.blank || ldarg == 0)
-								buflen += fmt_str(&ibuf[buflen], " ");
-							else
-								buflen += fmt_plusminus(&ibuf[buflen], ldarg);
+							buflen += fmt_plusminus(&ibuf[buflen], ldarg);
 						} else {
 							buflen += fmt_minus(&ibuf[buflen], ldarg);
 						}
 						
-						len = fmt_ulonglong(FMT_LEN, (unsigned long long) ldarg);
+						len = fmt_ulonglong(FMT_LEN, (unsigned long long) abs(ldarg));
 						
 						while ((unsigned long) len < f.p.width) {
 							buflen += fmt_str(&ibuf[buflen], "0");
 							f.p.width--;
 						}
 					
-						buflen += fmt_ulonglong(&ibuf[buflen], (unsigned long long) ldarg);
+						buflen += fmt_ulonglong(&ibuf[buflen], (unsigned long long) llabs(ldarg));
 					} else { /* !long long */
 						darg = va_arg(ap, signed long);
 						
@@ -289,22 +287,19 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 						
 						/* forced sign */
 						if (f.f.sign) {
-							if (f.f.blank || darg == 0)
-								buflen += fmt_str(&ibuf[buflen], " ");
-							else
-								buflen += fmt_plusminus(&ibuf[buflen], darg);
+							buflen += fmt_plusminus(&ibuf[buflen], darg);
 						} else {
 							buflen += fmt_minus(&ibuf[buflen], darg);
 						}
 						
-						len = fmt_ulong(FMT_LEN, (unsigned long) darg);
+						len = fmt_ulong(FMT_LEN, (unsigned long) labs(darg));
 						
 						while ((unsigned long) len < f.p.width) {
 							buflen += fmt_str(&ibuf[buflen], "0");
 							f.p.width--;
 						}
 					
-						buflen += fmt_ulong(&ibuf[buflen], (unsigned long) darg);
+						buflen += fmt_ulong(&ibuf[buflen], (unsigned long) labs(darg));
 					}
 					break;
 				
@@ -314,21 +309,9 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 					if (!f.p.isset)
 						f.p.width = 6;
 					
-					/* forced sign */
-					if (f.f.sign) {
-						if (f.f.blank || farg == 0)
-							buflen += fmt_str(&ibuf[buflen], " ");
-						else
-							buflen += fmt_plusminus(&ibuf[buflen], farg);
-					} else {
-						buflen += fmt_minus(&ibuf[buflen], farg);
-					}
-					
-					len = fmt_double(FMT_LEN, farg, f.p.width);
-					
-					while ((unsigned long) len < f.p.width) {
-						buflen += fmt_str(&ibuf[buflen], "0");
-						f.p.width--;
+					/* forced sign (fmt_double adds minus) */
+					if (f.f.sign && farg >= 0) {
+						buflen += fmt_str(&ibuf[buflen], "+");
 					}
 					
 					buflen += fmt_double(&ibuf[buflen], farg, f.p.width);
@@ -337,23 +320,6 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 				/* unsigned conversions */
 				case 'o': /* octal representation */
 					if (f.l == '2') { /* long long */
-						uarg = va_arg(ap, unsigned long);
-						
-						if (uarg == 0 && f.p.isset && f.p.width == 0)
-							break;
-						
-						if (f.f.alt)
-							buflen += fmt_str(&ibuf[buflen], "0");
-						
-						len = fmt_8long(FMT_LEN, uarg);
-						
-						while ((unsigned long) len < f.p.width) {
-							buflen += fmt_str(&ibuf[buflen], "0");
-							f.p.width--;
-						}
-						
-						buflen += fmt_8long(&ibuf[buflen], uarg);
-					} else { /* !long long */
 						luarg = va_arg(ap, unsigned long long);
 						
 						if (luarg == 0 && f.p.isset && f.p.width == 0)
@@ -362,7 +328,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 						if (f.f.alt)
 							buflen += fmt_str(&ibuf[buflen], "0");
 						
-						len = fmt_8longlong(FMT_LEN, luarg);
+						len = fmt_8long(FMT_LEN, luarg);
 						
 						while ((unsigned long) len < f.p.width) {
 							buflen += fmt_str(&ibuf[buflen], "0");
@@ -370,6 +336,23 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 						}
 						
 						buflen += fmt_8longlong(&ibuf[buflen], luarg);
+					} else { /* !long long */
+						uarg = va_arg(ap, unsigned long);
+						
+						if (uarg == 0 && f.p.isset && f.p.width == 0)
+							break;
+						
+						if (f.f.alt)
+							buflen += fmt_str(&ibuf[buflen], "0");
+						
+						len = fmt_8longlong(FMT_LEN, uarg);
+						
+						while ((unsigned long) len < f.p.width) {
+							buflen += fmt_str(&ibuf[buflen], "0");
+							f.p.width--;
+						}
+						
+						buflen += fmt_8long(&ibuf[buflen], uarg);
 					}
 					
 					break;
