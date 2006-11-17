@@ -20,12 +20,8 @@
 
 size_t fmt_plusminus(char *dest, long long i)
 {
-	if (i) {
-		if (dest)
-			*dest = i >= 0 ? '+' : '-';
-		
-		return 1;
-	}
+	if (dest)
+		*dest = i >= 0 ? '+' : '-';
 	
-	return 0;
+	return 1;
 }

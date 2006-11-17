@@ -18,100 +18,88 @@
 
 #include "fmt.h"
 
+#define EXP_MAX   ((1 << 11) - 1)
+
 size_t fmt_double(char *dest, double d, size_t prec)
 {
-	int i;
+	int len = 0;
+	
+	double f;
+	unsigned long long i;
 	
 	union {
 		double d;
 		unsigned long long x;
-	} u = {
-		.d = d,
-	};
+	} u = { .d = d };
 	
-	/* sign is stored in the highest bit */
-	int sign = u.x >> 63;
+	int                s = (u.x & 0x8000000000000000) >> 63; // sign
+	int                e = (u.x & 0x7FF0000000000000) >> 52; // exponent
+	unsigned long long m = (u.x & 0x000FFFFFFFFFFFFF);       // mantissa
 	
-	/* 12 highest bits except the highest one (0x800, used for sign)
-	** need to substract a bias of 1023 due to double has signed exp */
-	long exp  = ((u.x >> 52) & ~0x800) - 1023;
-	long expa = (exp >= 0) ? exp : -exp - 1;
+	/* not a number */
+	if (e == EXP_MAX && m != 0)
+		return fmt_str(dest, "nan");
 	
-	/* the exponent in memory is base-2, we need base-10 */
-	long e10a = 1L + (expa * 0.30102999566398119802); /* log10(2) */
+	/* pos. infinity */
+	else if (e == EXP_MAX && m == 0 && s == 0)
+		return fmt_str(dest, "+inf");
 	
-	char *dorig = dest;
+	/* neg. infinity */
+	else if (e == EXP_MAX && m == 0 && s == 1)
+		return fmt_str(dest, "-inf");
 	
-	/* put a negative sign to dest and make d positive
-	** so we can catch (d == 0.0) below */
-	if (sign) {
-		d = -d;
-		
-		if (dest) *dest = '-';
-		dest++;
-	}
-	
-	/* no further processing on null */
-	if (d == 0.0) {
-		if (dest) *dest = '0';
-		dest++;
-		
-		return dest - dorig;
-	}
-	
-	double pe10 = 10.0;
-	
-	/* get pow(10, e10a); */
-	for (i = e10a; i > 1; i--)
-		pe10 = pe10 * 10;
-	
-	/* get mantissa */
-	double m;
-	
-	if (exp >= 0)
-		m = d / pe10;
-	else
-		m = d * pe10;
-	
-	/* if precision is greather than 16 strange round errors will occur */
-	if (prec > 16)
-		prec = 16;
-	
-	int initial = 1;
-	
-	/* loop through mantissa */
-	while (prec > 0) {
-		i  = (int) m;
-		
-		/* round */
-		if (prec == 1 && (m - i) >= 0.6)
-			i++;
-		
-		m -= i;
-		
-		if (dest) *dest = i + '0';
-		dest++;
-		
-		if (initial) {
-			initial = 0;
-			if (dest) *dest = '.';
-			dest++;
+	/* zero */
+	else if (e == 0 && m == 0) {
+		if (s == 1) {
+			if (dest) *dest++ = '-';
+			len++;
 		}
 		
-		else
-			prec--;
+		if (dest) *dest++ = '0';
+		len++;
 		
-		m *= 10;
+		if (dest) *dest++ = '.';
+		len++;
+		
+		while (--prec) {
+			if (dest) *dest++ = '0';
+			len++;
+		}
 	}
 	
-	/* use scientific notation if we have a non-null exponent */
-	if (e10a != 0) {
-		if (dest) *dest = 'e';
-		dest++;
+	else {
+		if (s == 1) {
+			if (dest) *dest++ = '-';
+			len++;
+			
+			d = -d;
+		}
 		
-		dest += fmt_plusminus(dest, exp);
-		dest += fmt_ulong(dest, e10a);
+		i = fmt_ulonglong(dest, (unsigned long long) d);
+		
+		if (dest)
+			dest += i;
+		
+		len += i;
+		
+		if (prec > 0) {
+			if (dest) *dest++ = '.';
+			len++;
+		}
+		
+		f = (d - (unsigned long long) d) * 10;
+		
+		for (; prec > 0; prec--, f = (f - i) * 10) {
+			i = (unsigned long long) f;
+			
+			/* round */
+			if (prec == 1 && (f - i) >= 0.5)
+				i++;
+			
+			if (dest) *dest++ = i + '0';
+			len++;
+		}
 	}
 	
-	return dest - dorig;
+	return len;
 }
