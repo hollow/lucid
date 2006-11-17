@@ -29,7 +29,7 @@ void log_init(log_options_t *options)
 {
 	struct stat sb;
 	
-	if (options->file && (options->fd < 0 || fstat(options->fd, &sb)) == -1)
+	if (options->file && (options->fd < 0 || fstat(options->fd, &sb) == -1))
 		options->file = false;
 	
 	if (options->stderr && fstat(STDERR_FILENO, &sb) == -1)

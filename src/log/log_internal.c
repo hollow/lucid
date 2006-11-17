@@ -92,21 +92,22 @@ void log_internal(int level, int strerr, const char *fmt, va_list ap)
 	free(msg);
 }
 
-#define LOGFUNC(name, level) \
-void log_ ## name (const char *fmt, ...) { \
+#define LOGFUNC(name, level, rc) \
+int log_ ## name (const char *fmt, ...) { \
 	va_list ap; va_start(ap, fmt); \
 	log_internal(level, 0, fmt, ap); \
 	va_end(ap); \
+	return rc; \
 }
 
-LOGFUNC(emerg,  LOG_EMERG)
-LOGFUNC(alert,  LOG_ALERT)
-LOGFUNC(crit,   LOG_CRIT)
-LOGFUNC(error,  LOG_ERR)
-LOGFUNC(warn,   LOG_WARNING)
-LOGFUNC(notice, LOG_NOTICE)
-LOGFUNC(info,   LOG_INFO)
-LOGFUNC(debug,  LOG_DEBUG)
+LOGFUNC(emerg,  LOG_EMERG,   EXIT_FAILURE)
+LOGFUNC(alert,  LOG_ALERT,   EXIT_FAILURE)
+LOGFUNC(crit,   LOG_CRIT,    EXIT_FAILURE)
+LOGFUNC(error,  LOG_ERR,     EXIT_FAILURE)
+LOGFUNC(warn,   LOG_WARNING, EXIT_SUCCESS)
+LOGFUNC(notice, LOG_NOTICE,  EXIT_SUCCESS)
+LOGFUNC(info,   LOG_INFO,    EXIT_SUCCESS)
+LOGFUNC(debug,  LOG_DEBUG,   EXIT_SUCCESS)
 
 #define LOGFUNCDIE(name, level) \
 void log_ ## name ## _and_die(const char *fmt, ...) { \
@@ -121,22 +122,23 @@ LOGFUNCDIE(alert, LOG_ALERT)
 LOGFUNCDIE(crit,  LOG_CRIT)
 LOGFUNCDIE(error, LOG_ERR)
 
-#define LOGPFUNC(name, level) \
-void log_p ## name (const char *fmt, ...) { \
+#define LOGPFUNC(name, level, rc) \
+int log_p ## name (const char *fmt, ...) { \
 	errno_orig = errno; \
 	va_list ap; va_start(ap, fmt); \
 	log_internal(level, 1, fmt, ap); \
 	va_end(ap); \
+	return rc; \
 }
 
-LOGPFUNC(emerg,  LOG_EMERG)
-LOGPFUNC(alert,  LOG_ALERT)
-LOGPFUNC(crit,   LOG_CRIT)
-LOGPFUNC(error,  LOG_ERR)
-LOGPFUNC(warn,   LOG_WARNING)
-LOGPFUNC(notice, LOG_NOTICE)
-LOGPFUNC(info,   LOG_INFO)
-LOGPFUNC(debug,  LOG_DEBUG)
+LOGPFUNC(emerg,  LOG_EMERG,   EXIT_FAILURE)
+LOGPFUNC(alert,  LOG_ALERT,   EXIT_FAILURE)
+LOGPFUNC(crit,   LOG_CRIT,    EXIT_FAILURE)
+LOGPFUNC(error,  LOG_ERR,     EXIT_FAILURE)
+LOGPFUNC(warn,   LOG_WARNING, EXIT_SUCCESS)
+LOGPFUNC(notice, LOG_NOTICE,  EXIT_SUCCESS)
+LOGPFUNC(info,   LOG_INFO,    EXIT_SUCCESS)
+LOGPFUNC(debug,  LOG_DEBUG,   EXIT_SUCCESS)
 
 #define LOGPFUNCDIE(name, level) \
 void log_p ## name ## _and_die(const char *fmt, ...) { \
