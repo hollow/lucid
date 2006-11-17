@@ -17,7 +17,7 @@
 
 # Generic configuration
 AC_PREREQ(2.59)
-AC_INIT(lucid, 0.1, hollow@gentoo.org)
+AC_INIT(lucid, 0.1_rc1, hollow@gentoo.org)
 AC_CONFIG_HEADER([config.h])
 AC_GNU_SOURCE
 
@@ -26,7 +26,7 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 # Automake
-AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2])
+AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2])
 AM_MAINTAINER_MODE
 
 # Checks for programs.
