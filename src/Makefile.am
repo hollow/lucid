@@ -18,6 +18,8 @@
 
 EXTRA_DIST = Doxyfile
 
+noinclude_HEADERS = doxygen.h
+
 pkginclude_HEADERS = addr.h \
                      argv.h \
                      chroot.h \
@@ -29,7 +31,6 @@ pkginclude_HEADERS = addr.h \
                      list.h \
                      log.h \
                      misc.h \
-                     mmap.h \
                      open.h \
                      printf.h \
                      str.h \
@@ -98,10 +99,6 @@ MISC_C = misc/isdir.c \
          misc/path_concat.c \
          misc/runlink.c
 
-MMAP_C = mmap/mmap_private.c \
-         mmap/mmap_read.c \
-         mmap/mmap_shared.c
-
 OPEN_C = open/open_append.c \
          open/open_excl.c \
          open/open_read.c \
@@ -165,7 +162,6 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(IO_C) \
                      $(LOG_C) \
                      $(MISC_C) \
-                     $(MMAP_C) \
                      $(OPEN_C) \
                      $(PRINTF_C) \
                      $(STR_C) \
