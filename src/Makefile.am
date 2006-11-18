@@ -119,6 +119,8 @@ PRINTF_C = printf/asprintf.c \
            printf/vsnprintf.c
 
 STR_C = str/str_check.c \
+        str/str_index.c \
+        str/str_len.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_tolower.c \

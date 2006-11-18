@@ -23,6 +23,8 @@
 #ifndef _LUCID_STR_H
 #define _LUCID_STR_H
 
+#include <sys/types.h>
+
 /*! @brief check for an ASCII character */
 #define char_isascii(ch) ((unsigned int)(ch) < 128u)
 
@@ -172,6 +174,26 @@ char *str_tolower(char *str);
  * @return pointer to str
  */
 char *str_toupper(char *str);
+
+/*!
+ * @brief compute string length
+ *
+ * @param str string to compute
+ *
+ * @return string length
+ */
+size_t str_len(const char *str);
+
+/*!
+ * @brief scan string for character
+ *
+ * @param str string to scan
+ * @param c   character to look for
+ * @param n   scan first n bytes
+ *
+ * @return pointer to found character, or NULL
+ */
+const char *str_index(const char *str, int c, size_t n);
 
 #endif
 
