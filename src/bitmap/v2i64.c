@@ -21,7 +21,7 @@ int v2i64(uint64_t val)
 {
 	int index = 0;
 	
-	while ((val /= 2) != 0)
+	while ((val >> 1))
 		index++;
 	
 	return index;

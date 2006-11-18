@@ -22,94 +22,96 @@
 #include "whirlpool.h"
 
 void whirlpool_add(whirlpool_t * const context,
-                   const unsigned char * const source, unsigned long sourceBits)
+                   const unsigned char * const src, unsigned long srcbits)
 {
 	int i;
 	uint32_t b, carry;
-	int sourcePos      = 0; /* index of leftmost source uint8_t containing data (1 to 8 bits). */
-	int sourceGap      = (8 - ((int)sourceBits & 7)) & 7; /* space on source[sourcePos]. */
-	int bufferRem      = context->bufferBits & 7; /* occupied bits on buffer[bufferPos]. */
-	uint8_t *buffer    = context->buffer;
-	uint8_t *bitLength = context->bitLength;
-	int bufferBits     = context->bufferBits;
-	int bufferPos      = context->bufferPos;
+	int srcpos = 0; /* index of leftmost source uint8_t containing data (1 to 8 bits). */
+	
+	int gap      = (8 - ((int)srcbits & 7)) & 7; /* space on src[srcpos]. */
+	int rem      = context->bits & 7; /* occupied bits on buf[pos]. */
+	
+	uint8_t *buf = context->buf;
+	uint8_t *len = context->len;
+	int bits     = context->bits;
+	int pos      = context->pos;
 	
 	/* tally the length of the added data */
-	uint64_t value = sourceBits;
+	uint64_t value = srcbits;
 	
 	for (i = 31, carry = 0; i >= 0 && (carry != 0 || value != 0ULL); i--) {
-		carry += bitLength[i] + ((uint32_t)value & 0xff);
-		bitLength[i] = (uint8_t)carry;
+		carry += len[i] + ((uint32_t)value & 0xff);
+		len[i] = (uint8_t)carry;
 		carry >>= 8;
 		value >>= 8;
 	}
 	
 	/* process data in chunks of 8 bits */
-	while (sourceBits > 8) {
+	while (srcbits > 8) {
 		/* take a byte from the source */
-		b = ((source[sourcePos] << sourceGap) & 0xff) |
-				((source[sourcePos + 1] & 0xff) >> (8 - sourceGap));
+		b = ((src[srcpos] << gap) & 0xff) |
+				((src[srcpos + 1] & 0xff) >> (8 - gap));
 		
 		/* process this byte */
-		buffer[bufferPos++] |= (uint8_t)(b >> bufferRem);
-		bufferBits += 8 - bufferRem; /* bufferBits = 8*bufferPos; */
+		buf[pos++] |= (uint8_t)(b >> rem);
+		bits += 8 - rem; /* bits = 8*pos; */
 		
-		if (bufferBits == DIGESTBITS) {
+		if (bits == DIGESTBITS) {
 			/* process data block */
 			whirlpool_transform(context);
 			
-			/* reset buffer */
-			bufferBits = bufferPos = 0;
+			/* reset buf */
+			bits = pos = 0;
 		}
 		
-		buffer[bufferPos] = b << (8 - bufferRem);
-		bufferBits += bufferRem;
+		buf[pos] = b << (8 - rem);
+		bits += rem;
 		
 		/* proceed to remaining data */
-		sourceBits -= 8;
-		sourcePos++;
+		srcbits -= 8;
+		srcpos++;
 	}
 	
-	/* now 0 <= sourceBits <= 8;
-	 * furthermore, all data (if any is left) is in source[sourcePos].
+	/* now 0 <= srcbits <= 8;
+	 * furthermore, all data (if any is left) is in src[srcpos].
 	 */
-	if (sourceBits > 0) {
-		b = (source[sourcePos] << sourceGap) & 0xff; /* bits are left-justified on b. */
+	if (srcbits > 0) {
+		b = (src[srcpos] << gap) & 0xff; /* bits are left-justified on b. */
 		
 		/* process the remaining bits */
-		buffer[bufferPos] |= b >> bufferRem;
+		buf[pos] |= b >> rem;
 	}
 	
 	else
 		b = 0;
 	
-	/* all remaining data fits on buffer[bufferPos],
+	/* all remaining data fits on buf[pos],
 	 * and there still remains some space.
 	 */
-	if (bufferRem + sourceBits < 8) 
-		bufferBits += sourceBits;
+	if (rem + srcbits < 8) 
+		bits += srcbits;
 	
 	else {
-		/* buffer[bufferPos] is full */
-		bufferPos++;
-		bufferBits += 8 - bufferRem; /* bufferBits = 8*bufferPos; */
-		sourceBits -= 8 - bufferRem;
+		/* buf[pos] is full */
+		pos++;
+		bits += 8 - rem; /* bits = 8*pos; */
+		srcbits -= 8 - rem;
 		
-		/* now 0 <= sourceBits < 8;
-		 * furthermore, all data (if any is left) is in source[sourcePos].
+		/* now 0 <= srcbits < 8;
+		 * furthermore, all data (if any is left) is in src[srcpos].
 		 */
-		if (bufferBits == DIGESTBITS) {
+		if (bits == DIGESTBITS) {
 			/* process data block */
 			whirlpool_transform(context);
 			
-			/* reset buffer */
-			bufferBits = bufferPos = 0;
+			/* reset buf */
+			bits = pos = 0;
 		}
 		
-		buffer[bufferPos] = b << (8 - bufferRem);
-		bufferBits += (int)sourceBits;
+		buf[pos] = b << (8 - rem);
+		bits += (int)srcbits;
 	}
 	
-	context->bufferBits = bufferBits;
-	context->bufferPos  = bufferPos;
+	context->bits = bits;
+	context->pos  = pos;
 }

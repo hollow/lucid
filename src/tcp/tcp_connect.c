@@ -17,7 +17,7 @@
 
 #include <unistd.h>
 #include <errno.h>
-#include <string.h>
+#include <strings.h>
 #include <arpa/inet.h>
 
 #include "tcp.h"

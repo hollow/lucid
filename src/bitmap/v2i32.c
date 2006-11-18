@@ -21,7 +21,7 @@ int v2i32(uint32_t val)
 {
 	int index = 0;
 	
-	while ((val /= 2) != 0)
+	while ((val >> 1))
 		index++;
 	
 	return index;

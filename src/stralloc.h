@@ -18,6 +18,41 @@
 
 /*!
  * @defgroup stralloc Dynamic string allocator
+ *
+ * A stralloc variable holds a byte string in dynamically allocated space.
+ * String contents are unrestricted; in particular, strings may contain \\0.
+ * String length is limited only by memory and by the size of an unsigned int.
+ *
+ * A stralloc structure has three components: sa.s is a pointer to the first
+ * byte of the string, or 0 if space is not allocated; sa.len is the number of
+ * bytes in the string, or undefined if space is not allocated; sa.a is the
+ * number of bytes allocated for the string, or undefined if space is not
+ * allocated.
+ *
+ * Applications are expected to use sa.s and sa.len directly.
+ *
+ * The stralloc_ready() function makes sure that sa has enough space allocated
+ * to hold len bytes. The stralloc_readyplus() function is like stralloc_ready()
+ * except that, if sa is already allocated, stralloc_readyplus adds the current
+ * length of sa to len.
+ *
+ * The stralloc_copyb() function copies the string pointed to by src into dst,
+ * allocating space if necessary. The stralloc_copys() function copies a
+ * \\0-terminated string from src into dst, without the \\0. It is the same as
+ * stralloc_copyb(&dst,buf,str_len(buf)). stralloc_copy copies the string
+ * stored in src into dst. It is the same as
+ * stralloc_copyb(&dst,src.s,src.len); src must already be allocated.
+ *
+ * The stralloc_catb() adds the string pointed to by src to the end of the
+ * string stored in dst, allocating space if necessary. If dst is unallocated,
+ * stralloc_catb is the same as stralloc_copyb. The stralloc_cats() function is
+ * analogous to stralloc_copys, and stralloc_cat is analogous to stralloc_copy.
+ * The stralloc_catf() and stralloc_catm() functions are analogous to
+ * stralloc_cats() except that they take a formatted conversion or variable
+ * number of arguments, respectively, and appends these to the string stored in
+ * dst.
+ *
+ * @{
  */
  
 #ifndef _LUCID_STRALLOC_H
@@ -28,7 +63,7 @@
 /*!
  * @brief dynamic string allocator tracking data
  *
- * This strcut is used to keep track of the dynamic string state, i.e. its
+ * This struct is used to keep track of the dynamic string state, i.e. its
  * contents, its length and its additionaly allocated memory.
  */
 typedef struct {
@@ -120,7 +155,7 @@ int stralloc_copy(stralloc_t *dst, const stralloc_t *src);
  *
  * @return 0 on success, -1 on error with errno set
  */
-int stralloc_catb     (stralloc_t *dst, const char *src, size_t len);
+int stralloc_catb(stralloc_t *dst, const char *src, size_t len);
 
 /*!
  * @brief concatenate a dynamic string and a static one using formatted conversion
@@ -163,7 +198,7 @@ int stralloc_cats(stralloc_t *dst, const char *src);
  *
  * @return 0 on success, -1 on error with errno set
  */
-int  stralloc_cat(stralloc_t *dst, const stralloc_t *src);
+int stralloc_cat(stralloc_t *dst, const stralloc_t *src);
 
 
 /*!
@@ -175,7 +210,7 @@ int  stralloc_cat(stralloc_t *dst, const stralloc_t *src);
  * @return An integer less than, equal to, or greater than zero if a is found,
  *         respectively, to be less than, to match, or be greater than b.
  */
-int  stralloc_cmp      (const stralloc_t *a, const stralloc_t *b);
+int stralloc_cmp(const stralloc_t *a, const stralloc_t *b);
 
 #endif
 

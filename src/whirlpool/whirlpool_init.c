@@ -27,10 +27,10 @@ void whirlpool_init(whirlpool_t * const context)
 {
 	int i;
 	
-	memset(context->bitLength, 0, 32);
+	memset(context->len, 0, LENGTHBYTES);
 	
-	context->bufferBits = context->bufferPos = 0;
-	context->buffer[0]  = 0;
+	context->bits = context->pos = 0;
+	context->buf[0]  = 0;
 	
 	for (i = 0; i < 8; i++)
 		context->hash[i] = 0L;

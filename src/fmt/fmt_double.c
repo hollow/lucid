@@ -32,8 +32,8 @@ size_t fmt_double(char *dest, double d, size_t prec)
 		unsigned long long x;
 	} u = { .d = d };
 	
-	int                s = (u.x & 0x8000000000000000) >> 63; // sign
-	int                e = (u.x & 0x7FF0000000000000) >> 52; // exponent
+	unsigned long long s = (u.x & 0x8000000000000000) >> 63; // sign
+	unsigned long long e = (u.x & 0x7FF0000000000000) >> 52; // exponent
 	unsigned long long m = (u.x & 0x000FFFFFFFFFFFFF);       // mantissa
 	
 	/* not a number */
@@ -75,6 +75,7 @@ size_t fmt_double(char *dest, double d, size_t prec)
 			d = -d;
 		}
 		
+		/* TODO: do not cast floats! ugly! */
 		i = fmt_ulonglong(dest, (unsigned long long) d);
 		
 		if (dest)
@@ -87,9 +88,11 @@ size_t fmt_double(char *dest, double d, size_t prec)
 			len++;
 		}
 		
+		/* TODO: do not cast floats! ugly! */
 		f = (d - (unsigned long long) d) * 10;
 		
 		for (; prec > 0; prec--, f = (f - i) * 10) {
+			/* TODO: do not cast floats! ugly! */
 			i = (unsigned long long) f;
 			
 			/* round */
