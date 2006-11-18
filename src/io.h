@@ -16,7 +16,20 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup io Input/Output
+ * @defgroup io Input/Output wrappers
+ *
+ * The io family of functions provide convenient wrappers around read(2).
+ *
+ * The io_read_eol() function reads bytes until the end of the line, i.e. the
+ * character \\r or \\n, is reached and stores them in the string pointed to by
+ * line.
+ *
+ * The io_read_eof() function reads bytes until the end of the file is reached
+ * and stores them in the string pointed to by file.
+ *
+ * The io_read_len() function reads an exact number of bytes from the file and
+ * stores them in the string pointed to by str.
+ *
  * @{
  */
 
@@ -29,37 +42,49 @@
 /*!
  * @brief read a line of input
  *
- * @param fd   file descriptor to read from
- * @param line pointer to a string
+ * @param[in]  fd   file descriptor to read from
+ * @param[out] line pointer to a string
  *
  * @return bytes on success, -1 on error with errno set
  *
- * @note the caller is responsible to free memory for line obtained by malloc(3)
+ * @note The caller should free obtained memory for line using free(3)
+ *
+ * @see malloc(3)
+ * @see free(3)
+ * @see read(2)
  */
 int io_read_eol(int fd, char **line);
 
 /*!
  * @brief read until end of file
  *
- * @param fd   file descriptor to read from
- * @param file pointer to a string
+ * @param[in]  fd   file descriptor to read from
+ * @param[out] file pointer to a string
  *
  * @return bytes on success, -1 on error with errno set
  *
- * @note the caller is responsible to free memory for file obtained by malloc(3)
+ * @note The caller should free obtained memory for file using free(3)
+ *
+ * @see malloc(3)
+ * @see free(3)
+ * @see read(2)
  */
 int io_read_eof(int fd, char **file);
 
 /*!
  * @brief read exact number of bytes
  *
- * @param fd  file descriptor to read from
- * @param str pointer to a string
- * @param len bytes to be read
+ * @param[in]  fd  file descriptor to read from
+ * @param[out] str pointer to a string
+ * @param[in]  len bytes to be read
  *
  * @return bytes read on success, -1 on error with errno set
  *
- * @note the caller is responsible to free memory for str obtained by malloc(3)
+ * @note The caller should free obtained memory for str using free(3)
+ *
+ * @see malloc(3)
+ * @see free(3)
+ * @see read(2)
  */
 int io_read_len(int fd, char **str, size_t len);
 

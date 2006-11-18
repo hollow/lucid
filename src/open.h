@@ -17,7 +17,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup open Open files
+ * @defgroup open Create or open files
  * @{
  */
 
@@ -30,6 +30,8 @@
  * @param filename file to open
  *
  * @return filedescriptor on success, -1 otherwise with errno set
+ *
+ * @see open(2)
  */
 int open_append(const char *filename);
 
@@ -39,6 +41,8 @@ int open_append(const char *filename);
  * @param filename file to open
  *
  * @return filedescriptor on success, -1 otherwise with errno set
+ *
+ * @see open(2)
  */
 int open_excl(const char *filename);
 
@@ -48,6 +52,8 @@ int open_excl(const char *filename);
  * @param filename file to open
  *
  * @return filedescriptor on success, -1 otherwise with errno set
+ *
+ * @see open(2)
  */
 int open_read(const char *filename);
 
@@ -57,6 +63,8 @@ int open_read(const char *filename);
  * @param filename file to open
  *
  * @return filedescriptor on success, -1 otherwise with errno set
+ *
+ * @see open(2)
  */
 int open_rw(const char *filename);
 
@@ -66,6 +74,8 @@ int open_rw(const char *filename);
  * @param filename file to open
  *
  * @return filedescriptor on success, -1 otherwise with errno set
+ *
+ * @see open(2)
  */
 int open_trunc(const char *filename);
 
@@ -75,6 +85,8 @@ int open_trunc(const char *filename);
  * @param filename file to open
  *
  * @return filedescriptor on success, -1 otherwise with errno set
+ *
+ * @see open(2)
  */
 int open_write(const char *filename);
 

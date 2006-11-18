@@ -16,7 +16,21 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup list Doubly-linked lists
+ * @defgroup list Simple doubly linked lists
+ *
+ * The simplest kind of linked list is a singly-linked list, which has one link
+ * per node. This link points to the next node in the list, or to a null value
+ * or empty list if it is the final node; e.g. 12 -> 99 -> 37 -> NULL.
+ *
+ * A more sophisticated kind of linked list is a doubly-linked list. Each node
+ * has two links: one points to the previous node, or points to a null value or
+ * empty list if it is the first node; and one points to the next, or points to
+ * a null value or empty list if it is the final node; e.g.
+ * NULL <- 26 <-> 56 <-> 46 -> NULL.
+ *
+ * The list family of functions and macros provide routines to create a list,
+ * add, move or remove elements and iterate over the list.
+ *
  * @{
  */
 

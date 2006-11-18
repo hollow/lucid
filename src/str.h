@@ -16,7 +16,28 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup str String checks
+ * @defgroup str String classification and conversion
+ *
+ * The char family of functions check whether ch, which must have the value of
+ * an unsigned char, falls into a certain character class.
+ *
+ * The str_check family of functions extend the classification of single
+ * characters to strings. The str_check() function checks the string pointed to
+ * by str for a set of allowed character classes. As soon as a character is
+ * found that is not allowed checking stops and 0 is returned.
+ *
+ * The str_path_isabs() and str_path_isdot() functions check if the given path
+ * is absolute or contains dots, respectively.
+ *
+ * The str_toupper() and str_tolower() functions map lower-case to upper case,
+ * and vice-versa respectively.
+ *
+ * The str_len() function computes the number of characters in the string
+ * pointed to by str until the first occurence of \\0.
+ *
+ * The str_index() functions looks for the first occurence of the character c in
+ * the string pointed to by str and returns a pointer to that character.
+ *
  * @{
  */
 
@@ -46,7 +67,7 @@
 /*! @brief check for a printable character (including space) */
 #define char_isprint(ch) ((unsigned int)(ch - ' ') < 95u)
 
-/*! @brief check for a whitespace character (\t, \n, \v, \f, \r) */
+/*! @brief check for a whitespace character (\\t, \\n, \\v, \\f, \\r) */
 #define char_isspace(ch) ((unsigned int)(ch - '\t') < 5u || ch == ' ')
 
 /*! @brief check for an upper-case character */
@@ -77,64 +98,83 @@
 #define char_toupper(ch) do { if (char_islower(ch)) ch -= 32; } while(0)
 
 
-/*! @brief check string for alpha-numerical characters */
+/*! @brief class for alpha-numerical characters */
 #define CC_ALNUM  (1 <<  1)
 
-/*! @brief check string for upper- or lower-case characters */
+/*! @brief class for upper- or lower-case characters */
 #define CC_ALPHA  (1 <<  2)
 
-/*! @brief check string for ASCII characters */
+/*! @brief class for ASCII characters */
 #define CC_ASCII  (1 <<  3)
 
-/*! @brief check string for blank characters */
+/*! @brief class for blank characters */
 #define CC_BLANK  (1 <<  4)
 
-/*! @brief check string for ASCII control characters */
+/*! @brief class for ASCII control characters */
 #define CC_CNTRL  (1 <<  5)
 
-/*! @brief check string for digit characters */
+/*! @brief class for digit characters */
 #define CC_DIGIT  (1 <<  6)
 
-/*! @brief check string for graphable characters */
+/*! @brief class for graphable characters */
 #define CC_GRAPH  (1 <<  7)
 
-/*! @brief check string for lower-case characters */
+/*! @brief class for lower-case characters */
 #define CC_LOWER  (1 <<  8)
 
-/*! @brief check string for printable characters */
+/*! @brief class for printable characters */
 #define CC_PRINT  (1 <<  9)
 
-/*! @brief check string for punctuation characters */
+/*! @brief class for punctuation characters */
 #define CC_PUNCT  (1 << 10)
 
-/*! @brief check string for white space characters */
+/*! @brief class for white space characters */
 #define CC_SPACE  (1 << 11)
 
-/*! @brief check string for upper-case characters */
+/*! @brief class for upper-case characters */
 #define CC_UPPER  (1 << 12)
 
-/*! @brief check string for hexadecimal characters */
+/*! @brief class for hexadecimal characters */
 #define CC_XDIGIT (1 << 13)
 
 /*!
- * @brief check string against set of allowed characters
+ * @brief check string against classes of allowed characters
  *
  * @param str     string to check
- * @param allowed allowed set of characters (multiple sets by ORing)
+ * @param allowed allowed classes of characters (multiple classes by ORing)
  *
  * @return 1 if all characters are valid, 0 otherwise
  */
 int str_check(const char *str, int allowed);
 
+/*! @brief check if string is empty */
 #define str_isempty(str)  (!str || str_check(str, CC_SPACE))
+
+/*! @brief check string for alpha-numerical characters */
 #define str_isalnum(str)  str_check(str, CC_ALNUM)
+
+/*! @brief check string for upper- or lower-case characters */
 #define str_isalpha(str)  str_check(str, CC_ALPHA)
+
+/*! @brief check string for ASCII characters */
 #define str_isascii(str)  str_check(str, CC_ASCII)
+
+/*! @brief check string for digit characters */
 #define str_isdigit(str)  str_check(str, CC_DIGIT)
+
+/*! @brief check string for graphable characters */
 #define str_isgraph(str)  str_check(str, CC_GRAPH)
+
+/*! @brief check string for lower-case characters */
 #define str_islower(str)  str_check(str, CC_LOWER)
+
+/*! @brief check string for printable characters */
 #define str_isprint(str)  str_check(str, CC_PRINT)
+
+/*! @brief check string for upper-case characters */
 #define str_isupper(str)  str_check(str, CC_UPPER)
+
+/*! @brief check string for hexadecimal characters */
 #define str_isxdigit(str) str_check(str, CC_XDIGIT)
 
 /*!

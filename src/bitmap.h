@@ -17,6 +17,22 @@
 
 /*!
  * @defgroup bitmap Bitmap conversion
+ *
+ * The i2v and v2i family of functions convert between a bitmap and a bit index.
+ *
+ * A bitmap is simply an integer with certain bits being 1 (enabled) and 0
+ * (disabled).
+ *
+ * These functions only return usable results if exactly one bit is enabled.
+ *
+ * - Bit index to bitmap<br>
+ *   The resulting bitmask is a simple arithmetic left shift of 1 index times.
+ * - Bitmap to bit index<br>
+ *   The resulting bit index is asimple arithmetic right shift until the map is
+ *   empty.
+ *
+ * These functions are mainly used by the flist family of functions.
+ *
  * @{
  */
 
@@ -28,7 +44,7 @@
 /*!
  * @brief convert bit index to 32 bit value
  *
- * @param index bit index (0-31)
+ * @param[in] index bit index (0-31)
  *
  * @return 32 bit value
  */
@@ -37,7 +53,7 @@ uint32_t i2v32(int index);
 /*!
  * @brief convert bit index to 64 bit value
  *
- * @param index bit index (0-63)
+ * @param[in] index bit index (0-63)
  *
  * @return 64 bit value
  */
@@ -46,7 +62,7 @@ uint64_t i2v64(int index);
 /*!
  * @brief convert 32 bit value to bit index
  *
- * @param val 32 bit value
+ * @param[in] val 32 bit value
  *
  * @return bit index (0-31)
  */
@@ -55,7 +71,7 @@ int v2i32(uint32_t val);
 /*!
  * @brief convert 64 bit value to bit index
  *
- * @param val 64 bit value
+ * @param[in] val 64 bit value
  *
  * @return bit index (0-63)
  */

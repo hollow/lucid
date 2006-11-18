@@ -16,7 +16,14 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup exec Command execution
+ * @defgroup exec Command execution wrappers
+ *
+ * The exec family of functions provide convenient wrappers around fork(2),
+ * execve(2), waitpid(2) and pipe(2).
+ *
+ * These functions combine one or more of the above system calls in one
+ * function, thus allowing fast and simple process creation in applications.
+ *
  * @{
  */
 
@@ -31,12 +38,12 @@
 /*!
  * @brief fork, execvp and wait
  *
- * @param fmt format string passed to printf(3)
- * @param ... variable number of arguments according to fmt
+ * @param[in] fmt format string passed to printf(3)
+ * @param[in] ... variable number of arguments according to fmt
  *
  * @return status obtained by wait(2) or -1 with errno set
  *
- * @see printf(3)
+ * @see printf
  * @see execvp(2)
  */
 int exec_fork(const char *fmt, ...);
@@ -44,41 +51,45 @@ int exec_fork(const char *fmt, ...);
 /*!
  * @brief fork, execvp and ignore child
  *
- * @param fmt format string passed to printf(3)
- * @param ... variable number of arguments according to fmt
+ * @param[in] fmt format string passed to printf(3)
+ * @param[in] ... variable number of arguments according to fmt
  *
  * @return 0 on success or -1 with errno set
  *
- * @see printf(3)
+ * @see printf
  * @see execvp(2)
  *
- * @note this function closes file descriptors 1-100 before execvp
+ * @note this function closes file descriptors 0-100 before execvp
  */
 int exec_fork_background(const char *fmt, ...);
 
 /*!
  * @brief pipe, fork, execvp and wait
  *
- * @param out empty pointer to store combined stdout/stderr
- * @param fmt format string passed to printf(3)
- * @param ... variable number of arguments according to fmt
+ * @param[out] out empty pointer to store combined stdout/stderr
+ * @param[in]  fmt format string passed to printf(3)
+ * @param[in]  ... variable number of arguments according to fmt
  *
  * @return status obtained by wait(2) or -1 with errno set
  *
- * @see printf(3)
+ * @note The caller should free obtained memory for out using free(3)
+ *
+ * @see printf
+ * @see malloc(3)
+ * @see free(3)
  * @see execvp(2)
  */
-int exec_fork_pipe(char **out,const char *fmt, ...);
+int exec_fork_pipe(char **out, const char *fmt, ...);
 
 /*!
  * @brief plain execvp
  *
- * @param fmt format string passed to printf(3)
- * @param ... variable number of arguments according to fmt
+ * @param[in] fmt format string passed to printf(3)
+ * @param[in] ... variable number of arguments according to fmt
  *
  * @return only returns on error with errno set
  *
- * @see printf(3)
+ * @see printf
  * @see execvp(2)
  */
 int exec_replace(const char *fmt, ...);

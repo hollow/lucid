@@ -16,7 +16,12 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup tcp TCP sockets
+ * @defgroup tcp TCP socket wrappers
+ *
+ * The tcp family of functions provide wrappers around connect(2) and listen(2)
+ * taking an IP address in the string pointed to by ip and the port number as
+ * arguments.
+ *
  * @{
  */
 

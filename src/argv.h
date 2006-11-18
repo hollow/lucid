@@ -17,6 +17,15 @@
 
 /*!
  * @defgroup argv Argument vector conversion
+ *
+ * The command line arguments are the whitespace-separated tokens given in the
+ * shell command used to invoke the program; thus, in `cat foo bar', the
+ * arguments are `foo' and `bar'. For the command `cat foo bar', argc is 3 and
+ * argv has three elements, "cat", "foo" and "bar".
+ *
+ * The argv_from_str() and argv_to_str() functions convert an argument vector
+ * (as in main()) from and to a string (as seen in the shell), respectively.
+ *
  * @{
  */
 
@@ -26,24 +35,29 @@
 /*!
  * @brief convert string to argument vector
  *
- * @param str  space seperated string to convert
- * @param argv argument vector to fill
- * @param argc size of argv
+ * @param[in]  str  space seperated string to convert
+ * @param[out] argv argument vector to fill
+ * @param[in]  argc size of argv
  *
  * @return number of arguments found/converted
  *
- * @note the caller is responsible to alloc memory for argv
+ * @note the caller has to allocate memory for argv
  * @note this function modifies its first argument, use with caution
  */
 int argv_from_str(char *str, char ** const argv, int argc);
 
 /*!
- * @brief convert an argument vector to a string
+ * @brief convert argument vector to string
  *
- * @param argc size of argv
- * @param argv argument vector to convert
+ * @param[in] argc size of argv
+ * @param[in] argv argument vector to convert
  *
  * @return space seperated string (obtained by malloc(3))
+ *
+ * @note The caller should free obtained memory using free(3)
+ *
+ * @see malloc(3)
+ * @see free(3)
  */
 char *argv_to_str(int argc, const char ** const argv);
 
