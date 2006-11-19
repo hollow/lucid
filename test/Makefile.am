@@ -16,5 +16,14 @@
 ## Free Software Foundation, Inc.,
 ## 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-SUBDIRS = src \
-          test
+INCLUDES = -I$(top_srcdir)/src
+
+check_PROGRAMS = addr
+
+EXTRA_DIST = $(check_PROGRAMS)
+TESTS      = $(check_PROGRAMS)
+
+LUCID = $(top_builddir)/src/libucid.la
+
+addr_SOURCES = addr.c
+addr_LDADD = $(LUCID)

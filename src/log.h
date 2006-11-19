@@ -35,6 +35,7 @@
  */
 
 #ifndef _LUCID_LOG_H
+#define _LUCID_LOG_H
 
 #include <stdbool.h>
 #include <stdarg.h>
@@ -373,8 +374,6 @@ void log_perror_and_die(const char *fmt, ...);
  * @brief close connection to logging system
  */
 void log_close(void);
-
-#define _LUCID_LOG_H
 
 #endif
 
