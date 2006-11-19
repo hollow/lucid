@@ -33,7 +33,7 @@ int flist32_from_str(const char *str, const flist32_t list[],
 	if (str_isempty(str))
 		return errno = EINVAL, -1;
 	
-	buf = o = strdup(str);
+	buf = o = str_dup(str);
 	
 	for (p = strtok(buf, &delim); p; p = strtok(NULL, &delim), clear = 0) {
 		if (*p == clmod)

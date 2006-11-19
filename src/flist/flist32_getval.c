@@ -15,17 +15,17 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <string.h>
 #include <errno.h>
 
 #include "flist.h"
+#include "str.h"
 
 uint32_t flist32_getval(const flist32_t list[], const char *key)
 {
 	int i;
 	
 	for (i = 0; list[i].key; i++) {
-		if (strcmp(list[i].key, key) == 0)
+		if (str_cmp(list[i].key, key) == 0)
 			return list[i].val;
 	}
 	

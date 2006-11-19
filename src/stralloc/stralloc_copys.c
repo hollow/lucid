@@ -16,11 +16,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <string.h>
-
+#include "str.h"
 #include "stralloc.h"
 
 int stralloc_copys(stralloc_t *dst, const char *src)
 {
-	return stralloc_copyb(dst, src, strlen(src));
+	return stralloc_copyb(dst, src, str_len(src));
 }

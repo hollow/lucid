@@ -15,8 +15,6 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <string.h>
-
 #include "str.h"
 
 int str_check(const char *str, int allowed)
@@ -26,7 +24,7 @@ int str_check(const char *str, int allowed)
 	if (!str)
 		return 1;
 	
-	n = strlen(str);
+	n = str_len(str);
 	
 	for (i = 0; i < n; i++) {
 		if (allowed & CC_ALNUM  && char_isalnum (str[i])) continue;

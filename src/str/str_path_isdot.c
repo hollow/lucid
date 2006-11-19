@@ -27,10 +27,10 @@ int str_path_isdot(const char *str)
 	if (str_isempty(str))
 		return 0;
 	
-	path = o = strdup(str);
+	path = o = str_dup(str);
 	
 	for (p = strtok(path, "/"); p; p = strtok(NULL, "/")) {
-		if (strcmp(p, ".") == 0 || strcmp(p, "..") == 0) {
+		if (str_cmp(p, ".") == 0 || str_cmp(p, "..") == 0) {
 			free(o);
 			return 1;
 		}

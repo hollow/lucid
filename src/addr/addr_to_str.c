@@ -15,10 +15,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <string.h>
 #include <arpa/inet.h>
 
 #include "addr.h"
+#include "str.h"
 #include "stralloc.h"
 
 char *addr_to_str(uint32_t ip, uint32_t mask)
@@ -40,7 +40,7 @@ char *addr_to_str(uint32_t ip, uint32_t mask)
 		stralloc_catm(&addr, "/", addr_mask, NULL);
 	}	
 	
-	str = strndup(addr.s, addr.len);
+	str = str_dupn(addr.s, addr.len);
 	stralloc_free(&addr);
 	
 	return str;

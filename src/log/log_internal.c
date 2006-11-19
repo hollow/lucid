@@ -19,13 +19,13 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <syslog.h>
 #include <string.h>
 #include <strings.h>
 #include <time.h>
 
 #include "log.h"
+#include "printf.h"
 
 extern log_options_t *_log_options;
 
@@ -41,29 +41,29 @@ void log_fd(int fd, int level, const char *msg)
 		return;
 	
 	switch (level) {
-		case LOG_EMERG:   dprintf(fd, "[emrge]"); break;
-		case LOG_ALERT:   dprintf(fd, "[alert]"); break;
-		case LOG_CRIT:    dprintf(fd, "[crit ]"); break;
-		case LOG_ERR:     dprintf(fd, "[error]"); break;
-		case LOG_WARNING: dprintf(fd, "[warn ]"); break;
-		case LOG_NOTICE:  dprintf(fd, "[note ]"); break;
-		case LOG_INFO:    dprintf(fd, "[info ]"); break;
-		case LOG_DEBUG:   dprintf(fd, "[debug]"); break;
-		default:          dprintf(fd, "[none ]"); break;
+		case LOG_EMERG:   _lucid_dprintf(fd, "[emrge]"); break;
+		case LOG_ALERT:   _lucid_dprintf(fd, "[alert]"); break;
+		case LOG_CRIT:    _lucid_dprintf(fd, "[crit ]"); break;
+		case LOG_ERR:     _lucid_dprintf(fd, "[error]"); break;
+		case LOG_WARNING: _lucid_dprintf(fd, "[warn ]"); break;
+		case LOG_NOTICE:  _lucid_dprintf(fd, "[note ]"); break;
+		case LOG_INFO:    _lucid_dprintf(fd, "[info ]"); break;
+		case LOG_DEBUG:   _lucid_dprintf(fd, "[debug]"); break;
+		default:          _lucid_dprintf(fd, "[none ]"); break;
 	}
 	
 	if (_log_options->time) {
 		bzero(timebuf, 17);
 		strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
-		dprintf(fd, " %s", timebuf);
+		_lucid_dprintf(fd, " %s", timebuf);
 	}
 	
-	dprintf(fd, " %s", _log_options->ident);
+	_lucid_dprintf(fd, " %s", _log_options->ident);
 	
 	if (_log_options->flags & LOG_PID)
-		dprintf(fd, "[%d]", getpid());
+		_lucid_dprintf(fd, "[%d]", getpid());
 	
-	dprintf(fd, ": %s\n", msg);
+	_lucid_dprintf(fd, ": %s\n", msg);
 }
 
 void log_internal(int level, int strerr, const char *fmt, va_list ap)
@@ -73,11 +73,11 @@ void log_internal(int level, int strerr, const char *fmt, va_list ap)
 	if (!_log_options)
 		return;
 	
-	vasprintf(&msg, fmt, ap);
+	_lucid_vasprintf(&msg, fmt, ap);
 	
 	if (strerr) {
 		buf = msg;
-		asprintf(&msg, "%s: %s", buf, strerror(errno_orig));
+		_lucid_asprintf(&msg, "%s: %s", buf, strerror(errno_orig));
 		free(buf);
 	}
 	

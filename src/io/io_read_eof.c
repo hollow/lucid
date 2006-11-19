@@ -17,9 +17,9 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include "io.h"
+#include "str.h"
 
 int io_read_eof(int fd, char **file)
 {
@@ -47,7 +47,7 @@ int io_read_eof(int fd, char **file)
 	
 out:
 	if (len > 0)
-		*file = strndup(buf, len);
+		*file = str_dupn(buf, len);
 	
 	free(buf);
 	return len;

@@ -31,18 +31,18 @@ void whirlpool_transform(whirlpool_t * const context)
 	uint64_t block[8];
 	uint64_t state[8];
 	uint64_t L[8];
-	uint8_t *buffer = context->buffer;
+	uint8_t *buf = context->buf;
 
 	/* map the buffer to a block */
-	for (i = 0; i < 8; i++, buffer += 8) {
-		block[i] = (((uint64_t)buffer[0]        ) << 56) ^
-		           (((uint64_t)buffer[1] & 0xffL) << 48) ^
-		           (((uint64_t)buffer[2] & 0xffL) << 40) ^
-		           (((uint64_t)buffer[3] & 0xffL) << 32) ^
-		           (((uint64_t)buffer[4] & 0xffL) << 24) ^
-		           (((uint64_t)buffer[5] & 0xffL) << 16) ^
-		           (((uint64_t)buffer[6] & 0xffL) <<  8) ^
-		           (((uint64_t)buffer[7] & 0xffL)      );
+	for (i = 0; i < 8; i++, buf += 8) {
+		block[i] = (((uint64_t)buf[0]        ) << 56) ^
+		           (((uint64_t)buf[1] & 0xffL) << 48) ^
+		           (((uint64_t)buf[2] & 0xffL) << 40) ^
+		           (((uint64_t)buf[3] & 0xffL) << 32) ^
+		           (((uint64_t)buf[4] & 0xffL) << 24) ^
+		           (((uint64_t)buf[5] & 0xffL) << 16) ^
+		           (((uint64_t)buf[6] & 0xffL) <<  8) ^
+		           (((uint64_t)buf[7] & 0xffL)      );
 	}
 	
 	/* compute and apply K^0 to the cipher state */

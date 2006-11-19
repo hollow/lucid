@@ -18,7 +18,7 @@
 
 EXTRA_DIST = Doxyfile
 
-noinclude_HEADERS = doxygen.h
+noinst_HEADERS = doxygen.h
 
 pkginclude_HEADERS = addr.h \
                      argv.h \
@@ -116,12 +116,18 @@ PRINTF_C = printf/asprintf.c \
            printf/vsnprintf.c
 
 STR_C = str/str_check.c \
+        str/str_cmp.c \
+        str/str_cpy.c \
+        str/str_cpyn.c \
+        str/str_dup.c \
+        str/str_dupn.c \
         str/str_index.c \
         str/str_len.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_tolower.c \
-        str/str_toupper.c
+        str/str_toupper.c \
+        str/str_zero.c
 
 STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_cat.c \

@@ -29,7 +29,7 @@ int mkdirnamep(const char *path, mode_t mode)
 	char *buf, *dname;
 	int rc;
 	
-	buf = strdup(path);
+	buf = str_dup(path);
 	dname = dirname(buf);
 	
 	rc = mkdirp(dname, mode);

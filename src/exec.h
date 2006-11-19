@@ -38,7 +38,7 @@
 /*!
  * @brief fork, execvp and wait
  *
- * @param[in] fmt format string passed to printf(3)
+ * @param[in] fmt format string passed to printf
  * @param[in] ... variable number of arguments according to fmt
  *
  * @return status obtained by wait(2) or -1 with errno set
@@ -51,7 +51,7 @@ int exec_fork(const char *fmt, ...);
 /*!
  * @brief fork, execvp and ignore child
  *
- * @param[in] fmt format string passed to printf(3)
+ * @param[in] fmt format string passed to printf
  * @param[in] ... variable number of arguments according to fmt
  *
  * @return 0 on success or -1 with errno set
@@ -67,7 +67,7 @@ int exec_fork_background(const char *fmt, ...);
  * @brief pipe, fork, execvp and wait
  *
  * @param[out] out empty pointer to store combined stdout/stderr
- * @param[in]  fmt format string passed to printf(3)
+ * @param[in]  fmt format string passed to printf
  * @param[in]  ... variable number of arguments according to fmt
  *
  * @return status obtained by wait(2) or -1 with errno set
@@ -84,7 +84,7 @@ int exec_fork_pipe(char **out, const char *fmt, ...);
 /*!
  * @brief plain execvp
  *
- * @param[in] fmt format string passed to printf(3)
+ * @param[in] fmt format string passed to printf
  * @param[in] ... variable number of arguments according to fmt
  *
  * @return only returns on error with errno set

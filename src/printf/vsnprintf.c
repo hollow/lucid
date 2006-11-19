@@ -57,7 +57,8 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 	char c;
 	const char *fmtp = fmt;
 	
-	va_list ap = va_copy(_ap);
+	va_list ap;
+	va_copy(ap, _ap);
 	
 	/* sanitize destination buffer */
 	for (i = 0; i < size; i++)

@@ -18,13 +18,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <errno.h>
 #include <sys/wait.h>
 
 #include "argv.h"
 #include "exec.h"
 #include "io.h"
+#include "printf.h"
 
 int exec_fork_pipe(char **out, const char *fmt, ...)
 {
@@ -32,7 +32,7 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	va_start(ap, fmt);
 	
 	char *cmd;
-	vasprintf(&cmd, fmt, ap);
+	_lucid_vasprintf(&cmd, fmt, ap);
 	
 	va_end(ap);
 	

@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "printf.h"
 #include "stralloc.h"
 
 int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
@@ -29,7 +30,7 @@ int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 	int rc;
 	
 	va_start(ap, fmt);
-	vasprintf(&buf, fmt, ap);
+	_lucid_vasprintf(&buf, fmt, ap);
 	va_end(ap);
 	
 	rc = stralloc_cats(dst, buf);

@@ -32,7 +32,7 @@ int mkdirp(const char *path, mode_t mode)
 	if (str_isempty(path))
 		return errno = EINVAL, -1;
 	
-	buf = p = strdup(path);
+	buf = p = str_dup(path);
 	
 	do {
 		c = 0;

@@ -39,7 +39,7 @@
  * @param[out] argv argument vector to fill
  * @param[in]  argc size of argv
  *
- * @return number of arguments found/converted
+ * @return number of arguments that (would) have been converted
  *
  * @note the caller has to allocate memory for argv
  * @note this function modifies its first argument, use with caution

@@ -15,9 +15,8 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <string.h>
-
 #include "flist.h"
+#include "str.h"
 #include "stralloc.h"
 
 char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
@@ -38,7 +37,7 @@ char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
 	else
 		len = buf.len - 1;
 	
-	str = strndup(buf.s, len);
+	str = str_dupn(buf.s, len);
 	stralloc_free(&buf);
 	return str;
 }

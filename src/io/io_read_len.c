@@ -17,15 +17,13 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
-#include <strings.h>
 
 #include "io.h"
+#include "str.h"
 
 int io_read_len(int fd, char **str, size_t len)
 {
-	char *buf = malloc(len + 1);
-	bzero(buf, len);
+	char *buf = calloc(len + 1, sizeof(char));
 
 	ssize_t buflen = read(fd, buf, len);
 	
@@ -33,7 +31,7 @@ int io_read_len(int fd, char **str, size_t len)
 		return -1;
 	
 	if (buflen > 0)
-		*str = strndup(buf, buflen);
+		*str = str_dupn(buf, buflen);
 	
 	free(buf);
 	return buflen;

@@ -33,7 +33,7 @@ int str_path_isabs(const char *str)
 	if (str_path_isdot(str))
 		return 0;
 	
-	path = o = strdup(str);
+	path = o = str_dup(str);
 	
 	for (p = strtok(path, "/"); p; p = strtok(NULL, "/")) {
 		if (!str_isgraph(p)) {

@@ -16,7 +16,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @mainpage The little swiss army knife
+ * @mainpage lucid API documentation
  *
  * The lucid library provides several convenient wrappers around system calls
  * and libc library functions.

@@ -16,11 +16,11 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
-#include <string.h>
 
 #include "misc.h"
+#include "printf.h"
 #include "str.h"
 
 char *path_concat(char *dirname, char *basename)
@@ -30,7 +30,7 @@ char *path_concat(char *dirname, char *basename)
 	if (str_path_isdot(basename))
 		return errno = EINVAL, NULL;
 	
-	asprintf(&path, "%s/%s", dirname, basename);
+	_lucid_asprintf(&path, "%s/%s", dirname, basename);
 	
 	return path;
 }

@@ -18,11 +18,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <errno.h>
 
 #include "argv.h"
 #include "exec.h"
+#include "printf.h"
 
 int exec_replace(const char *fmt, ...)
 {
@@ -30,7 +30,7 @@ int exec_replace(const char *fmt, ...)
 	va_start(ap, fmt);
 	
 	char *cmd;
-	vasprintf(&cmd, fmt, ap);
+	_lucid_vasprintf(&cmd, fmt, ap);
 	
 	va_end(ap);
 	

@@ -26,23 +26,31 @@
 int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 {
 	struct in_addr ib;
-	char *o, *buf, *addr_ip, *addr_mask;
+	char *p, *addr_ip, *addr_mask;
+	int errno_orig;
 	
 	if (str_isempty(str))
 		return errno = EINVAL, -1;
 	
-	buf = o = strdup(str);
+	addr_ip   = str_dup(str);
+	addr_mask = NULL;
 	
-	addr_ip   = strtok(buf,  "/");
-	addr_mask = strtok(NULL, "/");
+	p = str_index(addr_ip, '/', str_len(addr_ip));
+	
+	if (p && p - addr_ip > 0) {
+		*p++ = '\0';
+		addr_mask = p;
+	}
 	
 	if (str_isempty(addr_ip)) {
 		errno = EINVAL;
 		goto err;
 	}
 	
-	if (inet_aton(addr_ip, &ib) == -1)
+	if (inet_aton(addr_ip, &ib) == 0) {
+		errno = EINVAL;
 		goto err;
+	}
 	
 	*ip = ib.s_addr;
 	
@@ -51,6 +59,11 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 	
 	else if (str_isdigit(addr_mask)) { /* We have CIDR notation */
 		int sz = atoi(addr_mask);
+		
+		if (sz < 0 || sz > 32) {
+			errno = EINVAL;
+			goto err;
+		}
 		
 		for (*mask = 0; sz > 0; --sz) {
 			*mask >>= 1;
@@ -61,16 +74,20 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 	}
 	
 	else { /* Standard netmask notation */
-		if (inet_aton(addr_mask, &ib) == -1)
+		if (inet_aton(addr_mask, &ib) == 0) {
+			errno = EINVAL;
 			goto err;
+		}
 		
 		*mask = ib.s_addr;
 	}
 	
-	free(o);
+	free(addr_ip);
 	return 0;
 	
 err:
-	free(o);
+	errno_orig = errno;
+	free(addr_ip);
+	errno = errno_orig;
 	return -1;
 }

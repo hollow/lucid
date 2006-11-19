@@ -17,12 +17,12 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
 #include "misc.h"
+#include "printf.h"
 
 int runlink(const char *path)
 {
@@ -51,7 +51,7 @@ int runlink(const char *path)
 			if (p && p[0] == '.' && (!p[1] || (p[1] == '.' && !p[2])))
 				continue;
 			
-			asprintf(&new_path, "%s/%s", path, d->d_name);
+			_lucid_asprintf(&new_path, "%s/%s", path, d->d_name);
 			
 			if (runlink(new_path) == -1)
 				status = -1;

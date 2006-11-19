@@ -207,8 +207,9 @@ int stralloc_cat(stralloc_t *dst, const stralloc_t *src);
  * @param[in] a first string
  * @param[in] b second string
  *
- * @return An integer less than, equal to, or greater than zero if a is found,
- *         respectively, to be less than, to match, or be greater than b.
+ * @return An integer greater than, equal to, or less than 0, if the string
+ *         pointed to by a is greater than, equal to, or less than the string
+ *         pointed to by b, respectively.
  */
 int stralloc_cmp(const stralloc_t *a, const stralloc_t *b);
 

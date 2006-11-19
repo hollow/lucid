@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 
 #include "log.h"
+#include "str.h"
 
 log_options_t *_log_options = NULL;
 
@@ -38,7 +39,7 @@ void log_init(log_options_t *options)
 	if (options->mask == 0)
 		options->mask = LOG_UPTO(LOG_INFO);
 	
-	if (!options->ident || strlen(options->ident) < 1)
+	if (!options->ident || str_len(options->ident) < 1)
 		options->ident = "(none)";
 	
 	options->flags &= ~LOG_PERROR;

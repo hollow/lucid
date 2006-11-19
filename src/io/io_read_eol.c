@@ -17,9 +17,9 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 
 #include "io.h"
+#include "str.h"
 
 int io_read_eol(int fd, char **line)
 {
@@ -54,7 +54,7 @@ int io_read_eol(int fd, char **line)
 	
 out:
 	if (len > 0)
-		*line = strndup(buf, len);
+		*line = str_dupn(buf, len);
 	
 	free(buf);
 	return len;

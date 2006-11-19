@@ -26,17 +26,37 @@
  * by str for a set of allowed character classes. As soon as a character is
  * found that is not allowed checking stops and 0 is returned.
  *
+ * The str_cmp() function compares the string pointed to by str1 to the string
+ * pointed to by str2. It returns an integer less than, equal to, or greater
+ * than zero if str1 is found, respectively, to be less than, to match, or be
+ * greater than str2.
+ *
+ * The strcpy() function copies the string pointed to by src (including the
+ * terminating `\\0' character) to the array pointed to by dst. The strings may
+ * not overlap, and the destination string dst must be large enough to receive
+ * the copy. The strncpy() function is similar, except that not more than n
+ * bytes of src are copied. Thus, if there is no null byte among the first n
+ * bytes of src, the result will not be null-terminated.
+ *
+ * The str_dup() function returns a pointer to a new string which is a duplicate
+ * of the string str. The str_dupn() function is similar, but only copies at
+ * most n characters. If s is longer than n, only n characters are copied, and a
+ * terminating null byte is added.
+ *
+ * The str_index() returns a pointer to the first occurence of the character c
+ * in the string pointed to by str.
+ *
+ * The str_len() function calculates the length of the string s, not including
+ * the terminating `\\0' character.
+ *
  * The str_path_isabs() and str_path_isdot() functions check if the given path
  * is absolute or contains dots, respectively.
  *
  * The str_toupper() and str_tolower() functions map lower-case to upper case,
  * and vice-versa respectively.
  *
- * The str_len() function computes the number of characters in the string
- * pointed to by str until the first occurence of \\0.
- *
- * The str_index() functions looks for the first occurence of the character c in
- * the string pointed to by str and returns a pointer to that character.
+ * The str_zero() function sets the first n bytes of the byte area starting at s
+ * to zero (bytes containing '\\0').
  *
  * @{
  */
@@ -140,8 +160,8 @@
 /*!
  * @brief check string against classes of allowed characters
  *
- * @param str     string to check
- * @param allowed allowed classes of characters (multiple classes by ORing)
+ * @param[in] str     string to check
+ * @param[in] allowed allowed classes of characters (multiple classes by ORing)
  *
  * @return 1 if all characters are valid, 0 otherwise
  */
@@ -177,19 +197,95 @@ int str_check(const char *str, int allowed);
 /*! @brief check string for hexadecimal characters */
 #define str_isxdigit(str) str_check(str, CC_XDIGIT)
 
+
 /*!
- * @brief check if given path contains . or .. entries
+ * @brief compare two strings
  *
- * @param str path to check
+ * @param[in] str1 first string
+ * @param[in] str2 second string
  *
- * @return 1 if str has dot entries, 0 otherwise
+ * @return An integer greater than, equal to, or less than 0, if the string
+ *         pointed to by str1 is greater than, equal to, or less than the string
+ *         pointed to by str2, respectively.
  */
-int str_path_isdot(const char *str);
+int str_cmp(const char *str1, const char *str2);
+
+/*!
+ * @brief copy a string
+ *
+ * @param[out] dst destination string
+ * @param[in]  src source string
+ *
+ * @return A pointer to the destination string dest.
+ */
+char *str_cpy(char *dst, const char *src);
+
+/*!
+ * @brief copy a string
+ *
+ * @param[out] dst destination string
+ * @param[in]  src source string
+ * @param[in]  n   copy first n bytes
+ *
+ * @return A pointer to the destination string dest.
+ */
+char *str_cpyn(char *dst, const char *src, size_t n);
+
+/*!
+ * @brief duplicate a string
+ *
+ * @param[in] str source string
+ *
+ * @return A pointer to the duplicated string, or NULL if insufficient memory
+ *         was available.
+ */
+char *str_dup(const char *str);
+
+/*!
+ * @brief duplicate a string
+ *
+ * @param[in] str source string
+ * @param[in] n   string length
+ *
+ * @return A pointer to the duplicated string, or NULL if insufficient memory
+ *         was available.
+ */
+char *str_dupn(const char *str, size_t n);
+
+/*!
+ * @brief scan string for character
+ *
+ * @param[in] str string to scan
+ * @param[in] c   character to look for
+ * @param[in] n   scan first n bytes
+ *
+ * @return A pointer to the matched character or NULL if the character is not
+ *         found.
+ */
+char *str_index(const char *str, int c, size_t n);
+
+/*!
+ * @brief calculate the length of a string
+ *
+ * @param[in] str source string
+ *
+ * @return number of characters in str
+ */
+size_t str_len(const char *str);
+
+/*!
+ * @brief write zero-valued bytes
+ *
+ * @param[out] str destination string
+ * @param[in]  n   write first n bytes
+ */
+void str_zero(char *str, size_t n);
+
 
 /*!
  * @brief check if path is absolute and contains no dot entries or ungraphable characters
  *
- * @param str path to check
+ * @param[in] str path to check
  *
  * @return 1 if str is an absolute pathname, 0 otherwise
  *
@@ -198,9 +294,19 @@ int str_path_isdot(const char *str);
 int str_path_isabs(const char *str);
 
 /*!
+ * @brief check if given path contains . or .. entries
+ *
+ * @param[in] str path to check
+ *
+ * @return 1 if str has dot entries, 0 otherwise
+ */
+int str_path_isdot(const char *str);
+
+
+/*!
  * @brief convert string to lower-case
  *
- * @param str string to convert
+ * @param[out] str string to convert
  *
  * @return pointer to str
  */
@@ -209,31 +315,11 @@ char *str_tolower(char *str);
 /*!
  * @brief convert string to upper-case
  *
- * @param str string to convert
+ * @param[out] str string to convert
  *
  * @return pointer to str
  */
 char *str_toupper(char *str);
-
-/*!
- * @brief compute string length
- *
- * @param str string to compute
- *
- * @return string length
- */
-size_t str_len(const char *str);
-
-/*!
- * @brief scan string for character
- *
- * @param str string to scan
- * @param c   character to look for
- * @param n   scan first n bytes
- *
- * @return pointer to found character, or NULL
- */
-const char *str_index(const char *str, int c, size_t n);
 
 #endif
 
