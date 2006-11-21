@@ -19,7 +19,7 @@
 
 #include "str.h"
 
-char *str_dupn(const char *str, size_t n)
+char *str_dupn(const char *str, int n)
 {
 	char *buf = calloc(n + 1, sizeof(char));
 	

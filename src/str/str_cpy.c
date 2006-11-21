@@ -17,7 +17,7 @@
 
 #include "str.h"
 
-char *str_cpy(char *dst, const char *src)
+int str_cpy(char *dst, const char *src)
 {
 	return str_cpyn(dst, src, str_len(src));
 }

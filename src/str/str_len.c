@@ -17,7 +17,7 @@
 
 #include "str.h"
 
-size_t str_len(const char *str)
+int str_len(const char *str)
 {
 	int i = 0;
 	

@@ -17,12 +17,12 @@
 
 #include "str.h"
 
-char *str_cpyn(char *dst, const char *src, size_t n)
+int str_cpyn(char *dst, const char *src, int n)
 {
 	char *p = dst;
 	
 	while (n--)
 		*dst++ = *src++;
 	
-	return p;
+	return dst - p;
 }

@@ -64,8 +64,6 @@
 #ifndef _LUCID_STR_H
 #define _LUCID_STR_H
 
-#include <sys/types.h>
-
 /*! @brief check for an ASCII character */
 #define char_isascii(ch) ((unsigned int)(ch) < 128u)
 
@@ -216,9 +214,9 @@ int str_cmp(const char *str1, const char *str2);
  * @param[out] dst destination string
  * @param[in]  src source string
  *
- * @return A pointer to the destination string dest.
+ * @return Number of bytes that have been copied.
  */
-char *str_cpy(char *dst, const char *src);
+int str_cpy(char *dst, const char *src);
 
 /*!
  * @brief copy a string
@@ -227,9 +225,9 @@ char *str_cpy(char *dst, const char *src);
  * @param[in]  src source string
  * @param[in]  n   copy first n bytes
  *
- * @return A pointer to the destination string dest.
+ * @return Number of bytes that have been copied.
  */
-char *str_cpyn(char *dst, const char *src, size_t n);
+int str_cpyn(char *dst, const char *src, int n);
 
 /*!
  * @brief duplicate a string
@@ -250,7 +248,7 @@ char *str_dup(const char *str);
  * @return A pointer to the duplicated string, or NULL if insufficient memory
  *         was available.
  */
-char *str_dupn(const char *str, size_t n);
+char *str_dupn(const char *str, int n);
 
 /*!
  * @brief scan string for character
@@ -262,7 +260,7 @@ char *str_dupn(const char *str, size_t n);
  * @return A pointer to the matched character or NULL if the character is not
  *         found.
  */
-char *str_index(const char *str, int c, size_t n);
+char *str_index(const char *str, int c, int n);
 
 /*!
  * @brief calculate the length of a string
@@ -271,7 +269,7 @@ char *str_index(const char *str, int c, size_t n);
  *
  * @return number of characters in str
  */
-size_t str_len(const char *str);
+int str_len(const char *str);
 
 /*!
  * @brief write zero-valued bytes
@@ -279,7 +277,7 @@ size_t str_len(const char *str);
  * @param[out] str destination string
  * @param[in]  n   write first n bytes
  */
-void str_zero(char *str, size_t n);
+void str_zero(char *str, int n);
 
 
 /*!
@@ -320,6 +318,30 @@ char *str_tolower(char *str);
  * @return pointer to str
  */
 char *str_toupper(char *str);
+
+
+/*!
+ * @brief convert string to integer
+ *
+ * @param[in]  str  string to convert
+ * @param[out] endp address of first invalid character
+ * @param[in]  base conversion base
+ * @param[in]  n    convert first n bytes
+ *
+ * @return Number of bytes read from str
+ */
+int str_toumax(const char *str, unsigned long long *val, int base, int n);
+
+/*!
+ * @brief convert integer to string
+ *
+ * @param[in]  val  integer to convert
+ * @param[out] str  destination string
+ * @param[in]  base conversion base
+ *
+ * @return Number of bytes written to str
+ */
+int str_fromumax(unsigned long long int val, char *str, int base);
 
 #endif
 

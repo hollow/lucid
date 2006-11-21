@@ -35,6 +35,7 @@ int str_path_isabs(const char *str)
 	
 	path = o = str_dup(str);
 	
+	/* TODO: strtok! */
 	for (p = strtok(path, "/"); p; p = strtok(NULL, "/")) {
 		if (!str_isgraph(p)) {
 			free(o);

@@ -15,28 +15,38 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "str.h"
 
-int str_path_isdot(const char *str)
+static inline
+char char_fromdigit(int d)
 {
-	char *p, *path, *o;
+	if (d >= 0 && d <= 9)
+		return d + '0';
 	
-	if (str_isempty(str))
-		return 0;
+	else if (d >= 10 && d <= 36)
+		return d + 'A' - 10;
 	
-	path = o = str_dup(str);
+	else
+		return -1;
+}
+
+int str_fromumax(unsigned long long int i, char *str, int base)
+{
+	int len = 1;
+	unsigned long long int tmp = i;
+	char *p = str;
 	
-	/* TODO: strtok */
-	for (p = strtok(path, "/"); p; p = strtok(NULL, "/")) {
-		if (str_cmp(p, ".") == 0 || str_cmp(p, "..") == 0) {
-			free(o);
-			return 1;
-		}
-	}
+	while ((tmp /= base))
+		len++;
 	
-	free(o);
-	return 0;
+	if (!str)
+		return len;
+	
+	p += len;
+	
+	do {
+		*--p = char_fromdigit((i % base));
+	} while ((i /= base));
+	
+	return len;
 }

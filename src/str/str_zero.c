@@ -17,7 +17,7 @@
 
 #include "str.h"
 
-void str_zero(char *str, size_t n)
+void str_zero(char *str, int n)
 {
 	while (n--)
 		*str++ = 0;

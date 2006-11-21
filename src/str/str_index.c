@@ -17,11 +17,11 @@
 
 #include "str.h"
 
-char *str_index(const char *str, int c, size_t n)
+char *str_index(const char *str, int c, int n)
 {
 	char *p = (char *) str;
 	
-	for (; n--; p++)
+	for (; n; p++, n--)
 		if (*p == c)
 			return p;
 	
