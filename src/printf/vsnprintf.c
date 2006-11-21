@@ -46,7 +46,7 @@ typedef struct {
 ** - format flags: #, 0, -, ' ', +
 ** - field width
 ** - argument precision
-** - length mods: hh, h, l, (handled as long); ll (handled as long long)
+** - length mods: hh, h, l, and ll
 ** - conversion spec: d, i, u, o, x, f, c, s, p */
 int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 {
@@ -145,23 +145,27 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 				}
 			}
 			
-			/* parse length modifier
-			** hh, h and l, are all handled as long int
-			** ll is handled as long long int */
+			/* parse length modifier */
+			f.l = 2;
+			
 			if (c == 'l') {
+				f.l = 3;
 				c = *fmt++;
 				
 				if (c == 'l') {
-					f.l = 1;
+					f.l = 4;
 					c = *fmt++;
 				}
 			}
 			
 			else if (c == 'h') {
+				f.l = 1;
 				c = *fmt++;
 				
-				if (c == 'h')
+				if (c == 'h') {
+					f.l = 0;
 					c = *fmt++;
+				}
 			}
 			
 			/* sign overrides blank */
@@ -176,15 +180,17 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 			if (f.p.isset && f.w > 0)
 				f.f.zero = 0;
 			
-			/* conversion functions */
-			size_t (*ufn)  (char *, unsigned long);
-			size_t (*lufn) (char *, unsigned long long);
+			/* buffer for alternate notation string */
+			char *alt;
 			
-			/* signed long argument */
-			signed long darg; signed long long ldarg;
+			/* signed arguments */
+			signed long long int darg;
 			
 			/* unsigned long argument */
-			unsigned long uarg; unsigned long long luarg;
+			unsigned long long int uarg;
+			
+			/* unsigned conversion function */
+			int (*ufn)(char *, unsigned long long int);
 			
 			/* float argument */
 			double farg;
@@ -217,50 +223,51 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 			switch (c) {
 				case 'd':
 				case 'i': /* signed conversion */
-					if (f.l) { /* long long */
-						ldarg = va_arg(ap, signed long long);
-						
-						if (ldarg == 0 && f.p.isset && f.p.width == 0)
-							break;
-						
-						/* forced sign */
-						if (f.f.sign)
-							buflen += fmt_plusminus(&ibuf[buflen], ldarg);
-						else
-							buflen += fmt_minus(&ibuf[buflen], ldarg);
-						
-						len = fmt_ulonglong(FMT_LEN, (unsigned long long) llabs(ldarg));
-						
-						while ((unsigned long) len < f.p.width) {
-							buflen += fmt_str(&ibuf[buflen], "0");
-							f.p.width--;
-						}
+					switch (f.l) {
+					case 0:
+						darg = (signed char) va_arg(ap, signed int);
+						break;
 					
-						buflen += fmt_ulonglong(&ibuf[buflen], (unsigned long long) llabs(ldarg));
+					case 1:
+						darg = (signed short int) va_arg(ap, signed int);
+						break;
+					
+					case 2:
+						darg = (signed int) va_arg(ap, signed int);
+						break;
+					
+					case 3:
+						darg = (signed long int) va_arg(ap, signed long int);
+						break;
+					
+					case 4:
+						darg = (signed long long int) va_arg(ap, signed long long int);
+						break;
+					
+					default:
+						darg = (signed long long int) va_arg(ap, signed int);
+						break;
 					}
 					
-					else { /* !long long */
-						darg = va_arg(ap, signed long);
-						
-						if (darg == 0 && f.p.isset && f.p.width == 0)
-							break;
-						
-						/* forced sign */
-						if (f.f.sign)
-							buflen += fmt_plusminus(&ibuf[buflen], darg);
-						else
-							buflen += fmt_minus(&ibuf[buflen], darg);
-						
-						len = fmt_ulong(FMT_LEN, (unsigned long) labs(darg));
-						
-						while ((unsigned long) len < f.p.width) {
-							buflen += fmt_str(&ibuf[buflen], "0");
-							f.p.width--;
-						}
+					if (darg == 0 && f.p.isset && f.p.width == 0)
+						break;
 					
-						buflen += fmt_ulong(&ibuf[buflen], (unsigned long) labs(darg));
+					/* forced sign */
+					if (f.f.sign)
+						buflen += fmt_plusminus(&ibuf[buflen], darg);
+					else
+						buflen += fmt_minus(&ibuf[buflen], darg);
+					
+					darg = darg < 0 ? -darg : darg;
+					
+					len = fmt_ulonglong(FMT_LEN, darg);
+					
+					while (len < f.p.width) {
+						buflen += fmt_str(&ibuf[buflen], "0");
+						f.p.width--;
 					}
 					
+					buflen += fmt_ulonglong(&ibuf[buflen], darg);
 					break;
 				
 				/* unsigned conversions */
@@ -268,58 +275,60 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 				case 'u': /* decimal notation */
 				case 'x': /* hexadecimal notation */
 					if (c == 'o') {
-						ufn = fmt_8long;
-						lufn = fmt_8longlong;
+						alt = "0";
+						ufn = fmt_8longlong;
 					}
 					
 					else if (c == 'u') {
-						ufn = fmt_ulong;
-						lufn = fmt_ulonglong;
+						alt = "";
+						ufn = fmt_ulonglong;
 					}
 					
 					else {
-						ufn = fmt_xlong;
-						lufn = fmt_xlonglong;
+						alt = "0x";
+						ufn = fmt_xlonglong;
 					}
 					
-					if (f.l) { /* long long */
-						luarg = va_arg(ap, unsigned long long);
-						
-						if (luarg == 0 && f.p.isset && f.p.width == 0)
-							break;
-						
-						if (f.f.alt)
-							buflen += fmt_str(&ibuf[buflen], "0");
-						
-						len = lufn(FMT_LEN, luarg);
-						
-						while ((unsigned long) len < f.p.width) {
-							buflen += fmt_str(&ibuf[buflen], "0");
-							f.p.width--;
-						}
-						
-						buflen += lufn(&ibuf[buflen], luarg);
+					switch (f.l) {
+					case 0:
+						uarg = (unsigned char) va_arg(ap, unsigned int);
+						break;
+					
+					case 1:
+						uarg = (unsigned short int) va_arg(ap, unsigned int);
+						break;
+					
+					case 2:
+						uarg = (unsigned int) va_arg(ap, unsigned int);
+						break;
+					
+					case 3:
+						uarg = (unsigned long int) va_arg(ap, unsigned long int);
+						break;
+					
+					case 4:
+						uarg = (unsigned long long int) va_arg(ap, unsigned long long int);
+						break;
+					
+					default:
+						uarg = (unsigned long long int) va_arg(ap, unsigned int);
+						break;
 					}
 					
-					else { /* !long long */
-						uarg = va_arg(ap, unsigned long);
+					if (uarg == 0 && f.p.isset && f.p.width == 0)
+						break;
+					
+					if (f.f.alt)
+						buflen += fmt_str(&ibuf[buflen], alt);
 						
-						if (uarg == 0 && f.p.isset && f.p.width == 0)
-							break;
-						
-						if (f.f.alt)
-							buflen += fmt_str(&ibuf[buflen], "0");
-						
-						len = ufn(FMT_LEN, uarg);
-						
-						while ((unsigned long) len < f.p.width) {
-							buflen += fmt_str(&ibuf[buflen], "0");
-							f.p.width--;
-						}
-						
-						buflen += ufn(&ibuf[buflen], uarg);
+					len = ufn(FMT_LEN, uarg);
+					
+					while (len < f.p.width) {
+						buflen += fmt_str(&ibuf[buflen], "0");
+						f.p.width--;
 					}
 					
+					buflen += ufn(&ibuf[buflen], uarg);
 					break;
 				
 				case 'f': /* float conversion */
@@ -350,8 +359,10 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 					sarg = va_arg(ap, const char *);
 					buf = sarg;
 					
-					if (!buf)
-						buflen = 0;
+					if (!buf) {
+						buf    = "(null)";
+						buflen = 6;
+					}
 					
 					else if (!f.p.isset)
 						buflen = str_len(buf);
@@ -376,7 +387,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
 					if (f.f.alt)
 						buflen += fmt_str(&ibuf[buflen], "0x");
 					
-					buflen += fmt_xlong(&ibuf[buflen], (unsigned long) parg);
+					buflen += fmt_xlonglong(&ibuf[buflen], (unsigned long int)parg);
 					break;
 				
 				case 'n':

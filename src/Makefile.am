@@ -33,6 +33,7 @@ pkginclude_HEADERS = addr.h \
                      misc.h \
                      open.h \
                      printf.h \
+                     scn.h \
                      str.h \
                      stralloc.h \
                      tcp.h \
@@ -67,20 +68,14 @@ FLIST_C = flist/flist32_from_str.c \
           flist/flist64_getval.c \
           flist/flist64_to_str.c
 
-FMT_C = fmt/fmt_8long.c \
-        fmt/fmt_8longlong.c \
+FMT_C = fmt/fmt_8longlong.c \
         fmt/fmt_double.c \
-        fmt/fmt_fill.c \
-        fmt/fmt_long.c \
         fmt/fmt_longlong.c \
         fmt/fmt_minus.c \
-        fmt/fmt_pad.c \
         fmt/fmt_plusminus.c \
         fmt/fmt_str.c \
         fmt/fmt_strn.c \
-        fmt/fmt_ulong.c \
         fmt/fmt_ulonglong.c \
-        fmt/fmt_xlong.c \
         fmt/fmt_xlonglong.c
 
 IO_C = io/io_read_eof.c \
@@ -115,17 +110,24 @@ PRINTF_C = printf/asprintf.c \
            printf/vprintf.c \
            printf/vsnprintf.c
 
+SCN_C = scn/scn_8longlong.c \
+        scn/scn_longlong.c \
+        scn/scn_ulonglong.c \
+        scn/scn_xlonglong.c
+
 STR_C = str/str_check.c \
         str/str_cmp.c \
         str/str_cpy.c \
         str/str_cpyn.c \
         str/str_dup.c \
         str/str_dupn.c \
+        str/str_fromumax.c \
         str/str_index.c \
         str/str_len.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_tolower.c \
+        str/str_toumax.c \
         str/str_toupper.c \
         str/str_zero.c
 
@@ -170,6 +172,7 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(MISC_C) \
                      $(OPEN_C) \
                      $(PRINTF_C) \
+                     $(SCN_C) \
                      $(STR_C) \
                      $(STRALLOC_C) \
                      $(TCP_C) \
