@@ -17,23 +17,9 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "fmt.h"
+#include "str.h"
 
-size_t fmt_ulonglong(char *dest, unsigned long long i)
+int fmt_ulonglong(char *dst, unsigned long long int src)
 {
-	size_t len = 1;
-	unsigned long long tmp = i;
-	
-	while ((tmp /= 10) != 0)
-		len++;
-	
-	if (!dest)
-		return len;
-	
-	dest += len;
-	
-	do {
-		*--dest = (i % 10) + '0';
-	} while ((i /= 10) != 0);
-	
-	return len;
+	return str_fromumax(src, dst, 10);
 }

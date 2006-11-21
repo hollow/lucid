@@ -20,7 +20,7 @@
 
 #define EXP_MAX   ((1 << 11) - 1)
 
-size_t fmt_double(char *dest, double d, size_t prec)
+int fmt_double(char *dest, double d, int prec)
 {
 	int len = 0;
 	

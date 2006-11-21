@@ -17,16 +17,17 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "fmt.h"
+#include "str.h"
 
-size_t fmt_longlong(char *dest, long long i)
+int fmt_longlong(char *dst, signed long long int src)
 {
-	if (i < 0) {
-		if (dest)
-			*dest++ = '-';
+	if (src < 0) {
+		if (dst)
+			*dst++ = '-';
 		
-		return fmt_ulonglong(dest, -i) + 1;
+		return fmt_ulonglong(dst, -src) + 1;
 	}
 	
 	else
-		return fmt_ulonglong(dest, i);
+		return fmt_ulonglong(dst, src);
 }

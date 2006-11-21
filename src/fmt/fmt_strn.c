@@ -18,18 +18,13 @@
 
 #include "fmt.h"
 
-size_t fmt_strn(char *dest, const char *src, size_t n)
+int fmt_strn(char *dest, const char *src, int n)
 {
 	char       *d = dest;
 	const char *s = src;
-	const char *l = src + n;
 	
-	for (; *s && s != l; s++) {
-		if (d) {
-			*d = *s;
-			++d;
-		}
-	}
+	while (*s && n--)
+		*d++ = *s++;
 	
 	return s - src;
 }

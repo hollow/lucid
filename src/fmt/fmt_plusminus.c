@@ -18,10 +18,10 @@
 
 #include "fmt.h"
 
-size_t fmt_plusminus(char *dest, long long i)
+int fmt_plusminus(char *dst, signed long long int i)
 {
-	if (dest)
-		*dest = i >= 0 ? '+' : '-';
+	if (dst)
+		*dst = i >= 0 ? '+' : '-';
 	
 	return 1;
 }

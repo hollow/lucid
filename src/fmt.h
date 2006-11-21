@@ -17,50 +17,42 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*!
- * @defgroup fmt Formatted string conversion
+ * @defgroup fmt Formatted integer conversion
  *
  * The fmt family of functions provide the core of the printf family of
  * functions; i.e. the conversion of single elements. Each function only
  * converts a single value at a time.
  *
- * The fmt_8long() and fmt_8longlong() functions convert a unsigned long int or
- * unsigned long long int, respectively, to octal notation and stores the
- * conversion in the string pointed to by dest.
+ * The fmt_8longlong() function converts an unsigned long long int to octal
+ * notation and stores the conversion in the string pointed to by dst.
  *
- * The fmt_long() and fmt_longlong() functions convert a long int or
- * long long int, respectively, to decimal notation and stores the
- * conversion in the string pointed to by dest.
+ * The fmt_longlong() function converts an signed long long int to decimal
+ * notation and stores the conversion in the string pointed to by dst.
  *
- * The fmt_ulong() and fmt_ulonglong() functions convert a unsigned long int or
- * unsigned long long int, respectively, to decimal notation and stores the
- * conversion in the string pointed to by dest.
+ * The fmt_ulonglong() function converts an unsigned long long int to decimal
+ * notation and stores the conversion in the string pointed to by dst.
  *
- * The fmt_xlong() and fmt_xlonglong() functions convert a unsigned long int or
- * unsigned long long int, respectively, to hexadecimal notation and stores the
- * conversion in the string pointed to by dest.
+ * The fmt_xlonglong() function converts an unsigned long long int to
+ * hexadecimal notation and stores the conversion in the string pointed to by
+ * dst.
  *
  * The fmt_double() function converts a double to decimal notation in the
  * style [-]ddd.ddd, where the number of digits after the decimal-point
  * character is equal to the precision specification.
  *
  * The fmt_minus() function converts a negative long long int to the minus
- * character and stores the conversion in the string pointed to by dest. The
+ * character and stores the conversion in the string pointed to by dst. The
  * fmt_plusminus() additionally converts a positive long long int to the plus
  * character.
  *
  * The fmt_str() and fmt_strn() functions append the string pointed to by src to
- * the string pointed to by dest.
- *
- * The fmt_pad() and fmt_fill() functions prefix or postfix the string pointed
- * to by dest with blanks, respectively.
+ * the string pointed to by dst.
  *
  * @{
  */
 
 #ifndef _LUCID_FMT_H
 #define _LUCID_FMT_H
-
-#include <sys/types.h>
 
 /*! @brief enough space to hold -2^127 in decimal, plus \\0 */
 #define FMT_LONG  41
@@ -80,157 +72,94 @@
 /*!
  * @brief write integer to string in octal notation
  *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
+ * @param[out] dst dstination string
+ * @param[in]  src integer to write
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_8long(char *dest, unsigned long i);
-
-/*!
- * @brief write integer to string in octal notation
- *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
- *
- * @return number of bytes written to dest
- */
-size_t fmt_8longlong(char *dest, unsigned long long i);
+int fmt_8longlong(char *dst, unsigned long long int src);
 
 /*!
  * @brief write integer to string in decimal notation
  *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
+ * @param[out] dst destination string
+ * @param[in]  src integer to write
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_long(char *dest, long i);
+int fmt_longlong(char *dst, signed long long int src);
 
 /*!
  * @brief write integer to string in decimal notation
  *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
+ * @param[out] dst destination string
+ * @param[in]  src integer to write
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_longlong(char *dest, long long i);
-
-/*!
- * @brief write integer to string in decimal notation
- *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
- *
- * @return number of bytes written to dest
- */
-size_t fmt_ulong(char *dest, unsigned long i);
-
-/*!
- * @brief write integer to string in decimal notation
- *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
- *
- * @return number of bytes written to dest
- */
-size_t fmt_ulonglong(char *dest, unsigned long long i);
+int fmt_ulonglong(char *dst, unsigned long long int src);
 
 /*!
  * @brief write integer to string in hexadecimal notation
  *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
+ * @param[out] dst destination string
+ * @param[in]  src integer to write
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_xlong(char *dest, unsigned long i);
-
-/*!
- * @brief write integer to string in hexadecimal notation
- *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
- *
- * @return number of bytes written to dest
- */
-size_t fmt_xlonglong(char *dest, unsigned long long i);
+int fmt_xlonglong(char *dst, unsigned long long int src);
 
 /*!
  * @brief write float to string in decimal notation
  *
- * @param[out] dest destination string
- * @param[in]  d    double-precision float to write
+ * @param[out] dst  destination string
+ * @param[in]  src  double-precision float to write
  * @param[in]  prec significand precision
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_double(char *dest, double d, size_t prec);
+int fmt_double(char *dst, double src, int prec);
 
 /*!
  * @brief write sign to string
  *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
+ * @param[out] dst destination string
+ * @param[in]  src integer to write
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_plusminus(char *dest, long long i);
+int fmt_plusminus(char *dst, signed long long int src);
 
 /*!
  * @brief write minus sign to string
  *
- * @param[out] dest destination string
- * @param[in]  i    integer to write
+ * @param[out] dst destination string
+ * @param[in]  src integer to write
  *
- * @return number of bytes written to dest
+ * @return number of bytes written to dst
  */
-size_t fmt_minus(char *dest, long long i);
+int fmt_minus(char *dst, signed long long int src);
 
 /*!
  * @brief write string to string
  *
- * @param[out] dest destination string
- * @param[in]  src  source string
+ * @param[out] dst destination string
+ * @param[in]  src source string
  *
- * @return number of bytes written to dest
+ * @return Number of bytes written to dst
  */
-size_t fmt_str(char *dest, const char *src);
+int fmt_str(char *dst, const char *src);
 
 /*!
  * @brief write string to string
  *
- * @param[out] dest destination string
- * @param[in]  src  source string
- * @param[in]  n    maximum number of bytes to copy
+ * @param[out] dst destination string
+ * @param[in]  src source string
+ * @param[in]  n   maximum number of bytes to copy
  *
- * @return number of bytes written to dest
+ * @return Number of bytes written to dst
  */
-size_t fmt_strn(char *dest, const char *src, size_t n);
-
-/*!
- * @brief pad string with blanks
- *
- * @param[out] dest   destination string
- * @param[in]  src    source string
- * @param[in]  srclen length of source string
- * @param[in]  padlen (padded) length of destination string
- *
- * @return number of bytes written to dest
- */
-size_t fmt_pad(char *dest, const char *src, size_t srclen, size_t padlen);
-
-/*!
- * @brief fill string with blanks
- *
- * @param[out] dest   destination string
- * @param[in]  srclen length of source string
- * @param[in]  padlen (padded) length of destination string
- *
- * @return number of bytes written to dest
- */
-size_t fmt_fill(char *dest, size_t srclen, size_t padlen);
+int fmt_strn(char *dst, const char *src, int n);
 
 #endif
 
