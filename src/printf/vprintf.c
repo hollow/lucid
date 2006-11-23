@@ -15,11 +15,9 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <unistd.h>
-
 #include "printf.h"
 
 int _lucid_vprintf(const char *fmt, va_list ap)
 {
-	return _lucid_vdprintf(STDOUT_FILENO, fmt, ap);
+	return _lucid_vdprintf(1, fmt, ap);
 }

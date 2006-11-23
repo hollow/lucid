@@ -17,7 +17,7 @@
 
 #include "printf.h"
 
-int _lucid_snprintf(char *str, size_t size, const char *fmt, /*args*/ ...)
+int _lucid_snprintf(char *str, int size, const char *fmt, /*args*/ ...)
 {
 	va_list ap;
 	va_start(ap, fmt);

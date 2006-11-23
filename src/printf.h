@@ -118,22 +118,13 @@
  *   value requires fewer digits, it is padded on the left with zeros. The
  *   default precision is 1. When 0 is printed with an explicit precision 0,
  *   the output is empty.
- * - o,u,x<br>
+ * - o,u,x,X<br>
  *   The unsigned int argument is converted to unsigned octal (o), unsigned
  *   decimal (u), or unsigned hexadecimal (x) notation. The letters abcdef are
  *   used for x conversions. The precision, if any, gives the minimum number of
  *   digits that must appear; if the converted value requires fewer digits, it
  *   is padded on the left with zeros. The default precision is 1. When 0 is
  *   printed with an explicit precision 0, the output is empty.
- * - f,F<br>
- *   The double argument is rounded and converted to decimal notation in the
- *   style [-]ddd.ddd, where the number of digits after the decimal-point
- *   character is equal to the precision specification. If the precision is
- *   missing, it is taken as 6; if the precision is explicitly zero, no
- *   decimal-point character appears. If a decimal point appears, at least one
- *   digit appears before it.
- *   A double argument representing an infinity will be converted to "[-]inf". A
- *   double argument representing a NaN will be converted to "[-]nan"
  * - c<br>
  *   The int argument is converted to an unsigned char, and the resulting
  *   character is written.
@@ -145,6 +136,8 @@
  *   given, no null byte need be present; if the precision is not specified, or
  *   is greater than the size of the array, the array must contain a terminating
  *   null byte.
+ * - p<br>
+ *   The void * pointer argument is printed in hexadecimal.
  * - n<br>
  *   The number of characters written so far is stored into the integer
  *   indicated by the int * pointer argument. No argument is converted.
@@ -167,7 +160,6 @@
 #define _LUCID_PRINTF_H
 
 #include <stdarg.h>
-#include <sys/types.h>
 
 /*!
  * @brief write conversion to string using va_list
@@ -182,7 +174,7 @@
  * @note Every conversion happens in this functions. All other printf functions
  *       are just convenient wrappers.
  */
-int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
+int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list ap);
 
 /*!
  * @brief write conversion to string using variable number of arguments
@@ -194,7 +186,7 @@ int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
  *
  * @return number of bytes (that would have been) written
  */
-int _lucid_snprintf (char *str, size_t size, const char *fmt, /*args*/ ...);
+int _lucid_snprintf (char *str, int size, const char *fmt, /*args*/ ...);
 
 /*!
  * @brief write conversion to allocated string using va_list
@@ -222,7 +214,7 @@ int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap);
  * @see malloc(3)
  * @see free(3)
  */
-int _lucid_asprintf (char **ptr, const char *fmt, /*args*/ ...);
+int _lucid_asprintf(char **ptr, const char *fmt, /*args*/ ...);
 
 /*!
  * @brief write conversion to file descriptor using va_list
@@ -233,7 +225,7 @@ int _lucid_asprintf (char **ptr, const char *fmt, /*args*/ ...);
  *
  * @return number of bytes (that would have been) written
  */
-int _lucid_vdprintf (int fd, const char *fmt, va_list ap);
+int _lucid_vdprintf(int fd, const char *fmt, va_list ap);
 
 /*!
  * @brief write conversion to file descriptor using variable number of arguments
@@ -244,7 +236,7 @@ int _lucid_vdprintf (int fd, const char *fmt, va_list ap);
  *
  * @return number of bytes (that would have been) written
  */
-int _lucid_dprintf  (int fd, const char *fmt, /*args*/ ...);
+int _lucid_dprintf(int fd, const char *fmt, /*args*/ ...);
 
 /*!
  * @brief write conversion to stdout using va_list
@@ -254,7 +246,7 @@ int _lucid_dprintf  (int fd, const char *fmt, /*args*/ ...);
  *
  * @return number of bytes (that would have been) written
  */
-int _lucid_vprintf  (const char *fmt, va_list ap);
+int _lucid_vprintf(const char *fmt, va_list ap);
 
 /*!
  * @brief write conversion to stdout using variable number of arguments
@@ -264,7 +256,7 @@ int _lucid_vprintf  (const char *fmt, va_list ap);
  *
  * @return number of bytes (that would have been) written
  */
-int _lucid_printf   (const char *fmt, /*args*/ ...);
+int _lucid_printf(const char *fmt, /*args*/ ...);
 
 #endif
 

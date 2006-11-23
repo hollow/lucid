@@ -1,5 +1,4 @@
-// Copyright 2005 Felix von Leitner <felix-libowfat@fefe.de>
-//           2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,16 +15,12 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "fmt.h"
+#include "scanf.h"
 
-int fmt_minus(char *dst, signed long long int src)
+int _lucid_sscanf(const char *str, const char *fmt, /*args*/ ...)
 {
-	if (src < 0) {
-		if (dst)
-			*dst = '-';
-		
-		return 1;
-	}
+	va_list ap;
+	va_start(ap, fmt);
 	
-	return 0;
+	return _lucid_vsscanf(str, fmt, ap);
 }

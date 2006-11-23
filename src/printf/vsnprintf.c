@@ -15,454 +15,503 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
-
-#include "fmt.h"
 #include "printf.h"
 #include "str.h"
 
-/* format structs */
-typedef struct {
-	int alt;
-	int zero;
-	int left;
-	int blank;
-	int sign;
-} __flags_t;
+enum __printf_flags {
+	PFL_ALT    = 0x01,
+	PFL_ZERO   = 0x02,
+	PFL_LEFT   = 0x04,
+	PFL_BLANK  = 0x08,
+	PFL_SIGN   = 0x10,
+	PFL_UPPER  = 0x20,
+	PFL_SIGNED = 0x40,
+};
+
+enum __printf_rank {
+	PFR_CHAR,
+	PFR_SHORT,
+	PFR_INT,
+	PFR_LONG,
+	PFR_LLONG,
+};
+
+#define PFR_MIN PFR_CHAR
+#define PFR_MAX PFR_LLONG
+
+enum __printf_state {
+	PFS_NORMAL,
+	PFS_FLAGS,
+	PFS_WIDTH,
+	PFS_PREC,
+	PFS_MOD,
+	PFS_CONV,
+};
 
 typedef struct {
-	int isset;
-	int width;
-} __prec_t;
-
-typedef struct {
-	__flags_t f;
-	__prec_t  p;
-	int w;
-	int l;
+	unsigned int f; /* flags */
+	int l;          /* length */
+	int p;          /* precision */
+	int s;          /* state */
+	unsigned int w; /* width */
 } __printf_t;
+
+#define EMIT(C) { if (idx < size) { *str++ = C; } idx++; }
+
+static
+int __printf_int(char *str, int size,
+                 unsigned long long int val, int base,
+                 __printf_t f)
+{
+	static const char lcdigits[] = "0123456789abcdef";
+	static const char ucdigits[] = "0123456789ABCDEF";
+	const char *digits;
+	
+	int idx = 0, ndigits = 0, nchars, minus = 0;
+	unsigned long long int tmpval;
+	
+	/* select type of digits */
+	digits = (f.f & PFL_UPPER) ? ucdigits : lcdigits;
+	
+	/* separate out the minus */
+	if (f.f & PFL_SIGNED && (signed long long int) val < 0) {
+		minus = 1;
+		val = (unsigned long long int) (-(signed long long int) val);
+	}
+	
+	/* count number of digits needed */
+	tmpval = val;
+	
+	while (tmpval) {
+		tmpval /= base;
+		ndigits++;
+	}
+	
+	/* Adjust ndigits for size of output */
+	if (f.f & PFL_ALT && base == 8) {
+		if (f.p < ndigits + 1)
+			f.p = ndigits + 1;
+	}
+	
+	/* mandatory number padding */
+	if (ndigits < f.p)
+		ndigits = f.p;
+	
+	/* zero still requires space */
+	else if (val == 0)
+		ndigits = 1;
+	
+	/* compute number of nondigits */
+	nchars = ndigits;
+	
+	/* need space for sign */
+	if (minus || (f.f & (PFL_SIGN | PFL_BLANK)))
+		nchars++;
+	
+	/* add 0x for hex */
+	if ((f.f & PFL_ALT) && base == 16)
+		nchars += 2;
+	
+	/* early space padding */
+	if (!(f.f & (PFL_LEFT | PFL_ZERO)) && f.w > nchars) {
+		while (f.w > nchars) {
+			EMIT(' ')
+			f.w--;
+		}
+	}
+	
+	/* nondigits */
+	if (minus)
+		EMIT('-')
+	
+	else if (f.f & PFL_SIGN)
+		EMIT('+')
+	
+	else if (f.f & PFL_BLANK)
+		EMIT(' ')
+	
+	if ((f.f & PFL_ALT) && base == 16) {
+		EMIT('0')
+		EMIT((f.f & PFL_UPPER) ? 'X' : 'x');
+	}
+	
+	/* zero padding */
+	if ((f.f & (PFL_LEFT | PFL_ZERO)) == PFL_ZERO && f.w > ndigits) {
+		while (f.w > nchars) {
+			EMIT('0')
+			f.w--;
+		}
+	}
+	
+	/* generate the number from right to left */
+	str += ndigits;
+	
+	do {
+		if (idx < size)
+			*--str = digits[val % base];
+		
+		idx++;
+	} while ((val /= base));
+	
+	/* late space padding */
+	while ((f.f & PFL_LEFT) && f.w > nchars) {
+		EMIT(' ')
+		f.w--;
+	}
+	
+	return idx;
+}
 
 /* supported formats:
 ** - format flags: #, 0, -, ' ', +
 ** - field width
 ** - argument precision
 ** - length mods: hh, h, l, and ll
-** - conversion spec: d, i, u, o, x, f, c, s, p */
-int _lucid_vsnprintf(char *str, size_t size, const char *fmt, va_list _ap)
+** - conversion spec: d, i, u, o, x, X, c, s, p, P, n */
+int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 {
+	/* generic counter */
+	int i;
+	
+	/* generic pointer */
+	const char *p;
+	
 	/* keep track of string length */
-	size_t idx = 0;
+	int idx = 0;
 	
-	int l, i;
+	/* save pointer to start of current conversion */
+	const char *ccp = fmt;
+	
+	/* current character in format */
 	char c;
-	const char *fmtp = fmt;
 	
+	/* current conversion data */
+	__printf_t f;
+	
+	/* arguments */
+	union {
+		/* signed argument */
+		signed long long int d;
+		
+		/* unsigned argument */
+		unsigned long long int u;
+		
+		/* float argument */
+		double f;
+		
+		/* character argument */
+		int c;
+		
+		/* string argument */
+		const char *s;
+		
+		/* pointer argument */
+		void *p;
+		
+		/* number argument */
+		int *n;
+	} arg;
+	
+	/* base used for integer conversions */
+	int base;
+	
+	/* number of consumed bytes in conversions */
+	int len;
+	
+	/* don't consume original ap */
 	va_list ap;
 	va_copy(ap, _ap);
 	
-	/* sanitize destination buffer */
-	for (i = 0; i < size; i++)
-		*(str+i) = 0;
+	/* initialize conversion data */
+	f.f = 0;
+	f.l = PFR_INT;
+	f.p = -1;
+	f.s = PFS_NORMAL;
+	f.w = 0;
 	
 	while ((c = *fmt++)) {
-		if (c != '%') {
-			if (idx < size)
-				str[idx] = c;
+		switch (f.s) {
+		case PFS_NORMAL:
+			if (c == '%') {
+				f.f = 0;
+				f.l = PFR_INT;
+				f.p = -1;
+				f.s = PFS_FLAGS;
+				f.w = 0;
+				ccp = &c;
+			}
 			
-			idx++;
-		}
+			else
+				EMIT(c)
+			
+			break;
 		
-		else {
-			/* format struct */
-			__printf_t f;
-			
-			/* sanitize struct with default values */
-			f.w = 0;
-			f.l = 0;
-			
-			f.f.alt   = 0;
-			f.f.zero  = 0;
-			f.f.left  = 0;
-			f.f.blank = 0;
-			f.f.sign  = 0;
-			
-			f.p.isset = 0;
-			f.p.width = 1;
-			
-			
-			/* parse flags */
-			while ((c = *fmt++)) {
-				if      (c == '#') f.f.alt   = 1;
-				else if (c == '0') f.f.zero  = 1;
-				else if (c == '-') f.f.left  = 1;
-				else if (c == ' ') f.f.blank = 1;
-				else if (c == '+') f.f.sign  = 1;
-				else               break;
-			}
-			
-			/* parse field width */
-			if (c == '*') {
-				l = va_arg(ap, int);
-				
-				if (l >= 0)
-					f.w = l;
-				else {
-					f.w = -l;
-					f.f.left = 1;
-				}
-				
-				c = *fmt++;
-			}
-			
-			else if (char_isdigit(c)) {
-				do {
-					f.w = f.w * 10 + c - '0';
-					c = *fmt++;
-				} while (char_isdigit(c));
-			}
-			
-			/* parse precision */
-			if (c == '.') {
-				c = *fmt++;
-				
-				f.p.isset = 1;
-				f.p.width = 0;
-				
-				if (c == '*') {
-					l = va_arg(ap, int);
-					
-					if (l >= 0)
-						f.p.width = l;
-					
-					c = *fmt++;
-				}
-				
-				else if (char_isdigit(c)) {
-					do {
-						f.p.width = f.p.width * 10 + c - '0';
-						c = *fmt++;
-					} while (char_isdigit(c));
-				}
-			}
-			
-			/* parse length modifier */
-			f.l = 2;
-			
-			if (c == 'l') {
-				f.l = 3;
-				c = *fmt++;
-				
-				if (c == 'l') {
-					f.l = 4;
-					c = *fmt++;
-				}
-			}
-			
-			else if (c == 'h') {
-				f.l = 1;
-				c = *fmt++;
-				
-				if (c == 'h') {
-					f.l = 0;
-					c = *fmt++;
-				}
-			}
-			
-			/* sign overrides blank */
-			if (f.f.sign)
-				f.f.blank = 0;
-			
-			/* left overrides zero */
-			if (f.f.left)
-				f.f.zero = 0;
-			
-			/* no zero padding if precision is specified */
-			if (f.p.isset && f.w > 0)
-				f.f.zero = 0;
-			
-			/* buffer for alternate notation string */
-			char *alt;
-			
-			/* signed arguments */
-			signed long long int darg;
-			
-			/* unsigned long argument */
-			unsigned long long int uarg;
-			
-			/* unsigned conversion function */
-			int (*ufn)(char *, unsigned long long int);
-			
-			/* float argument */
-			double farg;
-			
-			/* character argument */
-			int carg;
-			
-			/* string argument */
-			const char *sarg;
-			
-			/* pointer argument */
-			void *parg;
-			
-			/* number argument */
-			int *narg;
-			
-			/* used for precision counting */
-			int len;
-			
-			/* temporary buffer for integer conversions */
-			char ibuf[64];
-			
-			/* temporary buffer for string conversion */
-			const char *buf = ibuf;
-			
-			/* buffer length */
-			size_t buflen = 0;
-			
-			/* do conversions */
+		case PFS_FLAGS:
 			switch (c) {
-				case 'd':
-				case 'i': /* signed conversion */
-					switch (f.l) {
-					case 0:
-						darg = (signed char) va_arg(ap, signed int);
-						break;
-					
-					case 1:
-						darg = (signed short int) va_arg(ap, signed int);
-						break;
-					
-					case 2:
-						darg = (signed int) va_arg(ap, signed int);
-						break;
-					
-					case 3:
-						darg = (signed long int) va_arg(ap, signed long int);
-						break;
-					
-					case 4:
-						darg = (signed long long int) va_arg(ap, signed long long int);
-						break;
-					
-					default:
-						darg = (signed long long int) va_arg(ap, signed int);
-						break;
-					}
-					
-					if (darg == 0 && f.p.isset && f.p.width == 0)
-						break;
-					
-					/* forced sign */
-					if (f.f.sign)
-						buflen += fmt_plusminus(&ibuf[buflen], darg);
-					else
-						buflen += fmt_minus(&ibuf[buflen], darg);
-					
-					darg = darg < 0 ? -darg : darg;
-					
-					len = fmt_ulonglong(FMT_LEN, darg);
-					
-					while (len < f.p.width) {
-						buflen += fmt_str(&ibuf[buflen], "0");
-						f.p.width--;
-					}
-					
-					buflen += fmt_ulonglong(&ibuf[buflen], darg);
+			case '#':
+				f.f |= PFL_ALT;
+				break;
+			
+			case '0':
+				f.f |= PFL_ZERO;
+				break;
+			
+			case '-':
+				f.f &= ~PFL_ZERO; /* left overrides zero */
+				f.f |=  PFL_LEFT;
+				break;
+			
+			case ' ':
+				f.f |= PFL_BLANK;
+				break;
+			
+			case '+':
+				f.f &= ~PFL_BLANK; /* sign overrides blank */
+				f.f |=  PFL_SIGN;
+				break;
+			
+			default:
+				f.s = PFS_WIDTH;
+				fmt--;
+				break;
+			}
+			
+			break;
+		
+		case PFS_WIDTH:
+			if (c == '-') {
+					f.f &= PFL_ZERO; /* left overrides zero */
+					f.f |= PFL_LEFT;
+			}
+			
+			else if (c >= '0' && c <= '9')
+				f.w = f.w * 10  + (c - '0');
+			
+			else if (c == '*') {
+				f.w = va_arg(ap, int);
+				
+				if (f.w < 0) {
+					f.w = -f.w;
+					f.f &= PFL_ZERO; /* left overrides zero */
+					f.f |= PFL_LEFT;
+				}
+			}
+			
+			else if (c == '.') {
+				f.p = 0;
+				f.s = PFS_PREC;
+			}
+			
+			else {
+				f.s = PFS_MOD;
+				fmt--;
+			}
+			
+			break;
+		
+		case PFS_PREC:
+			if (c >= '0' && c <= '9')
+				f.p = f.p * 10  + (c - '0');
+			
+			else if (c == '*') {
+				f.p = va_arg(ap, int);
+				
+				if (f.p < 0)
+					f.p = 0;
+			}
+			
+			else {
+				f.s = PFS_MOD;
+				fmt--;
+			}
+			
+			break;
+		
+		case PFS_MOD:
+			switch (c) {
+			case 'h':
+				f.l--;
+				break;
+			
+			case 'l':
+				f.l++;
+				break;
+			
+			default:
+				f.s = PFS_CONV;
+				fmt--;
+				break;
+			}
+			
+			break;
+		
+		case PFS_CONV:
+			f.s = PFS_NORMAL;
+			
+			if (f.l > PFR_MAX)
+				f.l = PFR_MAX;
+			
+			if (f.l < PFR_MIN)
+				f.l = PFR_MIN;
+			
+			switch (c) {
+			case 'P':
+				f.f |= PFL_UPPER;
+			
+			case 'p':
+				base = 16;
+				f.p  = (8 * sizeof(void *) + 3)/4;
+				f.f |= PFL_ALT;
+				
+				arg.u = (unsigned long long int) (unsigned long int) va_arg(ap, void *);
+				
+				goto is_integer;
+			
+			case 'd':
+			case 'i': /* signed conversion */
+				base = 10;
+				f.f |= PFL_SIGNED;
+				
+				switch (f.l) {
+				case PFR_CHAR:
+					arg.d = (signed char) va_arg(ap, signed int);
 					break;
 				
-				/* unsigned conversions */
-				case 'o': /* octal notation */
-				case 'u': /* decimal notation */
-				case 'x': /* hexadecimal notation */
-					if (c == 'o') {
-						alt = "0";
-						ufn = fmt_8longlong;
-					}
-					
-					else if (c == 'u') {
-						alt = "";
-						ufn = fmt_ulonglong;
-					}
-					
-					else {
-						alt = "0x";
-						ufn = fmt_xlonglong;
-					}
-					
-					switch (f.l) {
-					case 0:
-						uarg = (unsigned char) va_arg(ap, unsigned int);
-						break;
-					
-					case 1:
-						uarg = (unsigned short int) va_arg(ap, unsigned int);
-						break;
-					
-					case 2:
-						uarg = (unsigned int) va_arg(ap, unsigned int);
-						break;
-					
-					case 3:
-						uarg = (unsigned long int) va_arg(ap, unsigned long int);
-						break;
-					
-					case 4:
-						uarg = (unsigned long long int) va_arg(ap, unsigned long long int);
-						break;
-					
-					default:
-						uarg = (unsigned long long int) va_arg(ap, unsigned int);
-						break;
-					}
-					
-					if (uarg == 0 && f.p.isset && f.p.width == 0)
-						break;
-					
-					if (f.f.alt)
-						buflen += fmt_str(&ibuf[buflen], alt);
-						
-					len = ufn(FMT_LEN, uarg);
-					
-					while (len < f.p.width) {
-						buflen += fmt_str(&ibuf[buflen], "0");
-						f.p.width--;
-					}
-					
-					buflen += ufn(&ibuf[buflen], uarg);
+				case PFR_SHORT:
+					arg.d = (signed short int) va_arg(ap, signed int);
 					break;
 				
-				case 'f': /* float conversion */
-					farg = va_arg(ap, double);
-					
-					if (!f.p.isset)
-						f.p.width = 6;
-					
-					/* forced sign (fmt_double adds minus) */
-					if (f.f.sign && farg >= 0)
-						buflen += fmt_str(&ibuf[buflen], "+");
-					
-					buflen += fmt_double(&ibuf[buflen], farg, f.p.width);
+				case PFR_INT:
+					arg.d = (signed int) va_arg(ap, signed int);
 					break;
 				
-				case 'c': /* character conversion */
-					/* no zero padding for string conversions */
-					f.f.zero = 0;
-					
-					carg = va_arg(ap, int);
-					ibuf[buflen++] = (unsigned char) carg;
+				case PFR_LONG:
+					arg.d = (signed long int) va_arg(ap, signed long int);
 					break;
 				
-				case 's': /* string conversion */
-					/* no zero padding for string conversions */
-					f.f.zero = 0;
-					
-					sarg = va_arg(ap, const char *);
-					buf = sarg;
-					
-					if (!buf) {
-						buf    = "(null)";
-						buflen = 6;
-					}
-					
-					else if (!f.p.isset)
-						buflen = str_len(buf);
-					
-					else if (f.p.width == 0)
-						buflen = 0;
-					
-					else {
-						const char *q = str_index(buf, '\0', f.p.width);
-						
-						if (q == 0) /* string will be truncated */
-							buflen = f.p.width;
-						else
-							buflen = q - buf;
-					}
-					
+				case PFR_LLONG:
+					arg.d = (signed long long int) va_arg(ap, signed long long int);
 					break;
-					
-				case 'p': /* pointer conversion */
-					parg = va_arg(ap, void *);
-					
-					if (f.f.alt)
-						buflen += fmt_str(&ibuf[buflen], "0x");
-					
-					buflen += fmt_xlonglong(&ibuf[buflen], (unsigned long int)parg);
-					break;
-				
-				case 'n':
-					narg  = va_arg(ap, int *);
-					*narg = idx;
-					
-					break;
-				
-				case '%':
-					/* no padding for % */
-					f.w = 0;
-					
-					ibuf[buflen++] = '%';
 				
 				default:
-					/* no padding for unknown conversion */
-					f.w = 0;
-					
-					buf    = fmtp;
-					buflen = str_len(fmtp);
-					fmt    = fmtp + buflen;
-					
-					const char *q = str_index(buf + 1, '%', buflen - 1);
-					
-					if (q != 0) {
-						buflen = q - buf - 1;
-						fmt    = q - 1;
-					}
-					
+					arg.d = (signed long long int) va_arg(ap, signed int);
 					break;
-			}
-			
-			/* blank/zero padding using right alignment */
-			if (!f.f.left) {
-				while (f.w > buflen) {
-					if (idx < size) {
-						if (f.f.zero)
-							fmt_strn(&str[idx++], "0", 1);
-						else
-							fmt_strn(&str[idx++], " ", 1);
-					}
-					
-					else
-						idx++;
-					
-					f.w--;
 				}
-			}
+				
+				arg.u = (unsigned long long int) arg.d;
+				
+				goto is_integer;
 			
-			/* write the converted argument */
-			for (i = 0; i < buflen; i++) {
-				if (idx < size)
-					fmt_strn(&str[idx++], &buf[i], 1);
-				else
-					idx++;
-			}
+			case 'o':
+				base = 8;
+				goto is_unsigned;
+				
+			case 'u':
+				base = 10;
+				goto is_unsigned;
+				
+			case 'X':
+				f.f |= PFL_UPPER;
 			
-			/* blank/zero padding using left alignment */
-			if (f.f.left && f.w > i) {
-				while (f.w > buflen) {
-					if (idx < size) {
-						if (f.f.zero)
-							fmt_strn(&str[idx++], "0", 1);
-						else
-							fmt_strn(&str[idx++], " ", 1);
-					}
-					
-					else
-						idx++;
-					
-					f.w--;
+			case 'x':
+				base = 16;
+				goto is_unsigned;
+				
+			is_unsigned:
+				switch (f.l) {
+				case PFR_CHAR:
+					arg.u = (unsigned char) va_arg(ap, unsigned int);
+					break;
+				
+				case PFR_SHORT:
+					arg.u = (unsigned short int) va_arg(ap, unsigned int);
+					break;
+				
+				case PFR_INT:
+					arg.u = (unsigned int) va_arg(ap, unsigned int);
+					break;
+				
+				case PFR_LONG:
+					arg.u = (unsigned long int) va_arg(ap, unsigned long int);
+					break;
+				
+				case PFR_LLONG:
+					arg.u = (unsigned long long int) va_arg(ap, unsigned long long int);
+					break;
+				
+				default:
+					arg.u = (unsigned long long int) va_arg(ap, unsigned int);
+					break;
 				}
+				
+			is_integer:
+				len = __printf_int(str, size, arg.u, base, f);
+				
+				str += len;
+				idx += len;
+				break;
+			
+			case 'c': /* character conversion */
+				arg.c = (char) va_arg(ap, int);
+				arg.s = (const char *) &arg.c;
+				len   = 1;
+				goto is_string;
+			
+			case 's': /* string conversion */
+				arg.s = va_arg(ap, const char *);
+				arg.s = arg.s ? arg.s : "(null)";
+				len   = str_len(arg.s);
+				goto is_string;
+				
+			is_string:
+				if (f.p != -1 && len > f.p)
+					len = f.p;
+				
+				while (f.w-- > len && !(f.f & PFL_LEFT)) {
+					if (f.f & PFL_ZERO)
+						EMIT('0')
+					else
+						EMIT(' ')
+				}
+				
+				for (i = len; i; i--)
+					EMIT(*arg.s++)
+				
+				while (f.w-- > len && (f.f & PFL_LEFT))
+					EMIT(' ')
+				
+				break;
+				
+			case 'n':
+				arg.n  = va_arg(ap, int *);
+				*arg.n = idx;
+				
+				break;
+			
+			case '%':
+				EMIT(c)
+				break;
+			
+			default:
+				/* no padding for unknown conversion */
+				f.w =  0;
+				f.p = -1;
+				
+				arg.s = ccp;
+				len   = str_len(arg.s);
+				fmt   = ccp + len;
+				
+				p = str_index(arg.s + 1, '%', len - 1);
+				
+				if (p != 0) {
+					len = p - arg.s - 1;
+					fmt = p - 1;
+				}
+				
+				goto is_string;
 			}
 			
-			fmtp = &c;
+			break;
 		}
 	}
 	

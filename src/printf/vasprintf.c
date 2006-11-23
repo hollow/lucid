@@ -16,22 +16,20 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <errno.h>
 
 #include "printf.h"
-#include "fmt.h"
 
 int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
 {
 	va_list ap2;
-	size_t len;
+	int len;
 	char *buf;
 	
 	/* don't consume the original ap, we'll need it again */
 	va_copy(ap2, ap);
 	
 	/* get required size */
-	len = _lucid_vsnprintf(FMT_LEN, 0, fmt, ap2);
+	len = _lucid_vsnprintf(0, 0, fmt, ap2);
 	
 	va_end(ap2);
 	
