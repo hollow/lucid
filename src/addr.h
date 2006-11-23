@@ -20,8 +20,8 @@
  *
  * addr_from_str() converts the Internet host address str from the standard
  * numbers-and-dots notation into binary data and stores it in the ip/mask pair
- * of pointers. inet_aton() returns non-zero if the address is valid, zero if
- * not.
+ * of pointers. addr_from_str() returns 0 if no argument was converted, 1 if ip
+ * was converted, 2 for mask and 3 for both.
  *
  * The addr_to_str() function converts the Internet host address given in the
  * ip/mask pair of pointers to a string in standard numbers-and-dots notation.
@@ -43,7 +43,8 @@
  * @param[out] ip    pointer to store IP address 
  * @param[out] mask  pointer to store netmask
  *
- * @return 0 on success, -1 on error with errno set
+ * @return 0 if no argument was converted, 1 if ip was
+ *            converted, 2 for mask and 3 for both.
  */
 int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask);
 

@@ -103,16 +103,6 @@ int mkdirnamep(const char *path, mode_t mode);
 int mkdirp(const char *path, mode_t mode);
 
 /*!
- * @brief concatenate dirname and basename
- *
- * @param[in] dirname  directory part
- * @param[in] basename basename part
- *
- * @return path on success, NULL on error with errno set
- */
-char *path_concat(char *dirname, char *basename);
-
-/*!
  * @brief recursive unlink(2) and rmdir(2)
  *
  * @param[in] path path to remove

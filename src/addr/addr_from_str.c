@@ -15,79 +15,50 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <arpa/inet.h>
-
 #include "addr.h"
+#include "scanf.h"
 #include "str.h"
 
 int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 {
-	struct in_addr ib;
-	char *p, *addr_ip, *addr_mask;
-	int errno_orig;
+	int rc = 0;
+	unsigned long long int cidr;
 	
-	if (str_isempty(str))
-		return errno = EINVAL, -1;
+	union {
+		uint8_t  b[4];
+		uint32_t l;
+	} u;
 	
-	addr_ip   = str_dup(str);
-	addr_mask = NULL;
+	const char *p = str_index(str, '/', str_len(str));
 	
-	p = str_index(addr_ip, '/', str_len(addr_ip));
-	
-	if (p && p - addr_ip > 0) {
-		*p++ = '\0';
-		addr_mask = p;
-	}
-	
-	if (str_isempty(addr_ip)) {
-		errno = EINVAL;
-		goto err;
-	}
-	
-	if (inet_aton(addr_ip, &ib) == 0) {
-		errno = EINVAL;
-		goto err;
-	}
-	
-	*ip = ib.s_addr;
-	
-	if (str_isempty(addr_mask)) /* default to /24 */
-		*mask = ntohl(0xffffff00);
-	
-	else if (str_isdigit(addr_mask)) { /* We have CIDR notation */
-		int sz = atoi(addr_mask);
-		
-		if (sz < 0 || sz > 32) {
-			errno = EINVAL;
-			goto err;
+	if (ip && (!p || p - str > 0)) {
+		if (_lucid_sscanf(str, "%hhu.%hhu.%hhu.%hhu",
+		                  &u.b[0], &u.b[1], &u.b[2], &u.b[3]) == 4) {
+			*ip = u.l;
+			rc = 1;
 		}
-		
-		for (*mask = 0; sz > 0; --sz) {
-			*mask >>= 1;
-			*mask  |= 0x80000000;
-		}
-		
-		*mask = ntohl(*mask);
 	}
 	
-	else { /* Standard netmask notation */
-		if (inet_aton(addr_mask, &ib) == 0) {
-			errno = EINVAL;
-			goto err;
-		}
+	if (!p || !mask)
+		return rc;
+	
+	/* CIDR notation */
+	if (!str_isempty(p) && str_isdigit(p)) {
+		str_toumax(p, &cidr, 10, str_len(p));
 		
-		*mask = ib.s_addr;
+		if (cidr > 0 && cidr <= 32) {
+			*mask = 0xffffffff & ~((1 << (32 - cidr)) - 1);
+			rc   += 2;
+		}
 	}
 	
-	free(addr_ip);
-	return 0;
+	if (!str_isempty(p)) {
+		if (_lucid_sscanf(str, "%hhu.%hhu.%hhu.%hhu",
+		                  &u.b[0], &u.b[1], &u.b[2], &u.b[3]) == 4) {
+			*mask = u.l;
+			rc += 2;
+		}
+	}
 	
-err:
-	errno_orig = errno;
-	free(addr_ip);
-	errno = errno_orig;
-	return -1;
+	return rc;
 }

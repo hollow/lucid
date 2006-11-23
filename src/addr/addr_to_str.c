@@ -15,33 +15,23 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <arpa/inet.h>
-
 #include "addr.h"
-#include "str.h"
-#include "stralloc.h"
+#include "printf.h"
 
 char *addr_to_str(uint32_t ip, uint32_t mask)
 {
-	struct in_addr ib;
-	char *str, *addr_ip, *addr_mask;
-	stralloc_t addr;
+	char *buf;
 	
-	stralloc_init(&addr);
+	uint8_t *ipp   = (uint8_t *) &ip;
+	uint8_t *maskp = (uint8_t *) &mask;
 	
-	ib.s_addr = ip;
-	addr_ip = inet_ntoa(ib);
-	stralloc_cats(&addr, addr_ip);
+	if (mask)
+		_lucid_asprintf(&buf, "%u.%u.%u.%u/%u.%u.%u.%u",
+		                      ipp[0],   ipp[1],   ipp[2],   ipp[3],
+		                      maskp[0], maskp[1], maskp[2], maskp[3]);
 	
-	if (mask > 0) {
-		ib.s_addr = mask;
-		addr_mask = inet_ntoa(ib);
-		
-		stralloc_catm(&addr, "/", addr_mask, NULL);
-	}	
+	else
+		_lucid_asprintf(&buf, "%u.%u.%u.%u", ipp[0],  ipp[1],  ipp[2],  ipp[3]);
 	
-	str = str_dupn(addr.s, addr.len);
-	stralloc_free(&addr);
-	
-	return str;
+	return buf;
 }

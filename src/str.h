@@ -46,17 +46,24 @@
  * The str_index() returns a pointer to the first occurence of the character c
  * in the string pointed to by str.
  *
- * The str_len() function calculates the length of the string s, not including
+ * The str_len() function calculates the length of the string str, not including
  * the terminating `\\0' character.
  *
- * The str_path_isabs() and str_path_isdot() functions check if the given path
- * is absolute or contains dots, respectively.
+ * The str_path_concat() function concatenates the directory name pointed to by
+ * dirname and file name pointed to by basename and checks that the latter does
+ * not contain any dot entries.
  *
- * The str_toupper() and str_tolower() functions map lower-case to upper case,
- * and vice-versa respectively.
+ * The str_path_isabs() and str_path_isdot() functions check if the file path
+ * pointed to by str is absolute or contains dots, respectively.
+ *
+ * The str_toupper() and str_tolower() functions map lower-case to upper case
+ * and vice-versa, respectively.
  *
  * The str_zero() function sets the first n bytes of the byte area starting at s
  * to zero (bytes containing '\\0').
+ *
+ * The str_toumax() function converts the string pointed to by str to an
+ * unsigned long long int val using base as conversion base.
  *
  * @{
  */
@@ -227,7 +234,7 @@ int str_cpy(char *dst, const char *src);
  *
  * @return Number of bytes that have been copied.
  */
-int str_cpyn(char *dst, const char *src, int n);
+int str_cpyn(void *dst, const void *src, int n);
 
 /*!
  * @brief duplicate a string
@@ -277,8 +284,19 @@ int str_len(const char *str);
  * @param[out] str destination string
  * @param[in]  n   write first n bytes
  */
-void str_zero(char *str, int n);
+void str_zero(void *str, int n);
 
+
+/*!
+ * @brief concatenate dirname and basename
+ *
+ * @param[in] dirname  directory part
+ * @param[in] basename basename part
+ *
+ * @return A pointer to the newly allocated string or NULL if insufficent memory
+ *         was available.
+ */
+char *str_path_concat(const char *dirname, const char *basename);
 
 /*!
  * @brief check if path is absolute and contains no dot entries or ungraphable characters
@@ -323,25 +341,14 @@ char *str_toupper(char *str);
 /*!
  * @brief convert string to integer
  *
- * @param[in]  str  string to convert
- * @param[out] endp address of first invalid character
+ * @param[in]  str  source string
+ * @param[out] val  destination integer
  * @param[in]  base conversion base
  * @param[in]  n    convert first n bytes
  *
  * @return Number of bytes read from str
  */
-int str_toumax(const char *str, unsigned long long *val, int base, int n);
-
-/*!
- * @brief convert integer to string
- *
- * @param[in]  val  integer to convert
- * @param[out] str  destination string
- * @param[in]  base conversion base
- *
- * @return Number of bytes written to str
- */
-int str_fromumax(unsigned long long int val, char *str, int base);
+int str_toumax(const char *str, unsigned long long int *val, int base, int n);
 
 #endif
 

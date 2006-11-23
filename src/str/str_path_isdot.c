@@ -16,27 +16,41 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "str.h"
 
 int str_path_isdot(const char *str)
 {
-	char *p, *path, *o;
+	char *buf, *p, *o;
 	
 	if (str_isempty(str))
 		return 0;
 	
-	path = o = str_dup(str);
+	buf = p = o = str_dup(str);
 	
-	/* TODO: strtok */
-	for (p = strtok(path, "/"); p; p = strtok(NULL, "/")) {
+	while (1) {
+		p = str_index(p, '/', str_len(p));
+		
+		if (p) {
+			if (o == p) {
+				p++;
+				continue;
+			}
+			
+			*p++ = '\0';
+		}
+		
 		if (str_cmp(p, ".") == 0 || str_cmp(p, "..") == 0) {
-			free(o);
+			free(buf);
 			return 1;
 		}
+		
+		if (!p)
+			break;
+		else
+			o = p;
 	}
 	
-	free(o);
-	return 0;
+	free(buf);
+	return 1;
 }

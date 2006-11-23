@@ -16,7 +16,6 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
 
 #include "flist.h"
@@ -33,16 +32,30 @@ int flist32_from_str(const char *str, const flist32_t list[],
 	if (str_isempty(str))
 		return errno = EINVAL, -1;
 	
-	buf = o = str_dup(str);
+	buf = p = o = str_dup(str);
 	
-	for (p = strtok(buf, &delim); p; p = strtok(NULL, &delim), clear = 0) {
-		if (*p == clmod)
+	while (1) {
+		p = str_index(p, delim, str_len(p));
+		
+		while (char_isspace(*o))
+			o++;
+		
+		if (p) {
+			if (o == p) {
+				p++;
+				continue;
+			}
+			
+			*p++ = '\0';
+		}
+		
+		if (*o == clmod)
 			clear = 1;
 		
-		cur_flag = flist32_getval(list, p+clear);
+		cur_flag = flist32_getval(list, o+clear);
 		
 		if (!cur_flag) {
-			free(o);
+			free(buf);
 			return errno = ENOENT, -1;
 		}
 		
@@ -53,8 +66,13 @@ int flist32_from_str(const char *str, const flist32_t list[],
 			*flags |=  cur_flag;
 			*mask  |=  cur_flag;
 		}
+		
+		if (!p)
+			break;
+		else
+			o = p;
 	}
 	
-	free(o);
+	free(buf);
 	return 0;
 }

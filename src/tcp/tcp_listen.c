@@ -17,9 +17,11 @@
 
 #include <unistd.h>
 #include <errno.h>
-#include <strings.h>
-#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
+#include "addr.h"
+#include "str.h"
 #include "tcp.h"
 
 int tcp_listen(const char *ip, int port, int backlog)
@@ -30,11 +32,11 @@ int tcp_listen(const char *ip, int port, int backlog)
 	if (port < 1)
 		return errno = EINVAL, -1;
 	
-	bzero(&inaddr, sizeof(inaddr));
+	str_zero(&inaddr, sizeof(inaddr));
 	inaddr.sin_family = AF_INET;
 	inaddr.sin_port   = htons(port);
 	
-	if (inet_pton(AF_INET, ip, &inaddr.sin_addr) == 0)
+	if (addr_from_str(ip, &inaddr.sin_addr.s_addr, 0) == 0)
 		return errno = EINVAL, -1;
 	
 	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)

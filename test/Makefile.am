@@ -18,7 +18,8 @@
 
 INCLUDES = -I$(top_srcdir)/src
 
-check_PROGRAMS = addr
+check_PROGRAMS = addr \
+                 bitmap
 
 EXTRA_DIST = $(check_PROGRAMS)
 TESTS      = $(check_PROGRAMS)
@@ -27,3 +28,6 @@ LUCID = $(top_builddir)/src/libucid.la
 
 addr_SOURCES = addr.c
 addr_LDADD = $(LUCID)
+
+bitmap_SOURCES = bitmap.c
+bitmap_LDADD = $(LUCID)

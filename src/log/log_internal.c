@@ -26,6 +26,7 @@
 
 #include "log.h"
 #include "printf.h"
+#include "str.h"
 
 extern log_options_t *_log_options;
 
@@ -53,7 +54,7 @@ void log_fd(int fd, int level, const char *msg)
 	}
 	
 	if (_log_options->time) {
-		bzero(timebuf, 17);
+		str_zero(timebuf, 17);
 		strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
 		_lucid_dprintf(fd, " %s", timebuf);
 	}

@@ -17,8 +17,10 @@
 
 #include "str.h"
 
-void str_zero(char *str, int n)
+void str_zero(void *str, int n)
 {
+	char *p = str;
+	
 	while (n--)
-		*str++ = 0;
+		*p++ = 0;
 }
