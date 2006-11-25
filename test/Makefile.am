@@ -19,7 +19,8 @@
 INCLUDES = -I$(top_srcdir)/src
 
 check_PROGRAMS = addr \
-                 bitmap
+                 bitmap \
+                 whirlpool
 
 EXTRA_DIST = $(check_PROGRAMS)
 TESTS      = $(check_PROGRAMS)
@@ -31,3 +32,6 @@ addr_LDADD = $(LUCID)
 
 bitmap_SOURCES = bitmap.c
 bitmap_LDADD = $(LUCID)
+
+whirlpool_SOURCES = whirlpool.c
+whirlpool_LDADD = $(LUCID)

@@ -23,7 +23,7 @@
 #include "log.h"
 
 static
-int test_from_str(void)
+int addr_from_str_t(void)
 {
 	int i, ret, rc = 0;
 	uint32_t ip, mask;
@@ -67,7 +67,7 @@ int test_from_str(void)
 }
 
 static
-int test_to_str(void)
+int addr_to_str_t(void)
 {
 	int i, rc = 0;
 	char *str;
@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
 	
 	log_init(&log_options);
 	
-	rc += test_from_str();
-	rc += test_to_str();
+	rc += addr_from_str_t();
+	rc += addr_to_str_t();
 	
 	log_close();
 	

@@ -23,7 +23,7 @@
 #include "log.h"
 
 static
-int test_i2v32(void)
+int i2v32_t(void)
 {
 	int i, rc = 0;
 	uint32_t value;
@@ -32,13 +32,15 @@ int test_i2v32(void)
 		int      index;
 		uint32_t value;
 	} T[] = {
+		{ -2, 0x00000000 }, /* out of bounds */
+		{ -1, 0x00000000 }, /* out of bounds */
 		{  0, 0x00000001 },
 		{  1, 0x00000002 },
 		{  2, 0x00000004 },
 		{  7, 0x00000080 },
 		{ 31, 0x80000000 },
-		{ 32, 0x00000000 },
-		{ 33, 0x00000000 },
+		{ 32, 0x00000000 }, /* out of bounds */
+		{ 33, 0x00000000 }, /* out of bounds */
 	};
 	
 	int TS = sizeof(T) / sizeof(T[0]);
@@ -55,7 +57,7 @@ int test_i2v32(void)
 }
 
 static
-int test_i2v64(void)
+int i2v64_t(void)
 {
 	int i, rc = 0;
 	uint64_t value;
@@ -64,13 +66,15 @@ int test_i2v64(void)
 		int      index;
 		uint64_t value;
 	} T[] = {
+		{ -2, 0x0000000000000000 }, /* out of bounds */
+		{ -1, 0x0000000000000000 }, /* out of bounds */
 		{  0, 0x0000000000000001 },
 		{  1, 0x0000000000000002 },
 		{  2, 0x0000000000000004 },
 		{  7, 0x0000000000000080 },
 		{ 63, 0x8000000000000000 },
-		{ 64, 0x0000000000000000 },
-		{ 65, 0x0000000000000000 },
+		{ 64, 0x0000000000000000 }, /* out of bounds */
+		{ 65, 0x0000000000000000 }, /* out of bounds */
 	};
 	
 	int TS = sizeof(T) / sizeof(T[0]);
@@ -81,6 +85,67 @@ int test_i2v64(void)
 		if (value != T[i].value)
 			rc += log_error("[%s/%02d] E[%#.16llx] R[%#.16llx]",
 			                __FUNCTION__, i, T[i].value, value);
+	}
+	
+	return rc;
+}
+
+static
+int v2i32_t(void)
+{
+	int i, rc = 0;
+	uint32_t value;
+	
+	struct test {
+		uint32_t value;
+		int      index;
+	} T[] = {
+		{ 0x00000000,  -1 },
+		{ 0x00000001,   0 },
+		{ 0x00000080,   7 },
+		{ 0x80000000,  31 },
+		{ 0x00abcdef,  23 }, /* highest bit counts */
+	};
+	
+	int TS = sizeof(T) / sizeof(T[0]);
+	
+	for (i = 0; i < TS; i++) {
+		value = v2i32(T[i].value);
+		
+		if (value != T[i].index)
+			rc += log_error("[%s/%02d] E[%02u] R[%02u]",
+			                __FUNCTION__, i, T[i].index, index);
+	}
+	
+	return rc;
+}
+
+static
+int v2i64_t(void)
+{
+	int i, rc = 0;
+	uint64_t value;
+	
+	struct test {
+		uint64_t value;
+		int      index;
+	} T[] = {
+		{ 0x0000000000000000, -1 },
+		{ 0x0000000000000001,  0 },
+		{ 0x0000000000000080,  7 },
+		{ 0x8000000000000000, 63 },
+		{ 0xabcdef1234567890, 63 }, /* highest bit counts */
+		{ 0x000000000000abcd, 15 }, /* highest bit counts */
+	};
+	
+	int TS = sizeof(T) / sizeof(T[0]);
+	
+	for (i = 0; i < TS; i++) {
+		value = v2i64(T[i].value);
+		
+		if (value != T[i].index)
+			rc += log_error("[%s/%02d] E[%02u] R[%02u]",
+			                __FUNCTION__, i, T[i].index, index);
 	}
 	
 	return rc;
@@ -98,8 +163,11 @@ int main(int argc, char *argv[])
 	
 	log_init(&log_options);
 	
-	rc += test_i2v32();
-	rc += test_i2v64();
+	rc += i2v32_t();
+	rc += i2v64_t();
+	
+	rc += v2i32_t();
+	rc += v2i64_t();
 	
 	log_close();
 	
