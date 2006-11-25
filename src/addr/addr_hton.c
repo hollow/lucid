@@ -15,18 +15,22 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <endian.h>
-
 #include "addr.h"
+
+static inline
+int islitend(void) {
+	int i = 0;
+	((char *)(&i))[0] = 1;
+	return i == 1;
+}
 
 uint32_t addr_hton(uint32_t addr)
 {
-#if __BYTE_ORDER==__LITTLE_ENDIAN
-	return (addr >> 24) |
-	       ((addr & 0xff0000) >> 8) |
-	       ((addr & 0xff00  ) << 8) |
-	       (addr << 24);
-#else
-	return addr;
-#endif
+	if (islitend())
+		return (addr >> 24) |
+		       ((addr & 0xff0000) >> 8) |
+		       ((addr & 0xff00  ) << 8) |
+		       (addr << 24);
+	else
+		return addr;
 }
