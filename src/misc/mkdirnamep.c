@@ -16,9 +16,6 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/stat.h>
 #include <libgen.h>
 
 #include "misc.h"

@@ -21,7 +21,6 @@
 #include <stdarg.h>
 #include <syslog.h>
 #include <string.h>
-#include <strings.h>
 #include <time.h>
 
 #include "log.h"

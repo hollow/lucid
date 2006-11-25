@@ -37,6 +37,24 @@
 #include <stdint.h>
 
 /*!
+ * @brief convert address from host to network byte order
+ *
+ * @param[in]  addr  address in host byte order
+ *
+ * @return address in network byte order
+ */
+uint32_t addr_hton(uint32_t addr);
+
+/*!
+ * @brief convert address from network to host byte order
+ *
+ * @param[in]  addr  address in network byte order
+ *
+ * @return address in host byte order
+ */
+uint32_t addr_ntoh(uint32_t addr);
+
+/*!
  * @brief convert string to IP address and netmask
  *
  * @param[in]  str   string in CIDR or netmask notation

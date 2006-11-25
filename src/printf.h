@@ -258,6 +258,17 @@ int _lucid_vprintf(const char *fmt, va_list ap);
  */
 int _lucid_printf(const char *fmt, /*args*/ ...);
 
+#ifdef _LUCID_PRINTF_MACROS
+#define vsnprintf _lucid_vsnprintf
+#define snprintf  _lucid_snprintf
+#define vasprintf _lucid_vasprintf
+#define asprintf  _lucid_asprintf
+#define vdprintf  _lucid_vdprintf
+#define dprintf   _lucid_dprintf
+#define vprintf   _lucid_vprintf
+#define printf    _lucid_printf
+#endif
+
 #endif
 
 /*! @} printf */

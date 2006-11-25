@@ -17,7 +17,6 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
 #include <syslog.h>
 #include <sys/stat.h>
 
@@ -51,5 +50,5 @@ void log_init(log_options_t *options)
 	
 	_log_options = (log_options_t *)malloc(sizeof(log_options_t));
 	
-	memcpy(_log_options, options, sizeof(log_options_t));
+	str_cpyn(_log_options, options, sizeof(log_options_t));
 }

@@ -50,6 +50,11 @@ int _lucid_vsscanf(const char *str, const char *fmt, va_list ap);
  */
 int _lucid_sscanf(const char *str, const char *fmt, /*args*/ ...);
 
+#ifdef _LUCID_SCANF_MACROS
+#define vsscanf _lucid_vsscanf
+#define sscanf  _lucid_sscanf
+#endif
+
 #endif
 
 /*! @} printf */

@@ -46,10 +46,10 @@ enum __scanf_state {
 };
 
 typedef struct {
-	unsigned int f; /* flags */
-	int l;          /* length */
-	int s;          /* state */
-	unsigned int w; /* width */
+	int f; /* flags */
+	int l; /* length */
+	int s; /* state */
+	int w; /* width */
 } __scanf_t;
 
 /* supported formats:
@@ -93,7 +93,7 @@ int _lucid_vsscanf(const char *str, const char *fmt, va_list _ap)
 	f.f = 0;
 	f.l = SFR_INT;
 	f.s = SFS_NORMAL;
-	f.w = 0;
+	f.w = str_len(str);
 	
 	while ((c = *fmt++)) {
 		switch (f.s) {
@@ -102,7 +102,7 @@ int _lucid_vsscanf(const char *str, const char *fmt, va_list _ap)
 				f.f = 0;
 				f.l = SFR_INT;
 				f.s = SFS_FLAGS;
-				f.w = ~0U;
+				f.w = str_len(str);
 			}
 			
 			else if (char_isspace(c))

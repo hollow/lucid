@@ -15,6 +15,8 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include <endian.h>
+
 #include "addr.h"
 #include "scanf.h"
 #include "str.h"
@@ -34,13 +36,15 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 	if (ip && (!p || p - str > 0)) {
 		if (_lucid_sscanf(str, "%hhu.%hhu.%hhu.%hhu",
 		                  &u.b[0], &u.b[1], &u.b[2], &u.b[3]) == 4) {
-			*ip = u.l;
+			*ip = addr_hton(u.l);
 			rc = 1;
 		}
 	}
 	
 	if (!p || !mask)
 		return rc;
+	
+	p++;
 	
 	/* CIDR notation */
 	if (!str_isempty(p) && str_isdigit(p)) {
@@ -53,9 +57,9 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 	}
 	
 	if (!str_isempty(p)) {
-		if (_lucid_sscanf(str, "%hhu.%hhu.%hhu.%hhu",
+		if (_lucid_sscanf(p, "%hhu.%hhu.%hhu.%hhu",
 		                  &u.b[0], &u.b[1], &u.b[2], &u.b[3]) == 4) {
-			*mask = u.l;
+			*mask = addr_hton(u.l);
 			rc += 2;
 		}
 	}

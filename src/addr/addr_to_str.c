@@ -22,6 +22,9 @@ char *addr_to_str(uint32_t ip, uint32_t mask)
 {
 	char *buf;
 	
+	ip   = addr_ntoh(ip);
+	mask = addr_ntoh(mask);
+	
 	uint8_t *ipp   = (uint8_t *) &ip;
 	uint8_t *maskp = (uint8_t *) &mask;
 	

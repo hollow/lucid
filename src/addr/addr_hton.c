@@ -1,5 +1,4 @@
-// Copyright 2005 Felix von Leitner <felix-libowfat@fefe.de>
-//           2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,25 +15,18 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdarg.h>
-#include <stdlib.h>
+#include <endian.h>
 
-#include "printf.h"
-#include "stralloc.h"
+#include "addr.h"
 
-int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
+uint32_t addr_hton(uint32_t addr)
 {
-	va_list ap;
-	char *buf;
-	int rc;
-	
-	va_start(ap, fmt);
-	_lucid_vasprintf(&buf, fmt, ap);
-	va_end(ap);
-	
-	rc = stralloc_cats(dst, buf);
-	
-	free(buf);
-	
-	return rc;
+#if __BYTE_ORDER==__LITTLE_ENDIAN
+	return (addr >> 24) |
+	       ((addr & 0xff0000) >> 8) |
+	       ((addr & 0xff00  ) << 8) |
+	       (addr << 24);
+#else
+	return addr;
+#endif
 }

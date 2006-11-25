@@ -1,5 +1,4 @@
-// Copyright 2005 Felix von Leitner <felix-libowfat@fefe.de>
-//           2006 Benedikt Böhm <hollow@gentoo.org>
+// Copyright 2006 Benedikt Böhm <hollow@gentoo.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,25 +15,9 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdarg.h>
-#include <stdlib.h>
+#include "addr.h"
 
-#include "printf.h"
-#include "stralloc.h"
-
-int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
+uint32_t addr_ntoh(uint32_t addr)
 {
-	va_list ap;
-	char *buf;
-	int rc;
-	
-	va_start(ap, fmt);
-	_lucid_vasprintf(&buf, fmt, ap);
-	va_end(ap);
-	
-	rc = stralloc_cats(dst, buf);
-	
-	free(buf);
-	
-	return rc;
+	return addr_hton(addr);
 }
