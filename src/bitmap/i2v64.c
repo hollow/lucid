@@ -19,5 +19,8 @@
 
 uint64_t i2v64(int index)
 {
+	if (index < 0 || index > 63)
+		return 0;
+	
 	return (1ULL << index);
 }
