@@ -46,7 +46,7 @@ int test_i2v32(void)
 	for (i = 0; i < TS; i++) {
 		value = i2v32(T[i].index);
 		
-		if (value != T[i].value)
+		//if (value != T[i].value)
 			rc += log_error("[%s/%02d] E[%#.8lx] R[%#.8lx]",
 			                __FUNCTION__, i, T[i].value, value);
 	}

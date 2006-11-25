@@ -87,35 +87,37 @@ int __printf_int(char *str, int size,
 		ndigits++;
 	}
 	
-	/* Adjust ndigits for size of output */
-	if (f.f & PFL_ALT && base == 8) {
-		if (f.p < ndigits + 1)
-			f.p = ndigits + 1;
-	}
-	
-	/* mandatory number padding */
-	if (ndigits < f.p)
-		ndigits = f.p;
-	
 	/* zero still requires space */
-	else if (val == 0)
+	if (val == 0)
 		ndigits = 1;
 	
 	/* compute number of nondigits */
-	nchars = ndigits;
+	nchars = f.p > ndigits ? f.p : ndigits;
 	
 	/* need space for sign */
 	if (minus || (f.f & (PFL_SIGN | PFL_BLANK)))
 		nchars++;
 	
-	/* add 0x for hex */
-	if ((f.f & PFL_ALT) && base == 16)
-		nchars += 2;
+	/* add prefix for alternate form */
+	if (f.f & PFL_ALT) {
+		if (base == 16)
+			nchars += 2;
+		else if (base == 8 && val != 0)
+			nchars += 1;
+	}
 	
 	/* early space padding */
 	if (!(f.f & (PFL_LEFT | PFL_ZERO)) && f.w > nchars) {
 		while (f.w > nchars) {
 			EMIT(' ')
+			f.w--;
+		}
+	}
+	
+	/* zero padding */
+	if ((f.f & (PFL_LEFT | PFL_ZERO)) == PFL_ZERO && f.w > nchars) {
+		while (f.w > nchars) {
+			EMIT('0')
 			f.w--;
 		}
 	}
@@ -130,16 +132,21 @@ int __printf_int(char *str, int size,
 	else if (f.f & PFL_BLANK)
 		EMIT(' ')
 	
-	if ((f.f & PFL_ALT) && base == 16) {
-		EMIT('0')
-		EMIT((f.f & PFL_UPPER) ? 'X' : 'x');
+	if (f.f & PFL_ALT) {
+		if (base == 16) {
+			EMIT('0')
+			EMIT((f.f & PFL_UPPER) ? 'X' : 'x');
+		}
+		
+		else if (base == 8 && val != 0)
+			EMIT('0')
 	}
 	
-	/* zero padding */
-	if ((f.f & (PFL_LEFT | PFL_ZERO)) == PFL_ZERO && f.w > ndigits) {
-		while (f.w > nchars) {
+	/* precision */
+	if (f.p > ndigits) {
+		while (f.p > ndigits) {
 			EMIT('0')
-			f.w--;
+			f.p--;
 		}
 	}
 	
