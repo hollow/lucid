@@ -15,36 +15,18 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
-
-#include "str.h"
-#include "argv.h"
-
-int argv_from_str(char *str, char ** const argv, int max_argc)
-{
-	int i, argc = 0;
-	
-	for (i = 0; i < max_argc; i++)
-		argv[i] = NULL;
-	
-	if (!str)
-		return 0;
-	
-	while (*str) {
-		while (char_isspace(*str))
-			*(str++) = '\0';
-		
-		if (*str && argc < max_argc - 1) {
-			argv[argc] = str;
-			argc++;
-			
-			while (*str && !char_isspace(*str))
-				str++;
-		}
-		
-		else
-			break;
-	}
-	
-	return argc;
-}
+/*!
+ * @mainpage lucid API documentation
+ *
+ * The lucid library provides several convenient wrappers around system calls
+ * and libc library functions.
+ *
+ * The size of functions range from a few hundred bytes to about 30K. Some
+ * functions, including the printf, bitmap, and flist family are completely
+ * self-contained and do not rely on libc. Others are just wrappers around
+ * libc library functions to ease their usage.
+ *
+ * For a complete list of function families see the Modules page.
+ *
+ * @{
+ */
