@@ -21,6 +21,7 @@ INCLUDES = -I$(top_srcdir)/src
 check_PROGRAMS = addr \
                  argv \
                  bitmap \
+                 flist \
                  whirlpool
 
 EXTRA_DIST = $(check_PROGRAMS)
@@ -36,6 +37,9 @@ argv_LDADD = $(LUCID)
 
 bitmap_SOURCES = bitmap.c
 bitmap_LDADD = $(LUCID)
+
+flist_SOURCES = flist.c
+flist_LDADD = $(LUCID)
 
 whirlpool_SOURCES = whirlpool.c
 whirlpool_LDADD = $(LUCID)

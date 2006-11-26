@@ -57,7 +57,7 @@ int addr_from_str_t(void)
 		if (ret  != T[i].ret ||
 		    ip   != T[i].ip  ||
 		    mask != T[i].mask)
-			rc += log_error("[%s/%02d] E[%d,%#x,%#x] R[%d,%#x,%#x]",
+			rc += log_error("[%s/%02d] E[%d,%#.8x,%#.8x] R[%d,%#.8x,%#.8x]",
 			                __FUNCTION__, i,
 			                T[i].ret, T[i].ip, T[i].mask,
 			                ret,      ip,      mask);

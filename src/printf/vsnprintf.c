@@ -460,17 +460,14 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 			
 			case 'c': /* character conversion */
 				arg.c = (char) va_arg(ap, int);
-				arg.s = (const char *) &arg.c;
-				len   = 1;
-				goto is_string;
+				EMIT(arg.c)
+				break;
 			
 			case 's': /* string conversion */
 				arg.s = va_arg(ap, const char *);
 				arg.s = arg.s ? arg.s : "(null)";
 				len   = str_len(arg.s);
-				goto is_string;
 				
-			is_string:
 				if (f.p != -1 && len > f.p)
 					len = f.p;
 				
