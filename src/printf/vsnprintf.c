@@ -468,6 +468,7 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 				arg.s = arg.s ? arg.s : "(null)";
 				len   = str_len(arg.s);
 				
+			is_string:
 				if (f.p != -1 && len > f.p)
 					len = f.p;
 				
