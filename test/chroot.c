@@ -95,6 +95,9 @@ int main(int argc, char *argv[])
 	
 	log_init(&log_options);
 	
+	if (getuid() != 0)
+		return log_info("This test needs root privileges; please run `sudo make check`");
+	
 	rc += chroot_secure_chdir_t();
 	
 	log_close();
