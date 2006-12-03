@@ -23,6 +23,7 @@ check_PROGRAMS = addr \
                  bitmap \
                  chroot \
                  flist \
+                 str \
                  whirlpool
 
 EXTRA_DIST = $(check_PROGRAMS)
@@ -44,6 +45,9 @@ chroot_LDADD = $(LUCID)
 
 flist_SOURCES = flist.c
 flist_LDADD = $(LUCID)
+
+str_SOURCES = str.c
+str_LDADD = $(LUCID)
 
 whirlpool_SOURCES = whirlpool.c
 whirlpool_LDADD = $(LUCID)
