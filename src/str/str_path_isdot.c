@@ -31,16 +31,10 @@ int str_path_isdot(const char *str)
 	while (1) {
 		p = str_index(p, '/', str_len(p));
 		
-		if (p) {
-			if (o == p) {
-				p++;
-				continue;
-			}
-			
+		if (p)
 			*p++ = '\0';
-		}
 		
-		if (str_cmp(p, ".") == 0 || str_cmp(p, "..") == 0) {
+		if (str_cmp(o, ".") == 0 || str_cmp(o, "..") == 0) {
 			free(buf);
 			return 1;
 		}
@@ -52,5 +46,5 @@ int str_path_isdot(const char *str)
 	}
 	
 	free(buf);
-	return 1;
+	return 0;
 }

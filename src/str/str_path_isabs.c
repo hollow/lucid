@@ -37,14 +37,8 @@ int str_path_isabs(const char *str)
 	while (1) {
 		p = str_index(p, '/', str_len(p));
 		
-		if (p) {
-			if (o == p) {
-				p++;
-				continue;
-			}
-			
+		if (p)
 			*p++ = '\0';
-		}
 		
 		if (!str_isgraph(o)) {
 			free(buf);

@@ -36,10 +36,7 @@ int io_read_eol(int fd, char **line)
 			goto out;
 		
 		default:
-			if (c == '\r')
-				continue;
-			
-			if (c == '\n')
+			if (c == '\n' || c == '\r')
 				goto out;
 			
 			if (len >= chunks * CHUNKSIZE) {

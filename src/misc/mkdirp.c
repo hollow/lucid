@@ -24,8 +24,8 @@
 
 int mkdirp(const char *path, mode_t mode)
 {
-	char *p, *buf;
-	char c;
+	int errno_orig, rc = 0;
+	char *p, *buf, c;
 	struct stat sb;
 	
 	if (str_isempty(path))
@@ -71,12 +71,11 @@ int mkdirp(const char *path, mode_t mode)
 		*p = c;
 	} while (1);
 	
-	return -1;
-	
-out:
-	free(buf);
-	return 0;
 err:
+	rc = -1;
+out:
+	errno_orig = errno;
 	free(buf);
-	return -1;
+	errno = errno_orig;
+	return rc;
 }

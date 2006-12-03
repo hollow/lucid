@@ -16,6 +16,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
+#include <errno.h>
 #include <libgen.h>
 
 #include "misc.h"
@@ -24,13 +25,19 @@
 int mkdirnamep(const char *path, mode_t mode)
 {
 	char *buf, *dname;
-	int rc;
+	int rc, errno_orig;
 	
-	buf = str_dup(path);
+	if (str_isempty(path))
+		return errno = EINVAL, -1;
+	
+	buf   = str_dup(path);
 	dname = dirname(buf);
 	
 	rc = mkdirp(dname, mode);
 	
+	errno_orig = errno;
 	free(buf);
+	errno = errno_orig;
+	
 	return rc;
 }

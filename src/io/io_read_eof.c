@@ -49,8 +49,8 @@ out:
 	if (len > 0)
 		*file = str_dupn(buf, len);
 	
-	free(buf);
-	return len;
+	rc = len;
+	
 err:
 	free(buf);
 	return rc;

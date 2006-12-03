@@ -23,7 +23,7 @@ char *str_path_concat(const char *dirname, const char *basename)
 {
 	char *path = 0;
 	
-	if (str_path_isdot(basename))
+	if (str_isempty(dirname) || str_path_isdot(basename))
 		return 0;
 	
 	_lucid_asprintf(&path, "%s/%s", dirname, basename);
