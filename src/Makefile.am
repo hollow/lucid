@@ -16,7 +16,8 @@
 ## Free Software Foundation, Inc.,
 ## 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-noinst_HEADERS = doxygen/license.h \
+noinst_HEADERS = doxygen/examples.h \
+                 doxygen/license.h \
                  doxygen/main.h
 
 pkginclude_HEADERS = addr.h \
