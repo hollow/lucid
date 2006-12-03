@@ -67,7 +67,7 @@ int chroot_secure_chdir_t(void)
 		return log_perror("[%s] stat(.)", __FUNCTION__);
 	
 	if (sb.st_dev != sb2.st_dev || sb.st_ino != sb2.st_ino)
-		return log_error("[%s/01] E[%u,%u] R[%u,%u]",
+		return log_error("[%s/01] E[%llu,%lu] R[%llu,%lu]", __FUNCTION__,
 		                 sb.st_dev, sb.st_ino, sb2.st_dev, sb2.st_ino);
 	
 	if (fchdir(fd) == -1)
@@ -77,8 +77,8 @@ int chroot_secure_chdir_t(void)
 		return log_perror("[%s] stat(.)", __FUNCTION__);
 	
 	if (sbcwd.st_dev != sb2.st_dev || sbcwd.st_ino != sb2.st_ino)
-		return log_error("[%s/02] E[%u,%u] R[%u,%u]",
-		                 sb.st_dev, sb.st_ino, sb2.st_dev, sb2.st_ino);
+		return log_error("[%s/02] E[%llu,%lu] R[%llu,%lu]", __FUNCTION__,
+		                 sbcwd.st_dev, sbcwd.st_ino, sb2.st_dev, sb2.st_ino);
 	
 	return 0;
 }
