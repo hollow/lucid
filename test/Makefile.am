@@ -26,9 +26,7 @@ check_PROGRAMS = addr \
                  str \
                  whirlpool
 
-EXTRA_DIST = $(check_PROGRAMS)
-TESTS      = $(check_PROGRAMS)
-
+TESTS = $(check_PROGRAMS)
 LUCID = $(top_builddir)/src/libucid.la
 
 addr_SOURCES = addr.c

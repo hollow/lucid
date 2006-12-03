@@ -16,7 +16,18 @@
 ## Free Software Foundation, Inc.,
 ## 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-EXTRA_DIST = Doxyfile
-
 SUBDIRS = src \
           test
+
+include aminclude.am
+
+MOSTLYCLEANFILES = $(DX_CLEANFILES)
+EXTRA_DIST = $(DX_CONFIG)
+
+dist-hook: doxygen-doc
+	rm -rf $(top_builddir)/$(DX_DOCDIR)/latex \
+	       $(top_builddir)/$(DX_DOCDIR)/lucid.tag \
+	       $(top_builddir)/$(DX_DOCDIR)/html/*.md5 \
+	       $(top_builddir)/$(DX_DOCDIR)/html/*.map \
+	       $(top_builddir)/$(DX_DOCDIR)/html/*.dot
+	mv $(top_builddir)/$(DX_DOCDIR) $(distdir)/
