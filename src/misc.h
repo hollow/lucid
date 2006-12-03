@@ -27,14 +27,14 @@
  *
  * The mkdirp() function creates any missing parent directories of the path in
  * the string pointed to by path, before creating the directory itself. The
- * mkdirnamep() additionally call dirname(3) on the path string before calling
- * mkdirp().
+ * mkdirnamep() function additionally calls dirname(3) on the path string
+ * before calling mkdirp().
  *
  * The path_concat() function concatenates the strings pointed to by dirname and
- * basename and checks the latter using str_path_isabs().
+ * basename and checks the latter using str_path_isdot().
  *
- * The runlink() function removes all files and directories in the directory in
- * the string pointed to by path.
+ * The runlink() function removes all files and directories in the path pointed
+ * to by the string path.
  *
  * @{
  */

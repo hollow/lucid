@@ -20,9 +20,9 @@
  *
  * The io family of functions provide convenient wrappers around read(2).
  *
- * The io_read_eol() function reads bytes until the end of the line, i.e. the
- * character \\r or \\n, is reached and stores them in the string pointed to by
- * line.
+ * The io_read_eol() function reads bytes until the end of the line, that is 
+ * until one of the characters \\r or \\n is found, and stores them in the
+ * string pointed to by line.
  *
  * The io_read_eof() function reads bytes until the end of the file is reached
  * and stores them in the string pointed to by file.

@@ -18,6 +18,10 @@
 
 /*!
  * @defgroup open Create or open files
+ *
+ * The open family of functions provide wrappers around open(2) with different
+ * flags.
+ *
  * @{
  */
 

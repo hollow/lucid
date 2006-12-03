@@ -18,14 +18,17 @@
 /*!
  * @defgroup addr Internet address conversion
  *
- * addr_from_str() converts the Internet host address str from the standard
- * numbers-and-dots notation into binary data and stores it in the ip/mask pair
- * of pointers. addr_from_str() returns 0 if no argument was converted, 1 if ip
- * was converted, 2 for mask and 3 for both.
+ * The addr_hton() and addr_ntoh() functions convert from host- to
+ * network-byteorder, and vice versa, respectively.
+ *
+ * The addr_from_str() function converts the Internet host address in standard
+ * numbers-and-dots notation pointed to by the string str into binary data and
+ * stores result in the ip/mask pair of pointers. addr_from_str() returns 0 if
+ * no argument was converted, 1 if ip was converted, 2 for mask and 3 for both.
  *
  * The addr_to_str() function converts the Internet host address given in the
  * ip/mask pair of pointers to a string in standard numbers-and-dots notation.
- * The string is returned is obtained by malloc and should be free(3)'d by the
+ * The returned string is obtained by malloc and should be free(3)'d by the
  * caller.
  *
  * @{
