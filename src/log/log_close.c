@@ -35,4 +35,6 @@ void log_close(void)
 		close(_log_options->fd);
 	
 	free(_log_options);
+	
+	_log_options = NULL;
 }
