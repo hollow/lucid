@@ -18,8 +18,8 @@
 /*!
  * @defgroup addr Internet address conversion
  *
- * The addr_hton() and addr_ntoh() functions convert from host- to
- * network-byteorder, and vice versa, respectively.
+ * The addr_htos(), addr_hton(), addr_stoh() and addr_ntoh() functions convert
+ * from host- to network-byteorder, and vice versa, respectively.
  *
  * The addr_from_str() function converts the Internet host address in standard
  * numbers-and-dots notation pointed to by the string str into binary data and
@@ -46,6 +46,15 @@
  *
  * @return address in network byte order
  */
+uint16_t addr_htos(uint16_t addr);
+
+/*!
+ * @brief convert address from host to network byte order
+ *
+ * @param[in]  addr  address in host byte order
+ *
+ * @return address in network byte order
+ */
 uint32_t addr_hton(uint32_t addr);
 
 /*!
@@ -58,11 +67,20 @@ uint32_t addr_hton(uint32_t addr);
 uint32_t addr_ntoh(uint32_t addr);
 
 /*!
+ * @brief convert address from network to host byte order
+ *
+ * @param[in]  addr  address in network byte order
+ *
+ * @return address in host byte order
+ */
+uint16_t addr_stoh(uint16_t addr);
+
+/*!
  * @brief convert string to IP address and netmask
  *
  * @param[in]  str   string in CIDR or netmask notation
- * @param[out] ip    pointer to store IP address 
- * @param[out] mask  pointer to store netmask
+ * @param[out] ip    pointer to store IP address in network byte order
+ * @param[out] mask  pointer to store netmask in network byte order
  *
  * @return 0 if no argument was converted, 1 if ip was
  *            converted, 2 for mask and 3 for both.
@@ -72,8 +90,8 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask);
 /*!
  * @brief convert IP address and netmask to string
  *
- * @param[in] ip   IP adress to convert
- * @param[in] mask netmask to convert
+ * @param[in] ip   IP adress to convert in network byte order
+ * @param[in] mask netmask to convert in network byte order
  *
  * @return string in netmask notation (obtained with malloc(3))
  *

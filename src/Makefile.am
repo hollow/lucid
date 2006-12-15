@@ -40,7 +40,9 @@ pkginclude_HEADERS = addr.h \
 
 ADDR_C = addr/addr_from_str.c \
          addr/addr_hton.c \
+         addr/addr_htos.c \
          addr/addr_ntoh.c \
+         addr/addr_stoh.c \
          addr/addr_to_str.c
 
 ARGV_C = argv/argv_from_str.c \

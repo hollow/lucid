@@ -15,42 +15,19 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <unistd.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
 #include "addr.h"
-#include "str.h"
-#include "tcp.h"
 
-int tcp_listen(const char *ip, int port, int backlog)
+static inline
+int islitend(void) {
+	int i = 0;
+	((char *)(&i))[0] = 1;
+	return i == 1;
+}
+
+uint16_t addr_htos(uint16_t addr)
 {
-	int fd;
-	struct sockaddr_in inaddr;
-	
-	if (port < 1)
-		return errno = EINVAL, -1;
-	
-	str_zero(&inaddr, sizeof(inaddr));
-	inaddr.sin_family = AF_INET;
-	inaddr.sin_port   = addr_htos(port);
-	
-	if (addr_from_str(ip, &inaddr.sin_addr.s_addr, 0) == 0)
-		return errno = EINVAL, -1;
-	
-	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-		return -1;
-	
-	if (bind(fd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) == -1) {
-		close(fd);
-		return -1;
-	}
-	
-	if (listen(fd, backlog) == -1) {
-		close(fd);
-		return -1;
-	}
-	
-	return fd;
+	if (islitend())
+		return ((addr >> 8) & 0xFF) | (addr << 8);
+	else
+		return addr;
 }

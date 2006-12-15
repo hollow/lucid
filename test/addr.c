@@ -55,12 +55,12 @@ int addr_from_str_t(void)
 		ret = addr_from_str(T[i].str, &ip, &mask);
 		
 		if (ret  != T[i].ret ||
-		    ip   != T[i].ip  ||
-		    mask != T[i].mask)
+		    ip   != addr_ntoh(T[i].ip)  ||
+		    mask != addr_ntoh(T[i].mask))
 			rc += log_error("[%s/%02d] E[%d,%#.8x,%#.8x] R[%d,%#.8x,%#.8x]",
 			                __FUNCTION__, i,
-			                T[i].ret, T[i].ip, T[i].mask,
-			                ret,      ip,      mask);
+			                T[i].ret, addr_ntoh(T[i].ip), addr_ntoh(T[i].mask),
+			                ret, ip, mask);
 	}
 	
 	return rc;
@@ -88,7 +88,7 @@ int addr_to_str_t(void)
 	int TS = sizeof(T) / sizeof(T[0]);
 	
 	for (i = 0; i < TS; i++) {
-		str = addr_to_str(T[i].ip, T[i].mask);
+		str = addr_to_str(addr_hton(T[i].ip), addr_hton(T[i].mask));
 		
 		if (!str || strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",

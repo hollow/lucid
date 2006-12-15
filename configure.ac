@@ -38,7 +38,6 @@ DX_INIT_DOXYGEN(lucid, Doxyfile, doc)
 
 # Automake
 AM_INIT_AUTOMAKE([1.9 foreign dist-bzip2])
-AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CC
