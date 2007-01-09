@@ -105,7 +105,7 @@ void strtok_delete(strtok_t *st, const char *token);
  *
  * @param 0 on success, -1 on error with errno set.
  */
-int strtok_toargv(strtok_t *st, char ***argv);
+int strtok_toargv(strtok_t *st, char **argv);
 
 /*!
  * @brief convert string tokenizer to character array
