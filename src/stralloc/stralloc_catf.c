@@ -29,7 +29,12 @@ int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 	int rc;
 	
 	va_start(ap, fmt);
-	_lucid_vasprintf(&buf, fmt, ap);
+	
+	if (_lucid_vasprintf(&buf, fmt, ap) == -1) {
+		va_end(ap);
+		return -1;
+	}
+	
 	va_end(ap);
 	
 	rc = stralloc_cats(dst, buf);
