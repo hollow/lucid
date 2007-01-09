@@ -54,18 +54,18 @@
  */
 
 /*! @brief list head */
-struct list_head {
+typedef struct list_head {
 	struct list_head *next, *prev;
-};
+} list_t;
 
 /*! @brief list head initialization */
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
 /*! @brief list head creation */
 #define LIST_HEAD(name) \
-	struct list_head name = LIST_HEAD_INIT(name)
+	list_t name = LIST_HEAD_INIT(name)
 
-static inline void INIT_LIST_HEAD(struct list_head *list)
+static inline void INIT_LIST_HEAD(list_t *list)
 {
 	list->next = list;
 	list->prev = list;
@@ -78,9 +78,9 @@ static inline void INIT_LIST_HEAD(struct list_head *list)
  * the prev/next entries already!
  */
 static inline
-void __list_add(struct list_head *new,
-                struct list_head *prev,
-                struct list_head *next)
+void __list_add(list_t *new,
+                list_t *prev,
+                list_t *next)
 {
 	next->prev = new;
 	new->next = next;
@@ -98,7 +98,7 @@ void __list_add(struct list_head *new,
  * @param head list head to add it after
  */
 static inline
-void list_add(struct list_head *new, struct list_head *head)
+void list_add(list_t *new, list_t *head)
 {
 	__list_add(new, head, head->next);
 }
@@ -113,7 +113,7 @@ void list_add(struct list_head *new, struct list_head *head)
  * @param head list head to add it before
  */
 static inline
-void list_add_tail(struct list_head *new, struct list_head *head)
+void list_add_tail(list_t *new, list_t *head)
 {
 	__list_add(new, head->prev, head);
 }
@@ -126,7 +126,7 @@ void list_add_tail(struct list_head *new, struct list_head *head)
  * the prev/next entries already!
  */
 static inline
-void __list_del(struct list_head * prev, struct list_head * next)
+void __list_del(list_t * prev, list_t * next)
 {
 	next->prev = prev;
 	prev->next = next;
@@ -141,7 +141,7 @@ void __list_del(struct list_head * prev, struct list_head * next)
  *       in an undefined state
  */
 static inline
-void list_del(struct list_head *entry)
+void list_del(list_t *entry)
 {
 	__list_del(entry->prev, entry->next);
 	entry->next = (void *) 0;
@@ -154,7 +154,7 @@ void list_del(struct list_head *entry)
  * @param entry the element to delete from the list
  */
 static inline
-void list_del_init(struct list_head *entry)
+void list_del_init(list_t *entry)
 {
 	__list_del(entry->prev, entry->next);
 	INIT_LIST_HEAD(entry);
@@ -167,7 +167,7 @@ void list_del_init(struct list_head *entry)
  * @param head the head that will precede our entry
  */
 static inline
-void list_move(struct list_head *list, struct list_head *head)
+void list_move(list_t *list, list_t *head)
 {
 	__list_del(list->prev, list->next);
 	list_add(list, head);
@@ -180,7 +180,7 @@ void list_move(struct list_head *list, struct list_head *head)
  * @param head the head that will follow our entry
  */
 static inline
-void list_move_tail(struct list_head *list, struct list_head *head)
+void list_move_tail(list_t *list, list_t *head)
 {
 	__list_del(list->prev, list->next);
 	list_add_tail(list, head);
@@ -192,17 +192,17 @@ void list_move_tail(struct list_head *list, struct list_head *head)
  * @param head the list to test
  */
 static inline
-int list_empty(const struct list_head *head)
+int list_empty(const list_t *head)
 {
 	return head->next == head;
 }
 
 static inline
-void __list_splice(struct list_head *list, struct list_head *head)
+void __list_splice(list_t *list, list_t *head)
 {
-	struct list_head *first = list->next;
-	struct list_head *last = list->prev;
-	struct list_head *at = head->next;
+	list_t *first = list->next;
+	list_t *last = list->prev;
+	list_t *at = head->next;
 	
 	first->prev = head;
 	head->next = first;
@@ -218,7 +218,7 @@ void __list_splice(struct list_head *list, struct list_head *head)
  * @param head the place to add it in the first list
  */
 static inline
-void list_splice(struct list_head *list, struct list_head *head)
+void list_splice(list_t *list, list_t *head)
 {
 	if (!list_empty(list))
 		__list_splice(list, head);
@@ -231,7 +231,7 @@ void list_splice(struct list_head *list, struct list_head *head)
  * @param head the place to add it in the first list
  */
 static inline
-void list_splice_init(struct list_head *list, struct list_head *head)
+void list_splice_init(list_t *list, list_t *head)
 {
 	if (!list_empty(list)) {
 		__list_splice(list, head);
@@ -242,7 +242,7 @@ void list_splice_init(struct list_head *list, struct list_head *head)
 /*!
  * @brief get the struct for this entry
  *
- * @param ptr    the &struct list_head pointer
+ * @param ptr    the &list_t pointer
  * @param type   the type of the struct this is embedded in
  * @param member the name of the list_struct within the struct
  */
@@ -252,7 +252,7 @@ void list_splice_init(struct list_head *list, struct list_head *head)
 /*!
  * @brief iterate over a list
  *
- * @param pos  the &struct list_head to use as a loop counter
+ * @param pos  the &list_t to use as a loop counter
  * @param head the head for your list
  */
 #define list_for_each(pos, head) \
@@ -261,7 +261,7 @@ void list_splice_init(struct list_head *list, struct list_head *head)
 /*!
  * @brief iterate over a list backwards
  *
- * @param pos  the &struct list_head to use as a loop counter
+ * @param pos  the &list_t to use as a loop counter
  * @param head the head for your list
  */
 #define list_for_each_prev(pos, head) \
@@ -270,8 +270,8 @@ void list_splice_init(struct list_head *list, struct list_head *head)
 /*!
  * @brief iterate over a list safe against removal of list entry
  *
- * @param pos   the &struct list_head to use as a loop counter
- * @param n     another &struct list_head to use as temporary storage
+ * @param pos   the &list_t to use as a loop counter
+ * @param n     another &list_t to use as temporary storage
  * @param head  the head for your list
  */
 #define list_for_each_safe(pos, n, head) \
