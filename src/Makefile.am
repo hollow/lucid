@@ -21,7 +21,6 @@ noinst_HEADERS = doxygen/examples.h \
                  doxygen/main.h
 
 pkginclude_HEADERS = addr.h \
-                     argv.h \
                      chroot.h \
                      bitmap.h \
                      exec.h \
@@ -46,9 +45,6 @@ ADDR_C = addr/addr_from_str.c \
          addr/addr_ntoh.c \
          addr/addr_stoh.c \
          addr/addr_to_str.c
-
-ARGV_C = argv/argv_from_str.c \
-         argv/argv_to_str.c
 
 BITMAP_C = bitmap/i2v32.c \
            bitmap/i2v64.c \
@@ -168,7 +164,6 @@ WHIRLPOOL_C = whirlpool/whirlpool_add.c \
 lib_LTLIBRARIES = libucid.la
 
 libucid_la_SOURCES = $(ADDR_C) \
-                     $(ARGV_C) \
                      $(BITMAP_C) \
                      $(CHROOT_C) \
                      $(EXEC_C) \

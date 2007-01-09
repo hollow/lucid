@@ -21,9 +21,9 @@
 #include <errno.h>
 #include <signal.h>
 
-#include "argv.h"
 #include "exec.h"
 #include "printf.h"
+#include "strtok.h"
 
 int exec_fork_background(const char *fmt, ...)
 {
@@ -31,17 +31,28 @@ int exec_fork_background(const char *fmt, ...)
 	va_start(ap, fmt);
 	
 	char *cmd;
-	_lucid_vasprintf(&cmd, fmt, ap);
+	
+	if (_lucid_vasprintf(&cmd, fmt, ap) == -1) {
+		va_end(ap);
+		return -1;
+	}
 	
 	va_end(ap);
 	
-	int argc;
-	char *argv[EXEC_MAX_ARGV];
+	strtok_t st;
 	
-	argc = argv_from_str(cmd, argv, EXEC_MAX_ARGV);
-	
-	if (argc < 1) {
+	if (!strtok_init_str(&st, cmd, ' ', 0)) {
 		free(cmd);
+		return errno = ENOMEM, -1;
+	}
+	
+	free(cmd);
+	
+	int argc = strtok_count(&st);
+	char **argv = calloc(argc + 1, sizeof(char *));
+	
+	if (strtok_toargv(&st, argv) < 1) {
+		strtok_free(&st);
 		return errno = EINVAL, -1;
 	}
 	
@@ -64,6 +75,7 @@ int exec_fork_background(const char *fmt, ...)
 		signal(SIGCHLD, SIG_IGN);
 	}
 	
-	free(cmd);
+	free(argv);
+	strtok_free(&st);
 	return 0;
 }
