@@ -161,6 +161,16 @@ int str_check(const char *str, int allowed);
 int str_cmp(const char *str1, const char *str2);
 
 /*!
+ * @brief compare two strings
+ *
+ * @param[in] str1 first string
+ * @param[in] str2 second string
+ *
+ * @return 1 if both strings are equal, 0 otherwise.
+ */
+int str_equal(const char *str1, const char *str2);
+
+/*!
  * @brief copy a string
  *
  * @param[out] dst destination string
