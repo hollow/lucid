@@ -16,7 +16,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "flist.h"
-#include "str.h"
+#include "mem.h"
 #include "stralloc.h"
 
 char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
@@ -37,7 +37,7 @@ char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
 	else
 		len = buf.len - 1;
 	
-	str = str_dupn(buf.s, len);
+	str = mem_dup(buf.s, len);
 	stralloc_free(&buf);
 	return str;
 }

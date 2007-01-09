@@ -29,6 +29,7 @@ pkginclude_HEADERS = addr.h \
                      io.h \
                      list.h \
                      log.h \
+                     mem.h \
                      misc.h \
                      open.h \
                      printf.h \
@@ -79,6 +80,14 @@ LOG_C = log/log_close.c \
         log/log_init.c \
         log/log_internal.c
 
+MEM_C = mem/mem_ccpy.c \
+        mem/mem_chr.c \
+        mem/mem_cmp.c \
+        mem/mem_cpy.c \
+        mem/mem_dup.c \
+        mem/mem_idx.c \
+        mem/mem_set.c
+
 MISC_C = misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
@@ -106,20 +115,17 @@ SCANF_C = scanf/sscanf.c \
           scanf/vsscanf.c
 
 STR_C = str/str_check.c \
+        str/str_chr.c \
         str/str_cmp.c \
         str/str_cpy.c \
-        str/str_cpyn.c \
         str/str_dup.c \
-        str/str_dupn.c \
-        str/str_index.c \
         str/str_len.c \
         str/str_path_concat.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_tolower.c \
         str/str_toumax.c \
-        str/str_toupper.c \
-        str/str_zero.c
+        str/str_toupper.c
 
 STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_cat.c \
@@ -158,6 +164,7 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(FLIST_C) \
                      $(IO_C) \
                      $(LOG_C) \
+                     $(MEM_C) \
                      $(MISC_C) \
                      $(OPEN_C) \
                      $(PRINTF_C) \

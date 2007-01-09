@@ -15,15 +15,16 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "str.h"
+#include "mem.h"
 
-int str_cpyn(void *dst, const void *src, int n)
+int mem_idx(const void *s, int c, int n)
 {
-	char *d = dst;
-	const char *s = src;
+	int i;
+	const unsigned char *p = s;
 	
-	while (n--)
-		*d++ = *s++;
+	for (i = 0; n--, *p++; i++)
+		if (c == *p)
+			return i;
 	
-	return d - (char *) dst;
+	return -1;
 }

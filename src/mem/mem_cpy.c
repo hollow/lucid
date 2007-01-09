@@ -15,16 +15,15 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <stdlib.h>
+#include "mem.h"
 
-#include "str.h"
-
-char *str_dupn(const char *str, int n)
+void *mem_cpy(void *s1, const void *s2, int n)
 {
-	char *buf = calloc(n + 1, sizeof(char));
+	unsigned char       *a = s1;
+	const unsigned char *b = s2;
 	
-	if (buf)
-		str_cpyn(buf, str, n);
+	while (n--)
+		*a++ = *b++;
 	
-	return buf;
+	return s1;
 }

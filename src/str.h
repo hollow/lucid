@@ -18,9 +18,6 @@
 /*!
  * @defgroup str String classification and conversion
  *
- * The char family of functions check whether ch, which must have the value of
- * an unsigned char, falls into a certain character class.
- *
  * The str_check family of functions extend the classification of single
  * characters to strings. The str_check() function checks the string pointed to
  * by str for a set of allowed character classes. As soon as a character is
@@ -70,58 +67,6 @@
 
 #ifndef _LUCID_STR_H
 #define _LUCID_STR_H
-
-/*! @brief check for an ASCII character */
-#define char_isascii(ch) ((unsigned int)(ch) < 128u)
-
-/*! @brief check for a blank character (space, horizontal tab) */
-#define char_isblank(ch) (ch == ' ' || ch == '\t')
-
-/*! @brief check for an ASCII control character */
-#define char_iscntrl(ch) ((unsigned int)(ch) < 32u || ch == 127)
-
-/*! @brief check for a digit character (0-9) */
-#define char_isdigit(ch) ((unsigned int)(ch - '0') < 10u)
-
-/*! @brief check for graphable characters (excluding space) */
-#define char_isgraph(ch) ((unsigned int)(ch - '!') < 94u)
-
-/*! @brief check for a lower-case character */
-#define char_islower(ch) ((unsigned int)(ch - 'a') < 26u)
-
-/*! @brief check for a printable character (including space) */
-#define char_isprint(ch) ((unsigned int)(ch - ' ') < 95u)
-
-/*! @brief check for a whitespace character (\\t, \\n, \\v, \\f, \\r) */
-#define char_isspace(ch) ((unsigned int)(ch - '\t') < 5u || ch == ' ')
-
-/*! @brief check for an upper-case character */
-#define char_isupper(ch) ((unsigned int)(ch - 'A') < 26u)
-
-/*! @brief check for a hexadecimal character */
-#define char_isxdigit(ch) (char_isdigit(ch) || \
-                          (unsigned int)(ch - 'a') < 6u || \
-                          (unsigned int)(ch - 'A') < 6u)
-
-
-/*! @brief check for an upper- or lower-case character */
-#define char_isalpha(ch) (char_islower(ch) || char_isupper(ch))
-
-/*! @brief check for an upper-, lower-case or digit character */
-#define char_isalnum(ch) (char_isalpha(ch) || char_isdigit(ch))
-
-/*! @brief check for a punctuation character */
-#define char_ispunct(ch) (char_isprint(ch) && \
-                         !char_isalnum(ch) && \
-                         !char_isspace(ch))
-
-
-/*! @brief convert character to lower-case */
-#define char_tolower(ch) do { if (char_isupper(ch)) ch += 32; } while(0)
-
-/*! @brief convert character to upper-case */
-#define char_toupper(ch) do { if (char_islower(ch)) ch -= 32; } while(0)
-
 
 /*! @brief class for alpha-numerical characters */
 #define CC_ALNUM  (1 <<  1)
@@ -221,20 +166,9 @@ int str_cmp(const char *str1, const char *str2);
  * @param[out] dst destination string
  * @param[in]  src source string
  *
- * @return Number of bytes that have been copied.
+ * @return A pointer to dst.
  */
-int str_cpy(char *dst, const char *src);
-
-/*!
- * @brief copy a string
- *
- * @param[out] dst destination string
- * @param[in]  src source string
- * @param[in]  n   copy first n bytes
- *
- * @return Number of bytes that have been copied.
- */
-int str_cpyn(void *dst, const void *src, int n);
+char *str_cpy(char *dst, const char *src);
 
 /*!
  * @brief duplicate a string
@@ -247,17 +181,6 @@ int str_cpyn(void *dst, const void *src, int n);
 char *str_dup(const char *str);
 
 /*!
- * @brief duplicate a string
- *
- * @param[in] str source string
- * @param[in] n   string length
- *
- * @return A pointer to the duplicated string, or NULL if insufficient memory
- *         was available.
- */
-char *str_dupn(const char *str, int n);
-
-/*!
  * @brief scan string for character
  *
  * @param[in] str string to scan
@@ -267,7 +190,7 @@ char *str_dupn(const char *str, int n);
  * @return A pointer to the matched character or NULL if the character is not
  *         found.
  */
-char *str_index(const char *str, int c, int n);
+char *str_chr(const char *str, int c, int n);
 
 /*!
  * @brief calculate the length of a string
@@ -277,14 +200,6 @@ char *str_index(const char *str, int c, int n);
  * @return number of characters in str
  */
 int str_len(const char *str);
-
-/*!
- * @brief write zero-valued bytes
- *
- * @param[out] str destination string
- * @param[in]  n   write first n bytes
- */
-void str_zero(void *str, int n);
 
 
 /*!

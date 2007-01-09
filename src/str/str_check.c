@@ -15,6 +15,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include "char.h"
 #include "str.h"
 
 int str_check(const char *str, int allowed)

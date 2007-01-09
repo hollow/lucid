@@ -15,9 +15,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include "mem.h"
 #include "str.h"
 
-int str_cpy(char *dst, const char *src)
+char *str_cpy(char *dst, const char *src)
 {
-	return str_cpyn(dst, src, str_len(src));
+	return mem_cpy(dst, src, str_len(src) + 1);
 }

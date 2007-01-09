@@ -17,8 +17,9 @@
 
 #include <stdlib.h>
 
-#include "str.h"
 #include "argv.h"
+#include "char.h"
+#include "str.h"
 
 int argv_from_str(char *str, char ** const argv, int max_argc)
 {

@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 #include "io.h"
-#include "str.h"
+#include "mem.h"
 
 int io_read_eol(int fd, char **line)
 {
@@ -51,7 +51,7 @@ int io_read_eol(int fd, char **line)
 	
 out:
 	if (len > 0)
-		*line = str_dupn(buf, len);
+		*line = mem_dup(buf, len);
 	
 	free(buf);
 	return len;

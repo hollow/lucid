@@ -15,12 +15,15 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "str.h"
+#include "mem.h"
 
-void str_zero(void *str, int n)
+int mem_cmp(const void *s1, const void *s2, int n)
 {
-	char *p = str;
+	int d;
+	const unsigned char *a = s1;
+	const unsigned char *b = s2;
 	
-	while (n--)
-		*p++ = 0;
+	for (d = *a - *b; n-- && d == 0; d = *a - *b);
+	
+	return d;
 }

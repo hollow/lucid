@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 
+#include "mem.h"
 #include "str.h"
 #include "stralloc.h"
 #include "whirlpool.h"
@@ -38,7 +39,7 @@ char *whirlpool_digest(const char *str)
 	for (i = 0; i < DIGESTBYTES; i++)
 		stralloc_catf(&sa, "%02X", digest[i]);
 	
-	buf = str_dupn(sa.s, sa.len);
+	buf = mem_dup(sa.s, sa.len);
 	
 	stralloc_free(&sa);
 	

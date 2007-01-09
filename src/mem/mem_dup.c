@@ -15,17 +15,12 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "char.h"
-#include "str.h"
+#include <stdlib.h>
 
-char *str_toupper(char *str)
+#include "mem.h"
+
+void *mem_dup(const void *s, int n)
 {
-	char *p = str;
-	
-	while (*p) {
-		char_toupper(*p);
-		p++;
-	}
-	
-	return str;
+	void *d = malloc(n);
+	return mem_cpy(d, s, n);
 }

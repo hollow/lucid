@@ -29,7 +29,7 @@ int str_path_isdot(const char *str)
 	buf = p = o = str_dup(str);
 	
 	while (1) {
-		p = str_index(p, '/', str_len(p));
+		p = str_chr(p, '/', str_len(p));
 		
 		if (p)
 			*p++ = '\0';

@@ -15,17 +15,15 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "char.h"
 #include "str.h"
 
-char *str_toupper(char *str)
+char *str_chr(const char *str, int c, int n)
 {
-	char *p = str;
+	char *p = (char *) str;
 	
-	while (*p) {
-		char_toupper(*p);
-		p++;
-	}
+	for (; n; p++, n--)
+		if (*p == c)
+			return p;
 	
-	return str;
+	return 0;
 }

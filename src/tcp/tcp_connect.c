@@ -21,7 +21,7 @@
 #include <sys/socket.h>
 
 #include "addr.h"
-#include "str.h"
+#include "mem.h"
 #include "tcp.h"
 
 int tcp_connect(const char *ip, int port)
@@ -32,7 +32,7 @@ int tcp_connect(const char *ip, int port)
 	if (port < 1)
 		return errno = EINVAL, -1;
 	
-	str_zero(&inaddr, sizeof(inaddr));
+	mem_set(&inaddr, 0, sizeof(inaddr));
 	inaddr.sin_family = AF_INET;
 	inaddr.sin_port   = htons(port);
 	

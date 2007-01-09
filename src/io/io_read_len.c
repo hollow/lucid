@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 #include "io.h"
-#include "str.h"
+#include "mem.h"
 
 int io_read_len(int fd, char **str, size_t len)
 {
@@ -31,7 +31,7 @@ int io_read_len(int fd, char **str, size_t len)
 		return -1;
 	
 	if (buflen > 0)
-		*str = str_dupn(buf, buflen);
+		*str = mem_dup(buf, buflen);
 	
 	free(buf);
 	return buflen;

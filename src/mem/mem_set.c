@@ -15,15 +15,14 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "str.h"
+#include "mem.h"
 
-char *str_index(const char *str, int c, int n)
+void *mem_set(void *s, int c, int n)
 {
-	char *p = (char *) str;
+	unsigned char *p = s;
 	
-	for (; n; p++, n--)
-		if (*p == c)
-			return p;
+	while (n--)
+		*p++ = c;
 	
-	return 0;
+	return s;
 }

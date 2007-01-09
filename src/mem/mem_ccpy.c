@@ -15,17 +15,21 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "char.h"
-#include "str.h"
+#include "mem.h"
 
-char *str_toupper(char *str)
+void *mem_ccpy(void *s1, const void *s2, int c, int n)
 {
-	char *p = str;
+	unsigned char       *a = s1;
+	const unsigned char *b = s2;
 	
-	while (*p) {
-		char_toupper(*p);
-		p++;
+	while (n--) {
+		*a++ = *b;
+		
+		if (*b == c)
+			return (void *) a;
+		
+		b++;
 	}
 	
-	return str;
+	return 0;
 }

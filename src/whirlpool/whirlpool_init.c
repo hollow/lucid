@@ -19,14 +19,14 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "str.h"
+#include "mem.h"
 #include "whirlpool.h"
 
 void whirlpool_init(whirlpool_t * const context)
 {
 	int i;
 	
-	str_zero(context->len, LENGTHBYTES);
+	mem_set(context->len, 0, LENGTHBYTES);
 	
 	context->bits = context->pos = 0;
 	context->buf[0]  = 0;

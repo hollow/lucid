@@ -29,7 +29,7 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 		uint32_t l;
 	} u;
 	
-	const char *p = str_index(str, '/', str_len(str));
+	const char *p = str_chr(str, '/', str_len(str));
 	
 	if (ip && (!p || p - str > 0)) {
 		if (_lucid_sscanf(str, "%hhu.%hhu.%hhu.%hhu",

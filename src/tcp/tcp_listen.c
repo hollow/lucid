@@ -21,7 +21,7 @@
 #include <sys/socket.h>
 
 #include "addr.h"
-#include "str.h"
+#include "mem.h"
 #include "tcp.h"
 
 int tcp_listen(const char *ip, int port, int backlog)
@@ -32,7 +32,7 @@ int tcp_listen(const char *ip, int port, int backlog)
 	if (port < 1)
 		return errno = EINVAL, -1;
 	
-	str_zero(&inaddr, sizeof(inaddr));
+	mem_set(&inaddr, 0, sizeof(inaddr));
 	inaddr.sin_family = AF_INET;
 	inaddr.sin_port   = addr_htos(port);
 	

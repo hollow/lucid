@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 #include "io.h"
-#include "str.h"
+#include "mem.h"
 
 int io_read_eof(int fd, char **file)
 {
@@ -47,7 +47,7 @@ int io_read_eof(int fd, char **file)
 	
 out:
 	if (len > 0)
-		*file = str_dupn(buf, len);
+		*file = mem_dup(buf, len);
 	
 	rc = len;
 	

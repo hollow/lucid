@@ -506,7 +506,7 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 				len   = str_len(arg.s);
 				fmt   = ccp + len;
 				
-				p = str_index(arg.s + 1, '%', len - 1);
+				p = str_chr(arg.s + 1, '%', len - 1);
 				
 				if (p != 0) {
 					len = p - arg.s - 1;

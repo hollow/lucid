@@ -16,7 +16,7 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include "str.h"
+#include "mem.h"
 #include "stralloc.h"
 
 int stralloc_copyb(stralloc_t *dst, const char *src, size_t len)
@@ -24,7 +24,7 @@ int stralloc_copyb(stralloc_t *dst, const char *src, size_t len)
 	if (stralloc_ready(dst, len) == -1)
 		return -1;
 	
-	str_cpyn(dst->s, src, len);
+	mem_cpy(dst->s, src, len);
 	dst->len = len;
 	return 0;
 }

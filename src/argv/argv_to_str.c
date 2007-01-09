@@ -16,7 +16,7 @@
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "argv.h"
-#include "str.h"
+#include "mem.h"
 #include "stralloc.h"
 
 char *argv_to_str(int argc, const char ** const argv)
@@ -36,7 +36,7 @@ char *argv_to_str(int argc, const char ** const argv)
 	else
 		len = buf.len - 1;
 	
-	str = str_dupn(buf.s, len);
+	str = mem_dup(buf.s, len);
 	stralloc_free(&buf);
 	return str;
 }

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "char.h"
 #include "flist.h"
 #include "str.h"
 
@@ -35,7 +36,7 @@ int flist32_from_str(const char *str, const flist32_t list[],
 	buf = p = o = str_dup(str);
 	
 	while (1) {
-		p = str_index(p, delim, str_len(p));
+		p = str_chr(p, delim, str_len(p));
 		
 		while (char_isspace(*o))
 			o++;

@@ -15,9 +15,10 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+#include "mem.h"
 #include "str.h"
 
 char *str_dup(const char *str)
 {
-	return str_dupn(str, str_len(str));
+	return mem_dup(str, str_len(str) + 1);
 }
