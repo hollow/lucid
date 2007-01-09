@@ -36,6 +36,7 @@ pkginclude_HEADERS = addr.h \
                      scanf.h \
                      str.h \
                      stralloc.h \
+                     strtok.h \
                      tcp.h \
                      whirlpool.h
 
@@ -119,6 +120,7 @@ STR_C = str/str_check.c \
         str/str_cmp.c \
         str/str_cpy.c \
         str/str_dup.c \
+        str/str_equal.c \
         str/str_len.c \
         str/str_path_concat.c \
         str/str_path_isabs.c \
@@ -141,6 +143,15 @@ STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_ready.c \
              stralloc/stralloc_readyplus.c \
              stralloc/stralloc_zero.c
+
+STRTOK_C = strtok/strtok_append.c \
+           strtok/strtok_count.c \
+           strtok/strtok_delete.c \
+           strtok/strtok_free.c \
+           strtok/strtok_init_argv.c \
+           strtok/strtok_init_str.c \
+           strtok/strtok_toargv.c \
+           strtok/strtok_tostr.c
 
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
@@ -171,6 +182,7 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(SCANF_C) \
                      $(STR_C) \
                      $(STRALLOC_C) \
+                     $(STRTOK_C) \
                      $(TCP_C) \
                      $(WHIRLPOOL_C)
 
