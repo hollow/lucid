@@ -25,7 +25,6 @@ pkginclude_HEADERS = addr.h \
                      bitmap.h \
                      exec.h \
                      flist.h \
-                     io.h \
                      list.h \
                      log.h \
                      mem.h \
@@ -68,10 +67,6 @@ FLIST_C = flist/flist32_from_str.c \
           flist/flist64_getkey.c \
           flist/flist64_getval.c \
           flist/flist64_to_str.c
-
-IO_C = io/io_read_eof.c \
-       io/io_read_eol.c \
-       io/io_read_len.c
 
 LOG_C = log/log_close.c \
         log/log_init.c \
@@ -121,6 +116,9 @@ STR_C = str/str_check.c \
         str/str_path_concat.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
+        str/str_read.c \
+        str/str_readfile.c \
+        str/str_readline.c \
         str/str_tolower.c \
         str/str_toumax.c \
         str/str_toupper.c
@@ -168,7 +166,6 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(CHROOT_C) \
                      $(EXEC_C) \
                      $(FLIST_C) \
-                     $(IO_C) \
                      $(LOG_C) \
                      $(MEM_C) \
                      $(MISC_C) \

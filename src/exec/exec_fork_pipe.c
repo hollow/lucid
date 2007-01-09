@@ -22,8 +22,8 @@
 #include <sys/wait.h>
 
 #include "exec.h"
-#include "io.h"
 #include "printf.h"
+#include "str.h"
 #include "strtok.h"
 
 int exec_fork_pipe(char **out, const char *fmt, ...)
@@ -89,7 +89,7 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 		
 		close(outfds[1]);
 		
-		if (out && io_read_eof(outfds[0], out) == -1)
+		if (out && str_readfile(outfds[0], out) == -1)
 			return -1;
 		
 		close(outfds[0]);

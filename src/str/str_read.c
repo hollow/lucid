@@ -17,42 +17,27 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
-#include "io.h"
-#include "mem.h"
+#include "str.h"
 
-int io_read_eol(int fd, char **line)
+int str_read(int fd, char **str, int len)
 {
-	size_t chunks = 1, len = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
-	char c;
-
-	for (;;) {
-		switch(read(fd, &c, 1)) {
-		case -1:
-			return -1;
-		
-		case 0:
-			goto out;
-		
-		default:
-			if (c == '\n' || c == '\r')
-				goto out;
-			
-			if (len >= chunks * CHUNKSIZE) {
-				chunks++;
-				buf = realloc(buf, chunks * CHUNKSIZE + 1);
-			}
-			
-			buf[len++] = c;
-			break;
-		}
+	int errno_orig;
+	char *buf = calloc(len + 1, sizeof(char));
+	
+	int buflen = read(fd, buf, len);
+	
+	if (buflen == -1) {
+		errno_orig = errno;
+		free(buf);
+		errno = errno_orig;
+		return -1;
 	}
 	
-out:
-	if (len > 0)
-		*line = mem_dup(buf, len);
+	if (buflen > 0)
+		*str = str_dup(buf);
 	
 	free(buf);
-	return len;
+	return buflen;
 }

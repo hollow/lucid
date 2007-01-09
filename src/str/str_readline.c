@@ -18,40 +18,69 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "io.h"
-#include "mem.h"
+#include "str.h"
 
-int io_read_eof(int fd, char **file)
+static inline
+int skip_to_newline(int fd)
 {
-	int rc = -1;
+	char c;
+	
+	while (1) {
+		switch(read(fd, &c, 1)) {
+		case -1:
+			return -1;
+		
+		case 0:
+			return 0;
+		
+		default:
+			if (c != '\n' && c != '\r')
+				return lseek(fd, lseek(fd, 0, SEEK_CUR) - 1, SEEK_SET);
+		}
+	}
+}
+
+int str_readline(int fd, char **line)
+{
 	size_t chunks = 1, len = 0;
 	char *buf = malloc(chunks * CHUNKSIZE + 1);
+	char c;
 
-	for (;;) {
-		int bytes_read = read(fd, buf+len, CHUNKSIZE);
+	while (1) {
+		switch(read(fd, &c, 1)) {
+		case -1:
+			len = -1;
+			goto free;
 		
-		if (bytes_read == -1)
-			goto err;
-		
-		len += bytes_read;
-		buf[len] = '\0';
-		
-		if (bytes_read == 0)
+		case 0:
 			goto out;
 		
-		if (bytes_read == CHUNKSIZE) {
-			chunks++;
-			buf = realloc(buf, chunks * CHUNKSIZE + 1);
+		default:
+			if (c == '\n' || c == '\r') {
+				if (skip_to_newline(fd) == -1) {
+					len = -1;
+					goto free;
+				}
+				
+				goto out;
+			}
+			
+			if (len >= chunks * CHUNKSIZE) {
+				chunks++;
+				buf = realloc(buf, chunks * CHUNKSIZE + 1);
+			}
+			
+			buf[len++] = c;
+			buf[len] = '\0';
+			break;
 		}
 	}
 	
 out:
 	if (len > 0)
-		*file = mem_dup(buf, len);
+		*line = str_dup(buf);
 	
-	rc = len;
-	
-err:
+free:
 	free(buf);
-	return rc;
+	return len;
 }

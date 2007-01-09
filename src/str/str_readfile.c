@@ -18,21 +18,39 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "io.h"
-#include "mem.h"
+#include "str.h"
 
-int io_read_len(int fd, char **str, size_t len)
+int str_readfile(int fd, char **str)
 {
-	char *buf = calloc(len + 1, sizeof(char));
+	int rc = -1;
+	int chunks = 1, len = 0;
+	char *buf = malloc(chunks * CHUNKSIZE + 1);
 
-	ssize_t buflen = read(fd, buf, len);
+	for (;;) {
+		int bytes_read = read(fd, buf+len, CHUNKSIZE);
+		
+		if (bytes_read == -1)
+			goto err;
+		
+		len += bytes_read;
+		buf[len] = '\0';
+		
+		if (bytes_read == 0)
+			goto out;
+		
+		if (bytes_read == CHUNKSIZE) {
+			chunks++;
+			buf = realloc(buf, chunks * CHUNKSIZE + 1);
+		}
+	}
 	
-	if (buflen == -1)
-		return -1;
+out:
+	if (len > 0)
+		*str = str_dup(buf);
 	
-	if (buflen > 0)
-		*str = mem_dup(buf, buflen);
+	rc = len;
 	
+err:
 	free(buf);
-	return buflen;
+	return rc;
 }
