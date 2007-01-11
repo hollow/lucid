@@ -15,28 +15,26 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include "flist.h"
-#include "mem.h"
+#include "str.h"
 #include "stralloc.h"
 
-char *flist64_to_str(const flist64_t list[], uint64_t val, char delim)
+char *flist64_to_str(const flist64_t list[], uint64_t val, char *delim)
 {
 	int i;
-	size_t len;
-	char *str;
-	stralloc_t buf;
+	char *buf;
+	stralloc_t _sa, *sa = &_sa;
 	
-	stralloc_init(&buf);
+	stralloc_init(sa);
 	
 	for (i = 0; list[i].key; i++)
 		if (val & list[i].val)
-			stralloc_catf(&buf, "%s%c", list[i].key, delim);
+			stralloc_catf(sa, "%s%s", list[i].key, delim);
 	
-	if (buf.len == 0)
-		len = 0;
-	else
-		len = buf.len - 1;
+	if (sa->len > 0)
+		sa->len -= str_len(delim);
 	
-	str = mem_dup(buf.s, len);
-	stralloc_free(&buf);
-	return str;
+	buf = stralloc_finalize(sa);
+	
+	stralloc_free(sa);
+	return buf;
 }

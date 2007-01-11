@@ -20,43 +20,32 @@
 #include "char.h"
 #include "flist.h"
 #include "str.h"
+#include "strtok.h"
 
 int flist32_from_str(const char *str, const flist32_t list[],
                   uint32_t *flags, uint32_t *mask,
-                  char clmod, char delim)
+                  char clmod, char *delim)
 {
-	char *p, *o, *buf;
+	char *token;
 	int clear = 0;
 	uint32_t cur_flag;
 	
-	if (str_isempty(str))
-		return errno = EINVAL, -1;
+	strtok_t _st, *st = &_st, *p;
 	
-	buf = p = o = str_dup(str);
+	if (!strtok_init_str(st, str, delim, 0))
+		return -1;
 	
-	while (1) {
-		p = str_chr(p, delim, str_len(p));
+	strtok_for_each(st, p) {
+		token = p->token;
 		
-		while (char_isspace(*o))
-			o++;
-		
-		if (p) {
-			if (o == p) {
-				p++;
-				continue;
-			}
-			
-			*p++ = '\0';
-		}
-		
-		if (*o == clmod)
+		if (*token == clmod)
 			clear = 1;
 		
-		cur_flag = flist32_getval(list, o+clear);
+		cur_flag = flist32_getval(list, token+clear);
 		
 		if (!cur_flag) {
-			free(buf);
-			return errno = ENOENT, -1;
+			strtok_free(st);
+			return -1;
 		}
 		
 		if (clear) {
@@ -66,13 +55,9 @@ int flist32_from_str(const char *str, const flist32_t list[],
 			*flags |=  cur_flag;
 			*mask  |=  cur_flag;
 		}
-		
-		if (!p)
-			break;
-		else
-			o = p;
 	}
 	
-	free(buf);
+	strtok_free(st);
+	
 	return 0;
 }

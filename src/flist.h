@@ -106,7 +106,7 @@ const char *flist32_getkey(const flist32_t list[], uint32_t val);
  */
 int flist32_from_str(const char *str, const flist32_t list[],
                      uint32_t *flags, uint32_t *mask,
-                     char clmod, char delim);
+                     char clmod, char *delim);
 
 /*!
  * @brief convert bit mask to flag list string
@@ -115,17 +115,13 @@ int flist32_from_str(const char *str, const flist32_t list[],
  * @param[in] val   bit mask
  * @param[in] delim flag delimiter
  *
- * @return flags list string (obtained with malloc(3))
+ * @return flags list string
  *
- * @note the caller should free obtained memory using free(3)
  * @note this function ignores set bits if they do not appear in the list
  * @note if no flag was found or the bitmap was empty, an empty string is
  *       returned, not NULL
- *
- * @see malloc(3)
- * @see free(3)
  */
-char *flist32_to_str(const flist32_t list[], uint32_t val, char delim);
+char *flist32_to_str(const flist32_t list[], uint32_t val, char *delim);
 
 
 
@@ -184,7 +180,7 @@ const char *flist64_getkey(const flist64_t list[], uint64_t val);
  */
 int flist64_from_str(const char *str, const flist64_t list[],
                      uint64_t *flags, uint64_t *mask,
-                     char clmod, char delim);
+                     char clmod, char *delim);
 
 /*!
  * @brief convert bit mask to flag list string
@@ -193,17 +189,13 @@ int flist64_from_str(const char *str, const flist64_t list[],
  * @param[in] val   bit mask
  * @param[in] delim flag delimiter
  *
- * @return flags list string (obtained with malloc(3))
+ * @return flags list string
  *
- * @note the caller should free obtained memory using free(3)
  * @note this function ignores set bits if they do not appear in the list
  * @note if no flag was found or the bitmap was empty, an empty string is
  *       returned, not NULL
- *
- * @see malloc(3)
- * @see free(3)
  */
-char *flist64_to_str(const flist64_t list[], uint64_t val, char delim);
+char *flist64_to_str(const flist64_t list[], uint64_t val, char *delim);
 
 #endif
 
