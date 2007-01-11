@@ -164,6 +164,19 @@ int str_cmp(const char *str1, const char *str2);
  *
  * @param[in] str1 first string
  * @param[in] str2 second string
+ * @param[in] n    compare first n bytes
+ *
+ * @return An integer greater than, equal to, or less than 0, if the string
+ *         pointed to by str1 is greater than, equal to, or less than the string
+ *         pointed to by str2, respectively.
+ */
+int str_cmpn(const char *str1, const char *str2, int n);
+
+/*!
+ * @brief compare two strings
+ *
+ * @param[in] str1 first string
+ * @param[in] str2 second string
  *
  * @return 1 if both strings are equal, 0 otherwise.
  */
@@ -200,6 +213,17 @@ char *str_dup(const char *str);
  *         found.
  */
 char *str_chr(const char *str, int c, int n);
+
+/*!
+ * @brief locate a substring
+ *
+ * @param[in] str    string to scan
+ * @param[in] needle string to look for
+ *
+ * @return A pointer to the matched substring or NULL if the substring is not
+ *         found.
+ */
+char *str_str(const char *str, const char *needle);
 
 /*!
  * @brief calculate the length of a string
