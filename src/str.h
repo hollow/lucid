@@ -117,7 +117,7 @@
 int str_check(const char *str, int allowed);
 
 /*! @brief check if string is empty */
-#define str_isempty(str)  (!str || str_check(str, CC_SPACE))
+#define str_isempty(str)  (!str || str_check(str, CC_BLANK))
 
 /*! @brief check string for alpha-numerical characters */
 #define str_isalnum(str)  str_check(str, CC_ALNUM)
