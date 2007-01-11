@@ -42,7 +42,7 @@ char *whirlpool_digest(const char *str)
 	for (i = 0; i < DIGESTBYTES; i++)
 		stralloc_catf(&sa, "%02X", digest[i]);
 	
-	buf = mem_dup(sa.s, sa.len);
+	buf = stralloc_finalize(&sa);
 	
 	stralloc_free(&sa);
 	
