@@ -77,7 +77,7 @@ void log_internal(int level, int strerr, const char *fmt, va_list ap)
 	if (strerr) {
 		buf = msg;
 		_lucid_asprintf(&msg, "%s: %s", buf, strerror(errno_orig));
-		free(buf);
+		mem_free(buf);
 	}
 	
 	if (_log_options->syslog)
@@ -89,7 +89,7 @@ void log_internal(int level, int strerr, const char *fmt, va_list ap)
 	if (_log_options->file)
 		log_fd(_log_options->fd, level, msg);
 	
-	free(msg);
+	mem_free(msg);
 }
 
 #define LOGFUNC(name, level, rc) \

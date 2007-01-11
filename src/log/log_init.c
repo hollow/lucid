@@ -48,7 +48,7 @@ void log_init(log_options_t *options)
 		setlogmask(options->mask);
 	}
 	
-	_log_options = (log_options_t *)malloc(sizeof(log_options_t));
+	_log_options = (log_options_t *) mem_alloc(sizeof(log_options_t));
 	
 	mem_cpy(_log_options, options, sizeof(log_options_t));
 }

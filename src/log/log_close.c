@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 
+#include "mem.h"
 #include "log.h"
 
 extern log_options_t *_log_options;
@@ -33,7 +34,7 @@ void log_close(void)
 	if (_log_options->file)
 		close(_log_options->fd);
 	
-	free(_log_options);
+	mem_free(_log_options);
 	
 	_log_options = NULL;
 }
