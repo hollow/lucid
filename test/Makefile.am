@@ -19,7 +19,6 @@
 INCLUDES = -I$(top_srcdir)/src
 
 check_PROGRAMS = addr \
-                 argv \
                  bitmap \
                  chroot \
                  flist \
@@ -31,9 +30,6 @@ LUCID = $(top_builddir)/src/libucid.la
 
 addr_SOURCES = addr.c
 addr_LDADD = $(LUCID)
-
-argv_SOURCES = argv.c
-argv_LDADD = $(LUCID)
 
 bitmap_SOURCES = bitmap.c
 bitmap_LDADD = $(LUCID)
