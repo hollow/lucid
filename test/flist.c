@@ -21,6 +21,7 @@
 
 #include "flist.h"
 #include "log.h"
+#include "mem.h"
 
 #define NODE_A 0x0001
 #define NODE_B 0x0008
@@ -54,8 +55,8 @@ int flist32_from_str_t(void)
 		uint32_t flags;
 		uint32_t mask;
 	} T[] = {
-		{ NULL,       -1, 0,             0 },
-		{ "",         -1, 0,             0 },
+		{ NULL,        0, 0,             0 },
+		{ "",          0, 0,             0 },
 		{ "A",         0, NODE_A,        NODE_A },
 		{ "A,B",       0, NODE_A|NODE_B, NODE_A|NODE_B },
 		{ "A,B,~C",    0, NODE_A|NODE_B, NODE_A|NODE_B|NODE_C },
@@ -67,7 +68,7 @@ int flist32_from_str_t(void)
 	for (i = 0; i < TS; i++) {
 		flags = mask = 0;
 		
-		ret = flist32_from_str(T[i].str, list32, &flags, &mask, '~', ',');
+		ret = flist32_from_str(T[i].str, list32, &flags, &mask, '~', ",");
 		
 		if (ret   != T[i].ret ||
 		    flags != T[i].flags  ||
@@ -93,8 +94,8 @@ int flist64_from_str_t(void)
 		uint64_t flags;
 		uint64_t mask;
 	} T[] = {
-		{ NULL,       -1, 0,             0 },
-		{ "",         -1, 0,             0 },
+		{ NULL,        0, 0,             0 },
+		{ "",          0, 0,             0 },
 		{ "A",         0, NODE_A,        NODE_A },
 		{ "A,D",       0, NODE_A|NODE_D, NODE_A|NODE_D },
 		{ "A,D,~E",    0, NODE_A|NODE_D, NODE_A|NODE_D|NODE_E },
@@ -106,7 +107,7 @@ int flist64_from_str_t(void)
 	for (i = 0; i < TS; i++) {
 		flags = mask = 0;
 		
-		ret = flist64_from_str(T[i].str, list64, &flags, &mask, '~', ',');
+		ret = flist64_from_str(T[i].str, list64, &flags, &mask, '~', ",");
 		
 		if (ret   != T[i].ret ||
 		    flags != T[i].flags  ||
@@ -141,9 +142,9 @@ int flist32_to_str_t(void)
 	
 	for (i = 0; i < TS; i++) {
 		if (str)
-			free(str);
+			mem_free(str);
 		
-		str = flist32_to_str(list32, T[i].flags, ',');
+		str = flist32_to_str(list32, T[i].flags, ",");
 		
 		if (strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
@@ -175,9 +176,9 @@ int flist64_to_str_t(void)
 	
 	for (i = 0; i < TS; i++) {
 		if (str)
-			free(str);
+			mem_free(str);
 		
-		str = flist64_to_str(list64, T[i].flags, ',');
+		str = flist64_to_str(list64, T[i].flags, ",");
 		
 		if (strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",

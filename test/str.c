@@ -19,8 +19,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "str.h"
 #include "log.h"
+#include "mem.h"
+#include "str.h"
 
 static
 int str_check_t(void)
@@ -122,7 +123,7 @@ int str_path_concat_t(void)
 			                T[i].path, path);
 		
 		if (path)
-			free(path);
+			mem_free(path);
 	}
 	
 	return rc;
@@ -155,7 +156,7 @@ int str_path_isabs_t(void)
 	for (i = 0; i < TS; i++) {
 		buf = strdup(T[i].str);
 		res = str_path_isabs(buf);
-		free(buf);
+		mem_free(buf);
 		
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",
@@ -195,7 +196,7 @@ int str_path_isdot_t(void)
 	for (i = 0; i < TS; i++) {
 		buf = strdup(T[i].str);
 		res = str_path_isdot(buf);
-		free(buf);
+		mem_free(buf);
 		
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",

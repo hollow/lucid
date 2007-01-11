@@ -19,8 +19,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "whirlpool.h"
 #include "log.h"
+#include "mem.h"
+#include "whirlpool.h"
 
 static
 int whirlpool_digest_t(void)
@@ -124,7 +125,7 @@ int whirlpool_digest_t(void)
 	
 	for (i = 0; i < TS; i++) {
 		if (digest)
-			free(digest);
+			mem_free(digest);
 		
 		digest = whirlpool_digest(T[i].str);
 		
