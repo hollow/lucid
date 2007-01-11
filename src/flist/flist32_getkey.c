@@ -14,19 +14,15 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <stdlib.h>
-#include <errno.h>
-
 #include "flist.h"
 
 const char *flist32_getkey(const flist32_t list[], uint32_t val)
 {
 	int i;
 	
-	for (i = 0; list[i].key; i++) {
+	for (i = 0; list[i].key; i++)
 		if (list[i].val == val)
 			return list[i].key;
-	}
 	
-	return errno = ENOENT, NULL;
+	return 0;
 }

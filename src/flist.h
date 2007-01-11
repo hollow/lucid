@@ -67,7 +67,7 @@ typedef struct {
 #define FLIST32_NODE1(PREFIX, NAME) { #NAME, (1 << PREFIX ## _ ## NAME) },
 
 /*! @brief 32 bit list termination */
-#define FLIST32_END { NULL, 0 } };
+#define FLIST32_END { 0, 0 } };
 
 /*!
  * @brief get 32 bit value by key
@@ -141,7 +141,7 @@ typedef struct {
 #define FLIST64_NODE1(PREFIX, NAME) { #NAME, (1 << PREFIX ## _ ## NAME) },
 
 /*! @brief 64 bit list termination */
-#define FLIST64_END { NULL, 0 } };
+#define FLIST64_END { 0, 0 } };
 
 /*!
  * @brief get 64 bit value by key

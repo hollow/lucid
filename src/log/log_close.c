@@ -15,7 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include <unistd.h>
-#include <stdlib.h>
 #include <syslog.h>
 
 #include "mem.h"
@@ -36,5 +35,5 @@ void log_close(void)
 	
 	mem_free(_log_options);
 	
-	_log_options = NULL;
+	_log_options = 0;
 }

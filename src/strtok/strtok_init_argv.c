@@ -31,12 +31,12 @@ strtok_t *strtok_init_argv(strtok_t *st, char *argv[], int argc, int empty)
 		
 		if (!(new = mem_alloc(sizeof(strtok_t)))) {
 			strtok_free(st);
-			return NULL;
+			return 0;
 		}
 		
 		if (!(new->token = str_dup(argv[i]))) {
 			strtok_free(st);
-			return NULL;
+			return 0;
 		}
 		
 		list_add_tail(&(new->list), &(st->list));

@@ -17,7 +17,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <errno.h>
 #include <sys/wait.h>
 
 #include "exec.h"
@@ -77,7 +76,7 @@ int exec_fork(const char *fmt, ...)
 		execvp(argv[0], argv);
 		
 		/* never get here */
-		exit(errno);
+		exit(1);
 	
 	default:
 		mem_free(argv);

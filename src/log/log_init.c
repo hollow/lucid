@@ -15,7 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include <unistd.h>
-#include <stdlib.h>
 #include <syslog.h>
 #include <sys/stat.h>
 
@@ -23,7 +22,7 @@
 #include "mem.h"
 #include "str.h"
 
-log_options_t *_log_options = NULL;
+log_options_t *_log_options = 0;
 
 void log_init(log_options_t *options)
 {

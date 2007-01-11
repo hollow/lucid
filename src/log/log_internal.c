@@ -34,7 +34,7 @@ static
 void log_fd(int fd, int level, const char *msg)
 {
 	char timebuf[17];
-	time_t curtime = time(NULL);
+	time_t curtime = time(0);
 	
 	if (!(_log_options->mask & level))
 		return;

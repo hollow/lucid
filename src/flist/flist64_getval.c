@@ -14,8 +14,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <errno.h>
-
 #include "flist.h"
 #include "str.h"
 
@@ -23,10 +21,9 @@ uint64_t flist64_getval(const flist64_t list[], const char *key)
 {
 	int i;
 	
-	for (i = 0; list[i].key; i++) {
+	for (i = 0; list[i].key; i++)
 		if (str_cmp(list[i].key, key) == 0)
 			return list[i].val;
-	}
 	
-	return errno = ENOENT, 0;
+	return 0;
 }

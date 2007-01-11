@@ -14,12 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <stdlib.h>
-#include <errno.h>
-
-#include "char.h"
 #include "flist.h"
-#include "str.h"
 #include "strtok.h"
 
 int flist64_from_str(const char *str, const flist64_t list[],
