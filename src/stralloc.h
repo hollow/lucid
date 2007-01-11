@@ -107,6 +107,15 @@ int stralloc_ready(stralloc_t *sa, size_t len);
 int stralloc_readyplus(stralloc_t *sa, size_t len);
 
 /*!
+ * @brief finalize dynamic string in new buffer
+ *
+ * @param[in] sa  string to finalize
+ *
+ * @return Newly allocated null-terminated string on success, NULL otherwise.
+ */
+char *stralloc_finalize(stralloc_t *sa);
+
+/*!
  * @brief deallocate all memory
  *
  * @param[out] sa string to initialize
