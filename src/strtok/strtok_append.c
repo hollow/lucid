@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "mem.h"
 #include "str.h"
 #include "strtok.h"
 
@@ -24,12 +25,11 @@ int strtok_append(strtok_t *st, const char *token)
 {
 	strtok_t *new;
 	
-	if (!(new = malloc(sizeof(strtok_t))))
+	if (!(new = mem_alloc(sizeof(strtok_t))))
 		return -1;
 	
 	if (!(new->token = str_dup(token))) {
-		free(new);
-		errno = ENOMEM;
+		mem_free(new);
 		return -1;
 	}
 	

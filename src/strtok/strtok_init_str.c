@@ -17,57 +17,53 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "mem.h"
 #include "str.h"
 #include "strtok.h"
 
-strtok_t *strtok_init_str(strtok_t *st, const char *s, char delim, int empty)
+strtok_t *strtok_init_str(strtok_t *st, const char *str, char *delim, int empty)
 {
 	strtok_t *new;
 	char *scpy, *cur, *token;
-	int len = str_len(s);
 	
 	INIT_LIST_HEAD(&(st->list));
 	
-	scpy = cur = token = str_dup(s);
+	if (!str)
+		return st;
+	
+	scpy = cur = token = str_dup(str);
 	
 	if (!scpy)
-		return NULL;
+		return 0;
 	
-	scpy[len] = delim;
-	
-	do {
-		if (*cur == delim) {
-			if (!empty && cur == token)
-				token = ++cur;
-			
-			else {
-				*cur++ = '\0';
-				
-				if (!(new = malloc(sizeof(strtok_t))))
-					goto free;
-				
-				if (!(new->token = str_dup(token)))
-					goto free;
-				
-				list_add_tail(&(new->list), &(st->list));
-				
-				token = cur;
-			}
+	while (token) {
+		cur = str_str(cur, delim);
+		
+		if (cur) {
+			mem_set(cur, 0, str_len(delim));
+			cur += str_len(delim);
 		}
 		
-		else
-			cur++;
-	} while(len--);
+		if (empty || !str_isempty(token)) {
+			if (!(new = mem_alloc(sizeof(strtok_t))))
+				goto free;
+			
+			if (!(new->token = str_dup(token)))
+				goto free;
+			
+			list_add_tail(&(new->list), &(st->list));
+		}
+		
+		token = cur;
+	}
 	
 	goto out;
 	
 free:
 	strtok_free(st);
-	st = NULL;
-	errno = ENOMEM;
-
-out:
-	free(scpy);
+	st = 0;
 	
+out:
+	mem_free(scpy);
 	return st;
 }

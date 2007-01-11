@@ -14,9 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <stdlib.h>
-#include <errno.h>
-
+#include "mem.h"
 #include "str.h"
 #include "strtok.h"
 
@@ -31,22 +29,18 @@ strtok_t *strtok_init_argv(strtok_t *st, char *argv[], int argc, int empty)
 		if (!empty && str_isempty(argv[i]))
 			continue;
 		
-		if (!(new = malloc(sizeof(strtok_t))))
-			goto free;
+		if (!(new = mem_alloc(sizeof(strtok_t)))) {
+			strtok_free(st);
+			return NULL;
+		}
 		
-		if (!(new->token = str_dup(argv[i])))
-			goto free;
+		if (!(new->token = str_dup(argv[i]))) {
+			strtok_free(st);
+			return NULL;
+		}
 		
 		list_add_tail(&(new->list), &(st->list));
 	}
 	
-	goto out;
-	
-free:
-	strtok_free(st);
-	st = NULL;
-	errno = ENOMEM;
-	
-out:
 	return st;
 }

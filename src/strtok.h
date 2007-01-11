@@ -46,13 +46,13 @@ strtok_t *strtok_init_argv(strtok_t *st, char *argv[], int argc, int empty);
  * @brief initialize string tokenizer from character array
  *
  * @param[out] st    tokenizer to initialize
- * @param[in]  s     pointer to a string
+ * @param[in]  str   pointer to a string
  * @param[in]  delim token delimiter
  * @param[in]  empty convert empty tokens
  *
  * @return A pointer to st.
  */
-strtok_t *strtok_init_str(strtok_t *st, const char *s, char delim, int empty);
+strtok_t *strtok_init_str(strtok_t *st, const char *str, char *delim, int empty);
 
 /*!
  * @brief deallocate string tokenizer
@@ -114,7 +114,7 @@ int strtok_toargv(strtok_t *st, char **argv);
  *
  * @param 0 on success, -1 on error with errno set.
  */
-int strtok_tostr(strtok_t *st, char **str, char delim);
+int strtok_tostr(strtok_t *st, char **str, char *delim);
 
 #endif
 

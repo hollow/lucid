@@ -14,8 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <stdlib.h>
-
+#include "mem.h"
 #include "str.h"
 #include "strtok.h"
 
@@ -29,8 +28,8 @@ void strtok_delete(strtok_t *st, const char *token)
 		
 		if (str_equal(p->token, token)) {
 			list_del(pos);
-			free(p->token);
-			free(p);
+			mem_free(p->token);
+			mem_free(p);
 		}
 	}
 }

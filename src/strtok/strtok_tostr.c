@@ -18,30 +18,29 @@
 #include "stralloc.h"
 #include "strtok.h"
 
-int strtok_tostr(strtok_t *st, char **str, char delim)
+int strtok_tostr(strtok_t *st, char **str, char *delim)
 {
 	int i = 0;
-	stralloc_t buf;
+	stralloc_t _sa, *sa = &_sa;
 	strtok_t *p;
 	
 	if (strtok_count(st) < 1)
 		return 0;
 	
-	stralloc_init(&buf);
+	stralloc_init(sa);
 	
 	strtok_for_each(st, p) {
-		if (stralloc_catf(&buf, "%s%c", p->token, delim) == -1)
+		if (stralloc_catf(sa, "%s%s", p->token, delim) == -1)
 			return -1;
 		
 		i++;
 	}
 	
-	if (buf.len > 0) {
-		buf.s[buf.len - 1] = '\0';
-		*str = str_dup(buf.s);
-	}
+	if (sa->len > 0)
+		sa->len -= str_len(delim);
 	
-	stralloc_free(&buf);
+	*str = stralloc_finalize(sa);
 	
+	stralloc_free(sa);
 	return i;
 }
