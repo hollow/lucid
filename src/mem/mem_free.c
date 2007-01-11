@@ -14,14 +14,28 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "mem.h"
+#include <errno.h>
+#include <sys/mman.h>
 
-void *mem_dup(const void *s, int n)
+#include "mem.h"
+#include "mem_internal.h"
+
+void mem_free(void *s)
 {
-	void *d = mem_alloc(n);
+	int errno_orig = errno;
+	_mem_pool_t *p;
 	
-	if (d)
-		return mem_cpy(d, s, n);
+	mem_for_each(_mem_pool, p)
+		if (p->mem == s)
+			break;
 	
-	return 0;
+	if (p->mem != s)
+		return;
+	
+	list_del(&(p->list));
+	
+	munmap(p->mem, p->len);
+	munmap(p, sizeof(_mem_pool_t));
+	
+	errno = errno_orig;
 }

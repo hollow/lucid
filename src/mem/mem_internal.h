@@ -14,14 +14,19 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "mem.h"
+#ifndef _LUCID_MEM_INTERNAL_H
+#define _LUCID_MEM_INTERNAL_H
 
-void *mem_dup(const void *s, int n)
-{
-	void *d = mem_alloc(n);
-	
-	if (d)
-		return mem_cpy(d, s, n);
-	
-	return 0;
-}
+#include "list.h"
+
+typedef struct {
+	list_t list;
+	void *mem;
+	int len;
+} _mem_pool_t;
+
+extern _mem_pool_t *_mem_pool;
+
+#define mem_for_each(pool, p) list_for_each_entry(p, &(pool->list), list)
+
+#endif

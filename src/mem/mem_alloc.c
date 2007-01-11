@@ -14,14 +14,46 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "mem.h"
+#include <sys/mman.h>
 
-void *mem_dup(const void *s, int n)
+#include "mem.h"
+#include "mem_internal.h"
+
+#define MAP(n) mmap(0, n, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0)
+
+_mem_pool_t *_mem_pool = NULL;
+
+void *mem_alloc(int n)
 {
-	void *d = mem_alloc(n);
+	if (!_mem_pool) {
+		if ((_mem_pool = MAP(sizeof(_mem_pool_t))) == MAP_FAILED)
+			return 0;
+		
+		INIT_LIST_HEAD(&(_mem_pool->list));
+	}
 	
-	if (d)
-		return mem_cpy(d, s, n);
+	_mem_pool_t *new;
 	
-	return 0;
+	if ((new = MAP(sizeof(_mem_pool_t))) == MAP_FAILED)
+		return 0;
+	
+	char *m;
+	
+	if ((m = MAP(n)) == MAP_FAILED) {
+		munmap(new, sizeof(_mem_pool_t));
+		return 0;
+	}
+	
+	new->len = n;
+	
+	m += n;
+	
+	while (n--)
+		*m-- = '\0';
+	
+	new->mem = m;
+	
+	list_add_tail(&(new->list), &(_mem_pool->list));
+	
+	return new->mem;
 }

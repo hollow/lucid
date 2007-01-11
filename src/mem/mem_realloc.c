@@ -14,14 +14,42 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "mem.h"
+#include <errno.h>
+#include <sys/mman.h>
 
-void *mem_dup(const void *s, int n)
+#include "mem.h"
+#include "mem_internal.h"
+
+void *mem_realloc(void *s, int n)
 {
-	void *d = mem_alloc(n);
+	int len = n;
+	_mem_pool_t *p;
 	
-	if (d)
-		return mem_cpy(d, s, n);
+	if (!s)
+		return mem_alloc(n);
 	
-	return 0;
+	mem_for_each(_mem_pool, p)
+		if (p->mem == s)
+			break;
+	
+	errno = EINVAL;
+	
+	if (p->mem != s)
+		return 0;
+	
+	char *m = mremap(p->mem, p->len, len, MREMAP_MAYMOVE);
+	
+	if (m == MAP_FAILED)
+		return 0;
+	
+	p->mem = m;
+	
+	m += n;
+	
+	while (n-- > p->len)
+		*m-- = '\0';
+	
+	p->len = len;
+	
+	return p->mem;
 }

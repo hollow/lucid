@@ -24,6 +24,15 @@
 #define _LUCID_MEM_H
 
 /*!
+ * @brief allocate memory
+ *
+ * @param[in]  n allocate n bytes
+ *
+ * @return A pointer to newly allocated memory, NULL otherwise.
+ */
+void *mem_alloc(int n);
+
+/*!
  * @brief copy memory block until character is found
  *
  * @param[out] s1 pointer to destination block
@@ -81,6 +90,13 @@ void *mem_cpy(void *s1, const void *s2, int n);
 void *mem_dup(const void *s, int n);
 
 /*!
+ * @brief free memory
+ *
+ * @param[in]  s memory area to free
+ */
+void mem_free(void *s);
+
+/*!
  * @brief find character in memory block
  *
  * @param[out] s pointer to memory block
@@ -93,6 +109,16 @@ void *mem_dup(const void *s, int n);
  *       found if n is less than or equal to zero.
  */
 int mem_idx(const void *s, int c, int n);
+
+/*!
+ * @brief reallocate memory
+ *
+ * @param[in]  s memory area to reallocate
+ * @param[in]  n allocate n bytes
+ *
+ * @return A pointer to newly allocated memory, NULL otherwise.
+ */
+void *mem_realloc(void *s, int n);
 
 /*!
  * @brief fill memory block with character
