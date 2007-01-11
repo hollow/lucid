@@ -21,6 +21,7 @@
 #include <sys/wait.h>
 
 #include "exec.h"
+#include "mem.h"
 #include "printf.h"
 #include "str.h"
 #include "strtok.h"
@@ -39,21 +40,27 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	
 	va_end(ap);
 	
-	strtok_t st;
+	strtok_t _st, *st = &_st;
 	
-	if (!strtok_init_str(&st, cmd, ' ', 0)) {
-		free(cmd);
-		return errno = ENOMEM, -1;
+	if (!strtok_init_str(st, cmd, " ", 0)) {
+		mem_free(cmd);
+		return -1;
 	}
 	
-	free(cmd);
+	mem_free(cmd);
 	
-	int argc = strtok_count(&st);
-	char **argv = calloc(argc + 1, sizeof(char *));
+	int argc    = strtok_count(st);
+	char **argv = mem_alloc(argc + 1);
 	
-	if (strtok_toargv(&st, argv) < 1) {
-		strtok_free(&st);
-		return errno = EINVAL, -1;
+	if (!argv) {
+		mem_free(argv);
+		strtok_free(st);
+		return -1;
+	}
+	
+	if (strtok_toargv(st, argv) < 1) {
+		strtok_free(st);
+		return -1;
 	}
 	
 	int outfds[2];
@@ -66,11 +73,12 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	
 	switch ((pid = fork())) {
 	case -1:
-		free(cmd);
 		return -1;
 	
 	case 0:
 		usleep(200);
+		
+		strtok_free(st);
 		
 		close(outfds[0]);
 		
@@ -83,8 +91,8 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 		exit(errno);
 	
 	default:
-		free(argv);
-		strtok_free(&st);
+		mem_free(argv);
+		strtok_free(st);
 		
 		close(outfds[1]);
 		
