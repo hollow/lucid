@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "mem.h"
 #include "str.h"
 
 static inline
@@ -41,15 +42,15 @@ int skip_to_newline(int fd)
 
 int str_readline(int fd, char **line)
 {
-	size_t chunks = 1, len = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
+	int chunks = 1, len = 0;
+	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
 	char c;
 
 	while (1) {
 		switch(read(fd, &c, 1)) {
 		case -1:
-			len = -1;
-			goto free;
+			mem_free(buf);
+			return -1;
 		
 		case 0:
 			goto out;
@@ -57,8 +58,8 @@ int str_readline(int fd, char **line)
 		default:
 			if (c == '\n' || c == '\r') {
 				if (skip_to_newline(fd) == -1) {
-					len = -1;
-					goto free;
+					mem_free(buf);
+					return -1;
 				}
 				
 				goto out;
@@ -66,20 +67,15 @@ int str_readline(int fd, char **line)
 			
 			if (len >= chunks * CHUNKSIZE) {
 				chunks++;
-				buf = realloc(buf, chunks * CHUNKSIZE + 1);
+				buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
 			}
 			
 			buf[len++] = c;
-			buf[len] = '\0';
 			break;
 		}
 	}
 	
 out:
-	if (len > 0)
-		*line = str_dup(buf);
-	
-free:
-	free(buf);
+	*line = buf;
 	return len;
 }

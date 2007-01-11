@@ -17,39 +17,34 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "mem.h"
 #include "str.h"
 
 int str_readfile(int fd, char **str)
 {
-	int rc = -1;
 	int chunks = 1, len = 0;
-	char *buf = malloc(chunks * CHUNKSIZE + 1);
-
+	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
+	
 	for (;;) {
 		int bytes_read = read(fd, buf+len, CHUNKSIZE);
 		
-		if (bytes_read == -1)
-			goto err;
+		if (bytes_read == -1) {
+			mem_free(buf);
+			return -1;
+		}
 		
 		len += bytes_read;
 		buf[len] = '\0';
 		
 		if (bytes_read == 0)
-			goto out;
+			break;
 		
 		if (bytes_read == CHUNKSIZE) {
 			chunks++;
-			buf = realloc(buf, chunks * CHUNKSIZE + 1);
+			buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
 		}
 	}
 	
-out:
-	if (len > 0)
-		*str = str_dup(buf);
-	
-	rc = len;
-	
-err:
-	free(buf);
-	return rc;
+	*str = buf;
+	return len;
 }

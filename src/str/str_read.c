@@ -18,25 +18,19 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "mem.h"
 #include "str.h"
 
 int str_read(int fd, char **str, int len)
 {
-	int errno_orig;
-	char *buf = calloc(len + 1, sizeof(char));
+	int buflen;
+	char *buf = mem_alloc(len + 1);
 	
-	int buflen = read(fd, buf, len);
-	
-	if (buflen == -1) {
-		errno_orig = errno;
-		free(buf);
-		errno = errno_orig;
+	if ((buflen = read(fd, buf, len)) == -1) {
+		mem_free(buf);
 		return -1;
 	}
 	
-	if (buflen > 0)
-		*str = str_dup(buf);
-	
-	free(buf);
+	*str = buf;
 	return buflen;
 }
