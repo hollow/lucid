@@ -17,10 +17,11 @@
 #include <stdlib.h>
 
 #include "str.h"
+#include "strtok.h"
 
 int str_path_isabs(const char *str)
 {
-	char *buf, *p, *o;
+	int abs = 1;
 	
 	if (str_isempty(str))
 		return 0;
@@ -28,28 +29,20 @@ int str_path_isabs(const char *str)
 	if (*str != '/')
 		return 0;
 	
-	if (str_path_isdot(str))
-		return 0;
+	strtok_t _st, *st = &_st, *p;
 	
-	buf = p = o = str_dup(str);
+	if (!strtok_init_str(st, str, "/", 0))
+		return -1;
 	
-	while (1) {
-		p = str_chr(p, '/', str_len(p));
-		
-		if (p)
-			*p++ = '\0';
-		
-		if (!str_isgraph(o)) {
-			free(buf);
-			return 0;
-		}
-		
-		if (!p)
+	strtok_for_each(st, p) {
+		if (str_equal(p->token, ".") || str_equal(p->token, "..") ||
+		    !str_isgraph(p->token)) {
+			abs = 0;
 			break;
-		else
-			o = p;
+		}
 	}
 	
-	free(buf);
-	return 1;
+	strtok_free(st);
+	
+	return abs;
 }

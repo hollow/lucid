@@ -17,33 +17,28 @@
 #include <stdlib.h>
 
 #include "str.h"
+#include "strtok.h"
 
 int str_path_isdot(const char *str)
 {
-	char *buf, *p, *o;
+	int found = 0;
 	
 	if (str_isempty(str))
 		return 0;
 	
-	buf = p = o = str_dup(str);
+	strtok_t _st, *st = &_st, *p;
 	
-	while (1) {
-		p = str_chr(p, '/', str_len(p));
-		
-		if (p)
-			*p++ = '\0';
-		
-		if (str_cmp(o, ".") == 0 || str_cmp(o, "..") == 0) {
-			free(buf);
-			return 1;
-		}
-		
-		if (!p)
+	if (!strtok_init_str(st, str, "/", 0))
+		return 0;
+	
+	strtok_for_each(st, p) {
+		if (str_equal(p->token, ".") || str_equal(p->token, "..")) {
+			found = 1;
 			break;
-		else
-			o = p;
+		}
 	}
 	
-	free(buf);
-	return 0;
+	strtok_free(st);
+	
+	return found;
 }
