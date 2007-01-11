@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 
+#include "mem.h"
 #include "stralloc.h"
 
 int stralloc_ready(stralloc_t *sa, size_t len)
@@ -25,7 +26,7 @@ int stralloc_ready(stralloc_t *sa, size_t len)
 	char *tmp;
 	
 	if (!sa->s || sa->a < len) {
-		if (!(tmp = realloc(sa->s, wanted)))
+		if (!(tmp = mem_realloc(sa->s, wanted)))
 			return -1;
 		
 		sa->a = wanted;

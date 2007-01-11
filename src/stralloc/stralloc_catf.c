@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#include "mem.h"
 #include "printf.h"
 #include "stralloc.h"
 
@@ -37,7 +38,7 @@ int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 	
 	rc = stralloc_cats(dst, buf);
 	
-	free(buf);
+	mem_free(buf);
 	
 	return rc;
 }

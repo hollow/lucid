@@ -15,14 +15,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <stdlib.h>
-
+#include "mem.h"
 #include "stralloc.h"
 
 void stralloc_free(stralloc_t *sa)
 {
 	if (sa->s)
-		free(sa->s);
+		mem_free(sa->s);
 	
 	sa->s = 0;
 }
