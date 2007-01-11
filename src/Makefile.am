@@ -70,12 +70,16 @@ LOG_C = log/log_close.c \
         log/log_init.c \
         log/log_internal.c
 
-MEM_C = mem/mem_ccpy.c \
+MEM_C = mem/mem_alloc.c \
+        mem/mem_ccpy.c \
         mem/mem_chr.c \
         mem/mem_cmp.c \
         mem/mem_cpy.c \
         mem/mem_dup.c \
+        mem/mem_free.c \
         mem/mem_idx.c \
+        mem/mem_internal.h \
+        mem/mem_realloc.c \
         mem/mem_set.c
 
 MISC_C = misc/isdir.c \
@@ -107,6 +111,7 @@ SCANF_C = scanf/sscanf.c \
 STR_C = str/str_check.c \
         str/str_chr.c \
         str/str_cmp.c \
+        str/str_cmpn.c \
         str/str_cpy.c \
         str/str_dup.c \
         str/str_equal.c \
@@ -117,6 +122,7 @@ STR_C = str/str_check.c \
         str/str_read.c \
         str/str_readfile.c \
         str/str_readline.c \
+        str/str_str.c \
         str/str_tolower.c \
         str/str_toumax.c \
         str/str_toupper.c
@@ -130,6 +136,7 @@ STRALLOC_C = stralloc/stralloc_catb.c \
              stralloc/stralloc_copyb.c \
              stralloc/stralloc_copy.c \
              stralloc/stralloc_copys.c \
+             stralloc/stralloc_finalize.c \
              stralloc/stralloc_free.c \
              stralloc/stralloc_init.c \
              stralloc/stralloc_ready.c \
