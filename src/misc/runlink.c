@@ -20,6 +20,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "mem.h"
 #include "misc.h"
 #include "printf.h"
 
@@ -55,7 +56,7 @@ int runlink(const char *path)
 			if (runlink(new_path) == -1)
 				status = -1;
 			
-			free(new_path);
+			mem_free(new_path);
 		}
 		
 		if (closedir(dp) == -1)

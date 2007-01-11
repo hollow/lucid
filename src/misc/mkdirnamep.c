@@ -18,13 +18,14 @@
 #include <errno.h>
 #include <libgen.h>
 
+#include "mem.h"
 #include "misc.h"
 #include "str.h"
 
 int mkdirnamep(const char *path, mode_t mode)
 {
 	char *buf, *dname;
-	int rc, errno_orig;
+	int rc;
 	
 	if (str_isempty(path))
 		return errno = EINVAL, -1;
@@ -34,9 +35,7 @@ int mkdirnamep(const char *path, mode_t mode)
 	
 	rc = mkdirp(dname, mode);
 	
-	errno_orig = errno;
-	free(buf);
-	errno = errno_orig;
+	mem_free(buf);
 	
 	return rc;
 }
