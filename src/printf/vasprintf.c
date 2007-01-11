@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 
+#include "mem.h"
 #include "printf.h"
 
 int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
@@ -35,7 +36,7 @@ int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
 	/* if size is 0, no buffer is allocated
 	** just set *ptr to NULL and return size */
 	if (len > 0) {
-		if (!(buf = calloc(len + 1, sizeof(char))))
+		if (!(buf = mem_alloc(len + 1)))
 			return -1;
 		
 		_lucid_vsnprintf(buf, len, fmt, ap);

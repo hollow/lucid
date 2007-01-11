@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "mem.h"
 #include "printf.h"
 
 int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
@@ -26,7 +27,7 @@ int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
 	
 	buflen = _lucid_vasprintf(&buf, fmt, ap);
 	len = write(fd, buf, buflen);
-	free(buf);
+	mem_free(buf);
 	
 	return len;
 }
