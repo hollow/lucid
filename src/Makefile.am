@@ -23,6 +23,7 @@ pkginclude_HEADERS = addr.h \
                      bitmap.h \
                      exec.h \
                      flist.h \
+                     http.h \
                      list.h \
                      log.h \
                      mem.h \
@@ -65,6 +66,19 @@ FLIST_C = flist/flist32_from_str.c \
           flist/flist64_getkey.c \
           flist/flist64_getval.c \
           flist/flist64_to_str.c
+
+HTTP_C = http/http_header_add.c \
+         http/http_header_del.c \
+         http/http_header_free.c \
+         http/http_header_init.c \
+         http/http_internal.h \
+         http/http_request_fromstr.c \
+         http/http_request_tostr.c \
+         http/http_response_fromstr.c \
+         http/http_response_tostr.c \
+         http/http_url_cmp.c \
+         http/http_url_fromstr.c \
+         http/http_url_tostr.c
 
 LOG_C = log/log_close.c \
         log/log_init.c \
@@ -171,6 +185,7 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(CHROOT_C) \
                      $(EXEC_C) \
                      $(FLIST_C) \
+                     $(HTTP_C) \
                      $(LOG_C) \
                      $(MEM_C) \
                      $(MISC_C) \
