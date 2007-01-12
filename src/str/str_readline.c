@@ -14,30 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <unistd.h>
-
 #include "mem.h"
 #include "str.h"
-
-static inline
-int skip_to_newline(int fd)
-{
-	char c;
-	
-	while (1) {
-		switch(read(fd, &c, 1)) {
-		case -1:
-			return -1;
-		
-		case 0:
-			return 0;
-		
-		default:
-			if (c != '\n' && c != '\r')
-				return lseek(fd, lseek(fd, 0, SEEK_CUR) - 1, SEEK_SET);
-		}
-	}
-}
 
 int str_readline(int fd, char **line)
 {
@@ -55,14 +33,8 @@ int str_readline(int fd, char **line)
 			goto out;
 		
 		default:
-			if (c == '\n' || c == '\r') {
-				if (skip_to_newline(fd) == -1) {
-					mem_free(buf);
-					return -1;
-				}
-				
+			if (c == '\n' || c == '\r')
 				goto out;
-			}
 			
 			if (len >= chunks * CHUNKSIZE) {
 				chunks++;
