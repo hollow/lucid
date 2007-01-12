@@ -35,13 +35,10 @@ int http_request_fromstr(const char *str, http_request_t *request)
 	/* get request line */
 	cur = str_str(cur, "\r\n");
 	
-	if (!cur) {
-		mem_free(scpy);
-		return errno = EINVAL, -1;
+	if (cur) {
+		mem_set(cur, 0, 2);
+		cur += 2;
 	}
-	
-	mem_set(cur, 0, 2);
-	cur += 2;
 	
 	/* parse request method */
 	char *method = reqline;
@@ -85,6 +82,9 @@ int http_request_fromstr(const char *str, http_request_t *request)
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
+	
+	if (!cur)
+		return 0;
 	
 	/* get headers */
 	if (!strtok_init_str(st, cur, "\r\n", 0)) {
