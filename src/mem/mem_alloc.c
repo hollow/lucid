@@ -19,7 +19,11 @@
 #include "mem.h"
 #include "mem_internal.h"
 
+#ifdef MAP_ANONYMOUS
 #define MAP(n) mmap(0, n, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0)
+#else
+#define MAP(n) mmap(0, n, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, 0, 0)
+#endif
 
 _mem_pool_t *_mem_pool = 0;
 
