@@ -37,7 +37,7 @@ void *mem_realloc(void *s, int n)
 	if (p->mem != s)
 		return 0;
 	
-	char *m = mremap(p->mem, p->len, len, MREMAP_MAYMOVE);
+	char *m = mremap(p->mem, p->len, len, 0);
 	
 	if (m == MAP_FAILED)
 		return 0;

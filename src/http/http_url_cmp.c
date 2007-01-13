@@ -32,4 +32,3 @@ int http_url_cmp(http_url_t *a, http_url_t *b)
 	
 	return str_cmp(a->path, b->path);
 }
-
