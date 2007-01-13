@@ -88,7 +88,7 @@ int http_response_fromstr(const char *str, http_response_t *response)
 	
 	mem_free(scpy);
 	
-	http_header_t *hs = &(response->headers);
+	http_header_t _hs, *hs = &_hs;
 	http_header_init(hs);
 	
 	http_header_name_t name;
@@ -114,6 +114,13 @@ int http_response_fromstr(const char *str, http_response_t *response)
 		if (http_header_add(hs, name, value) == -1)
 			goto free;
 	}
+	
+	response->headers.name  = 0;
+	response->headers.value = 0;
+	
+	/* wow, this is ugly, but gcc does not like hs = &(response->headers) */
+	response->headers.list.next = hs->list.next;
+	response->headers.list.prev = hs->list.prev;
 	
 	goto out;
 	

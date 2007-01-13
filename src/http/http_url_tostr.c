@@ -15,8 +15,6 @@
 // Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#include <inttypes.h>
-
 #include "http.h"
 #include "mem.h"
 #include "printf.h"
@@ -25,7 +23,7 @@
 int http_url_tostr(http_url_t *url, char **str)
 {
 	char *buf;
-	int rc =  _lucid_asprintf(&buf, "http://%s:%" PRIu16 "%s",
+	int rc =  _lucid_asprintf(&buf, "http://%s:%d%s",
 	                          url->host, url->port, url->path);
 	
 	if (rc == -1)

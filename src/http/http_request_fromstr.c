@@ -95,7 +95,7 @@ int http_request_fromstr(const char *str, http_request_t *request)
 	
 	mem_free(scpy);
 	
-	http_header_t *hs = &(request->headers);
+	http_header_t _hs, *hs = &_hs;
 	http_header_init(hs);
 	
 	http_header_name_t name;
@@ -121,6 +121,13 @@ int http_request_fromstr(const char *str, http_request_t *request)
 		if (http_header_add(hs, name, value) == -1)
 			goto free;
 	}
+	
+	request->headers.name  = 0;
+	request->headers.value = 0;
+	
+	/* wow, this is ugly, but gcc does not like hs = &(request->headers) */
+	request->headers.list.next = hs->list.next;
+	request->headers.list.prev = hs->list.prev;
 	
 	goto out;
 	
