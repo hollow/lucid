@@ -163,6 +163,8 @@ STRTOK_C = strtok/strtok_append.c \
            strtok/strtok_free.c \
            strtok/strtok_init_argv.c \
            strtok/strtok_init_str.c \
+           strtok/strtok_next.c \
+           strtok/strtok_prev.c \
            strtok/strtok_toargv.c \
            strtok/strtok_tostr.c
 

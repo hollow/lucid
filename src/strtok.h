@@ -90,6 +90,19 @@ int strtok_append(strtok_t *st, const char *token);
  */
 void strtok_delete(strtok_t *st, const char *token);
 
+/*!
+ * @brief Go to the previous token
+ *
+ * @param[in] st tokenizer to iterate
+ */
+char *strtok_prev(strtok_t **st);
+
+/*!
+ * @brief Go to the previous token
+ *
+ * @param[in] st tokenizer to iterate
+ */
+char *strtok_next(strtok_t **st);
 
 /*! @brief interate through tokens */
 #define strtok_for_each(st, p) list_for_each_entry(p, &(st->list), list)
