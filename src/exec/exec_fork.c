@@ -70,9 +70,6 @@ int exec_fork(const char *fmt, ...)
 	
 	case 0:
 		usleep(200);
-		
-		strtok_free(st);
-		
 		execvp(argv[0], argv);
 		
 		/* never get here */
