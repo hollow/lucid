@@ -97,6 +97,12 @@ void *mem_dup(const void *s, int n);
 void mem_free(void *s);
 
 /*!
+ * @brief free all memory
+ */
+void mem_freeall(void);
+
+
+/*!
  * @brief find character in memory block
  *
  * @param[out] s pointer to memory block

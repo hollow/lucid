@@ -14,21 +14,18 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#ifndef _LUCID_MEM_INTERNAL_H
-#define _LUCID_MEM_INTERNAL_H
+#include <sys/mman.h>
 
-#include "list.h"
+#include "mem.h"
+#include "mem_internal.h"
 
-typedef struct {
-	list_t list;
-	void *mem;
-	int len;
-} _mem_pool_t;
-
-extern _mem_pool_t *_mem_pool;
-
-#define mem_for_each(pool, p) list_for_each_entry(p, &(pool->list), list)
-#define mem_for_each_safe(pool, p, tmp) \
-	list_for_each_entry_safe(p, tmp, &(pool->list), list)
-
-#endif
+void mem_freeall(void)
+{
+	_mem_pool_t *p, *tmp;
+	
+	mem_for_each_safe(_mem_pool, p, tmp) {
+		list_del(&(p->list));
+		munmap(p->mem, p->len);
+		munmap(p, sizeof(_mem_pool_t));
+	}
+}

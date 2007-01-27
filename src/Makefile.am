@@ -90,6 +90,7 @@ MEM_C = mem/mem_alloc.c \
         mem/mem_cmp.c \
         mem/mem_cpy.c \
         mem/mem_dup.c \
+        mem/mem_freeall.c \
         mem/mem_free.c \
         mem/mem_idx.c \
         mem/mem_internal.h \
