@@ -30,15 +30,17 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 	
 	const char *p = str_chr(str, '/', str_len(str));
 	
-	if (ip && (!p || p - str > 0)) {
+	if (!p || p - str > 0) {
 		if (_lucid_sscanf(str, "%hhu.%hhu.%hhu.%hhu",
 		                  &u.b[0], &u.b[1], &u.b[2], &u.b[3]) == 4) {
-			*ip = u.l;
+			if (ip)
+				*ip = u.l;
+			
 			rc = 1;
 		}
 	}
 	
-	if (!p || !mask)
+	if (!p)
 		return rc;
 	
 	p++;
@@ -48,7 +50,9 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 		str_toumax(p, &cidr, 10, str_len(p));
 		
 		if (cidr > 0 && cidr <= 32) {
-			*mask = addr_hton(0xffffffff & ~((1 << (32 - cidr)) - 1));
+			if (mask)
+				*mask = addr_hton(0xffffffff & ~((1 << (32 - cidr)) - 1));
+			
 			rc   += 2;
 		}
 	}
@@ -56,7 +60,9 @@ int addr_from_str(const char *str, uint32_t *ip, uint32_t *mask)
 	if (!str_isempty(p)) {
 		if (_lucid_sscanf(p, "%hhu.%hhu.%hhu.%hhu",
 		                  &u.b[0], &u.b[1], &u.b[2], &u.b[3]) == 4) {
-			*mask = u.l;
+			if (mask)
+				*mask = u.l;
+			
 			rc += 2;
 		}
 	}
