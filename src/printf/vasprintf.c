@@ -37,7 +37,7 @@ int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
 		if (!(buf = mem_alloc(len + 1)))
 			return -1;
 		
-		_lucid_vsnprintf(buf, len, fmt, ap);
+		_lucid_vsnprintf(buf, len + 1, fmt, ap);
 		
 		*ptr = buf;
 	}

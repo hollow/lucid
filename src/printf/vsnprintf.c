@@ -55,7 +55,7 @@ typedef struct {
 	unsigned int w; /* width */
 } __printf_t;
 
-#define EMIT(C) { if (idx < size) { *str++ = C; } idx++; }
+#define EMIT(C) { if (idx < size - 1) { *str++ = C; } idx++; }
 
 static
 int __printf_int(char *str, int size,
@@ -234,6 +234,9 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 	f.p = -1;
 	f.s = PFS_NORMAL;
 	f.w = 0;
+	
+	if (size > 0)
+		mem_set(str, 0, size);
 	
 	while ((c = *fmt++)) {
 		switch (f.s) {
