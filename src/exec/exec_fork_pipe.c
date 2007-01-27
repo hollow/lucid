@@ -72,6 +72,8 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	
 	switch ((pid = fork())) {
 	case -1:
+		close(outfds[0]);
+		close(outfds[1]);
 		return -1;
 	
 	case 0:
