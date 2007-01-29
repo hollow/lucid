@@ -24,18 +24,18 @@ void mem_free(void *s)
 {
 	int errno_orig = errno;
 	_mem_pool_t *p;
-	
+
 	mem_for_each(_mem_pool, p)
 		if (p->mem == s)
 			break;
-	
+
 	if (p->mem != s)
 		return;
-	
+
 	list_del(&(p->list));
-	
+
 	free(p->mem);
 	free(p);
-	
+
 	errno = errno_orig;
 }

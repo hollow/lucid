@@ -22,10 +22,10 @@
 void mem_freeall(void)
 {
 	_mem_pool_t *p, *tmp;
-	
+
 	if (!_mem_pool)
 		return;
-	
+
 	mem_for_each_safe(_mem_pool, p, tmp) {
 		list_del(&(p->list));
 		free(p->mem);

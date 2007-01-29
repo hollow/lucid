@@ -22,34 +22,40 @@
 
 void *mem_realloc(void *s, int n)
 {
-	_mem_pool_t *p;
-	
-	if (!s && n > 0)
-		return mem_alloc(n);
+	if (!s) {
+		if (n > 0)
+			return mem_alloc(n);
+		else
+			return NULL;
+	}
 
-	if (s && n == 0) {
+	else if (n < 1) {
 		mem_free(s);
 		return NULL;
 	}
-	
-	if (n == 0)
-		return NULL;
-	
+
+	_mem_pool_t *p;
+
 	mem_for_each(_mem_pool, p)
 		if (p->mem == s)
 			break;
-	
+
 	if (p->mem != s) {
 		errno = EINVAL;
-		return 0;
+		return NULL;
 	}
-	
-	void *m = realloc(p->mem, n);
-	
+
+	char *m = realloc(p->mem, n);
+
 	if (!m)
-		return 0;
-	
+		return NULL;
+
 	p->mem = m;
-	
+
+	if (n > p->len)
+		mem_set(m + p->len, 0, n - p->len);
+
+	p->len = n;
+
 	return p->mem;
 }

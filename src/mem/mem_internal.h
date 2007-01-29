@@ -22,6 +22,7 @@
 typedef struct {
 	list_t list;
 	void *mem;
+	int len;
 } _mem_pool_t;
 
 extern _mem_pool_t *_mem_pool;

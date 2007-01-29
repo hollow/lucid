@@ -19,34 +19,32 @@
 #include "mem.h"
 #include "mem_internal.h"
 
-_mem_pool_t *_mem_pool = NULL;
+_mem_pool_t *_mem_pool = 0;
 
 void *mem_alloc(int n)
 {
 	if (!_mem_pool) {
-		_mem_pool = malloc(sizeof(_mem_pool_t));
-		
-		if (!_mem_pool)
+		if ((_mem_pool = malloc(sizeof(_mem_pool_t))) == NULL)
 			return NULL;
-		
+
 		INIT_LIST_HEAD(&(_mem_pool->list));
 	}
-	
-	_mem_pool_t *new = malloc(sizeof(_mem_pool_t));
-	
-	if (!new)
+
+	_mem_pool_t *new;
+
+	if ((new = malloc(sizeof(_mem_pool_t))) == NULL)
 		return NULL;
-	
-	new->mem = malloc(n);
-	
-	if (!new->mem) {
+
+	new->len = n;
+
+	if ((new->mem = malloc(new->len)) == NULL) {
 		free(new);
 		return NULL;
 	}
-	
-	mem_set(new->mem, 0, n);
-	
+
+	mem_set(new->mem, 0, new->len);
+
 	list_add_tail(&(new->list), &(_mem_pool->list));
-	
+
 	return new->mem;
 }
