@@ -14,7 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <sys/mman.h>
+#include <stdlib.h>
 
 #include "mem.h"
 #include "mem_internal.h"
@@ -28,7 +28,7 @@ void mem_freeall(void)
 	
 	mem_for_each_safe(_mem_pool, p, tmp) {
 		list_del(&(p->list));
-		munmap(p->mem, p->len);
-		munmap(p, sizeof(_mem_pool_t));
+		free(p->mem);
+		free(p);
 	}
 }

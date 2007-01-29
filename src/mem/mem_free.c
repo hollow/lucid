@@ -14,8 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <stdlib.h>
 #include <errno.h>
-#include <sys/mman.h>
 
 #include "mem.h"
 #include "mem_internal.h"
@@ -34,8 +34,8 @@ void mem_free(void *s)
 	
 	list_del(&(p->list));
 	
-	munmap(p->mem, p->len);
-	munmap(p, sizeof(_mem_pool_t));
+	free(p->mem);
+	free(p);
 	
 	errno = errno_orig;
 }

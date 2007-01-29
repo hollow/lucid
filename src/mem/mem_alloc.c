@@ -14,23 +14,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <sys/mman.h>
+#include <stdlib.h>
 
 #include "mem.h"
 #include "mem_internal.h"
-
-#ifdef MAP_ANONYMOUS
-#define MAP(n) mmap(0, n, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, 0, 0)
-#else
-#define MAP(n) mmap(0, n, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, 0, 0)
-#endif
 
 _mem_pool_t *_mem_pool = 0;
 
 void *mem_alloc(int n)
 {
 	if (!_mem_pool) {
-		if ((_mem_pool = MAP(sizeof(_mem_pool_t))) == MAP_FAILED)
+		if (!(_mem_pool = calloc(1, sizeof(_mem_pool_t))))
 			return 0;
 		
 		INIT_LIST_HEAD(&(_mem_pool->list));
@@ -38,17 +32,15 @@ void *mem_alloc(int n)
 	
 	_mem_pool_t *new;
 	
-	if ((new = MAP(sizeof(_mem_pool_t))) == MAP_FAILED)
+	if (!(new = calloc(1, sizeof(_mem_pool_t))))
 		return 0;
 	
 	char *m;
 	
-	if ((m = MAP(n)) == MAP_FAILED) {
-		munmap(new, sizeof(_mem_pool_t));
+	if (!(m = calloc(1, n))) {
+		free(new);
 		return 0;
 	}
-	
-	new->len = n;
 	
 	m += n;
 	

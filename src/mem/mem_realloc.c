@@ -14,42 +14,39 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <stdlib.h>
 #include <errno.h>
-#include <sys/mman.h>
 
 #include "mem.h"
 #include "mem_internal.h"
 
 void *mem_realloc(void *s, int n)
 {
-	int len = n;
 	_mem_pool_t *p;
 	
 	if (!s)
 		return mem_alloc(n);
+
+	if (n == 0) {
+		mem_free(s);
+		return NULL;
+	}
 	
 	mem_for_each(_mem_pool, p)
 		if (p->mem == s)
 			break;
 	
-	errno = EINVAL;
-	
-	if (p->mem != s)
+	if (p->mem != s) {
+		errno = EINVAL;
 		return 0;
+	}
 	
-	char *m = mremap(p->mem, p->len, len, 0);
+	char *m = realloc(p->mem, n);
 	
-	if (m == MAP_FAILED)
+	if (!m)
 		return 0;
 	
 	p->mem = m;
-	
-	m += n;
-	
-	while (n-- > p->len)
-		*m-- = '\0';
-	
-	p->len = len;
 	
 	return p->mem;
 }
