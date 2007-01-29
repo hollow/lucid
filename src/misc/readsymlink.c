@@ -26,7 +26,7 @@ char *readsymlink(const char *path)
 	int chunks = 1, len = 0;
 	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
 
-	for (;;) {
+	while (1) {
 		len = readlink(path, buf, chunks * CHUNKSIZE);
 
 		if (len == -1) {
@@ -38,6 +38,9 @@ char *readsymlink(const char *path)
 			chunks++;
 			buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
 		}
+
+		else
+			break;
 	}
 
 	buf[len] = '\0';
