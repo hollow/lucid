@@ -300,7 +300,7 @@ int str_toumax(const char *str, unsigned long long int *val, int base, int n);
 
 
 /*! bytes read at a time */
-#define CHUNKSIZE 128
+#define CHUNKSIZE 4096
 
 /*!
  * @brief read a line of input

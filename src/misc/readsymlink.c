@@ -29,12 +29,14 @@ char *readsymlink(const char *path)
 	for (;;) {
 		len = readlink(path, buf, chunks * CHUNKSIZE);
 
-		if (len == -1)
+		if (len == -1) {
+			mem_free(buf);
 			return NULL;
+		}
 
 		if (len >= chunks * CHUNKSIZE) {
 			chunks++;
-			continue;
+			buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
 		}
 	}
 
