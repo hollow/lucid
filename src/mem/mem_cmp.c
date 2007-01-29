@@ -18,11 +18,13 @@
 
 int mem_cmp(const void *s1, const void *s2, int n)
 {
-	int d;
+	int d, i;
 	const unsigned char *a = s1;
 	const unsigned char *b = s2;
 	
-	for (d = *a - *b; n-- && d == 0; d = *a - *b);
+	for (i = 0; i < n; i++)
+		if ((d = a[i] - b[i]) != 0)
+			return d;
 	
-	return d;
+	return 0;
 }

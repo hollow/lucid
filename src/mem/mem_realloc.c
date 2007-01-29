@@ -24,13 +24,16 @@ void *mem_realloc(void *s, int n)
 {
 	_mem_pool_t *p;
 	
-	if (!s)
+	if (!s && n > 0)
 		return mem_alloc(n);
 
-	if (n == 0) {
+	if (s && n == 0) {
 		mem_free(s);
 		return NULL;
 	}
+	
+	if (n == 0)
+		return NULL;
 	
 	mem_for_each(_mem_pool, p)
 		if (p->mem == s)
@@ -41,7 +44,7 @@ void *mem_realloc(void *s, int n)
 		return 0;
 	}
 	
-	char *m = realloc(p->mem, n);
+	void *m = realloc(p->mem, n);
 	
 	if (!m)
 		return 0;
