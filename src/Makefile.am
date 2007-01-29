@@ -100,8 +100,10 @@ MEM_C = mem/mem_alloc.c \
 MISC_C = misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
+         misc/ispath.c \
          misc/mkdirnamep.c \
          misc/mkdirp.c \
+         misc/readsymlink.c \
          misc/runlink.c
 
 OPEN_C = open/open_append.c \

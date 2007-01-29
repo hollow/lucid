@@ -44,6 +44,17 @@
 #include <sys/types.h>
 
 /*!
+ * @brief check if given path exists
+ *
+ * @param[in] path path to check
+ *
+ * @return 1 on success, 0 otherwise
+ *
+ * @see stat(2)
+ */
+int ispath(const char *path);
+
+/*!
  * @brief check if given path is a directory
  *
  * @param[in] path path to check
@@ -112,6 +123,19 @@ int mkdirp(const char *path, mode_t mode);
  * @see rmdir(2)
  */
 int runlink(const char *path);
+
+/*!
+ * @brief read contents of symlink
+ *
+ * @param[in] path symlink to read
+ *
+ * @return on success a pointer to a string containing the destination of the
+ *         link, NULL on error with errno set
+ *
+ * @see unlink(2)
+ * @see rmdir(2)
+ */
+char *readsymlink(const char *path);
 
 #endif
 
