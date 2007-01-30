@@ -20,12 +20,14 @@ int strtok_toargv(strtok_t *st, char **argv)
 {
 	int i = 0;
 	strtok_t *p;
-	
+
 	if (strtok_count(st) < 1)
 		return 0;
-	
+
 	strtok_for_each(st, p)
 		argv[i++] = p->token;
-	
+
+	argv[i] = NULL;
+
 	return i;
 }
