@@ -107,7 +107,7 @@ int __printf_int(char *str, int size,
 	}
 
 	/* early space padding */
-	if ((f.f & PFL_LEFT) == 0) {
+	if ((f.f & (PFL_LEFT|PFL_ZERO)) == 0) {
 		while (f.w > nchars) {
 			EMIT(' ')
 			f.w--;
@@ -478,18 +478,29 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 				if (f.p != -1 && len > f.p)
 					len = f.p;
 
-				while (f.w-- > len && !(f.f & PFL_LEFT)) {
-					if (f.f & PFL_ZERO)
-						EMIT('0')
-					else
+				if ((f.f & (PFL_LEFT|PFL_ZERO)) == 0) {
+					while (f.w > len) {
 						EMIT(' ')
+						f.w--;
+					}
+				}
+
+				if ((f.f & PFL_ZERO) > 0) {
+					while (f.w > len) {
+						EMIT('0')
+						f.w--;
+					}
 				}
 
 				for (i = len; i; i--)
 					EMIT(*arg.s++)
 
-				while (f.w-- > len && (f.f & PFL_LEFT))
-					EMIT(' ')
+				if ((f.f & PFL_LEFT) > 0) {
+					while (f.w > len) {
+						EMIT(' ')
+						f.w--;
+					}
+				}
 
 				break;
 
