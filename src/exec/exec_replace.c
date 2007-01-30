@@ -26,41 +26,41 @@ int exec_replace(const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	
+
 	char *cmd;
-	
+
 	if (_lucid_vasprintf(&cmd, fmt, ap) == -1) {
 		va_end(ap);
 		return -1;
 	}
-	
+
 	va_end(ap);
-	
+
 	strtok_t _st, *st = &_st;
-	
+
 	if (!strtok_init_str(st, cmd, " ", 0)) {
 		mem_free(cmd);
 		return -1;
 	}
-	
+
 	mem_free(cmd);
-	
+
 	int argc    = strtok_count(st);
-	char **argv = mem_alloc(argc + 1);
-	
+	char **argv = mem_alloc((argc + 1) * sizeof(char *));
+
 	if (!argv) {
 		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
-	
+
 	if (strtok_toargv(st, argv) < 1) {
 		strtok_free(st);
 		return -1;
 	}
-	
+
 	execvp(argv[0], argv);
-	
+
 	/* never get here */
 	mem_free(argv);
 	strtok_free(st);

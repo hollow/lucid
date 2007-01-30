@@ -29,82 +29,82 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	
+
 	char *cmd;
-	
+
 	if (_lucid_vasprintf(&cmd, fmt, ap) == -1) {
 		va_end(ap);
 		return -1;
 	}
-	
+
 	va_end(ap);
-	
+
 	strtok_t _st, *st = &_st;
-	
+
 	if (!strtok_init_str(st, cmd, " ", 0)) {
 		mem_free(cmd);
 		return -1;
 	}
-	
+
 	mem_free(cmd);
-	
+
 	int argc    = strtok_count(st);
-	char **argv = mem_alloc(argc + 1);
-	
+	char **argv = mem_alloc((argc + 1) * sizeof(char *));
+
 	if (!argv) {
 		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
-	
+
 	if (strtok_toargv(st, argv) < 1) {
 		strtok_free(st);
 		return -1;
 	}
-	
+
 	int outfds[2];
-	
+
 	if (pipe(outfds) == -1)
 		return -1;
-	
+
 	pid_t pid;
 	int status;
-	
+
 	switch ((pid = fork())) {
 	case -1:
 		close(outfds[0]);
 		close(outfds[1]);
 		return -1;
-	
+
 	case 0:
 		usleep(200);
-		
+
 		strtok_free(st);
-		
+
 		close(outfds[0]);
-		
+
 		dup2(outfds[1], STDOUT_FILENO);
 		dup2(outfds[1], STDERR_FILENO);
-		
+
 		execvp(argv[0], argv);
-		
+
 		/* never get here */
 		exit(1);
-	
+
 	default:
 		mem_free(argv);
 		strtok_free(st);
-		
+
 		close(outfds[1]);
-		
+
 		if (out && str_readfile(outfds[0], out) == -1)
 			return -1;
-		
+
 		close(outfds[0]);
-		
+
 		if (waitpid(pid, &status, 0) == -1)
 			return -1;
 	}
-	
+
 	return status;
 }
