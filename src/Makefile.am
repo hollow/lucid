@@ -97,7 +97,8 @@ MEM_C = mem/mem_alloc.c \
         mem/mem_realloc.c \
         mem/mem_set.c
 
-MISC_C = misc/isdir.c \
+MISC_C = misc/copy_file.c \
+         misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
          misc/ispath.c \
