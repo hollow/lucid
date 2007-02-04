@@ -39,6 +39,9 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
+#include "mem.h"
+#include "str.h"
+
 /*!
  * @brief multiplexer configuration data
  *
@@ -85,7 +88,7 @@ void log_internal(int level, int strerr, const char *fmt, va_list ap);
 #define LOG_TRACEME do { \
 	char *__trace_bn = str_path_basename(__FILE__); \
 	log_debug("[trace] %s (%s:%d)", __FUNCTION__, __trace_bn, __LINE__); \
-	mem_free(__trace_basename); \
+	mem_free(__trace_bn); \
 } while (0);
 
 /*!
