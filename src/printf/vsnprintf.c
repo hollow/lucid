@@ -59,9 +59,8 @@ typedef struct {
 #define EMIT(C) { if (idx < size - 1) { *str++ = C; } idx++; }
 
 static
-int __printf_int(char *str, int size,
-                 unsigned long long int val, int base,
-                 __printf_t f)
+int __printf_int(char *str, int size, unsigned long long int val,
+		int base, __printf_t f)
 {
 	static const char lcdigits[] = "0123456789abcdef";
 	static const char ucdigits[] = "0123456789ABCDEF";

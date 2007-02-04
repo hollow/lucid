@@ -52,26 +52,31 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	char **argv = mem_alloc((argc + 1) * sizeof(char *));
 
 	if (!argv) {
-		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
 
 	if (strtok_toargv(st, argv) < 1) {
+		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
 
 	int outfds[2];
 
-	if (pipe(outfds) == -1)
+	if (pipe(outfds) == -1) {
+		mem_free(argv);
+		strtok_free(st);
 		return -1;
+	}
 
 	pid_t pid;
 	int status;
 
 	switch ((pid = fork())) {
 	case -1:
+		mem_free(argv);
+		strtok_free(st);
 		close(outfds[0]);
 		close(outfds[1]);
 		return -1;
@@ -79,14 +84,15 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	case 0:
 		usleep(200);
 
-		strtok_free(st);
-
 		close(outfds[0]);
 
 		dup2(outfds[1], STDOUT_FILENO);
 		dup2(outfds[1], STDERR_FILENO);
 
 		execvp(argv[0], argv);
+
+		mem_free(argv);
+		strtok_free(st);
 
 		/* never get here */
 		exit(1);

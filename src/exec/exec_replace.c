@@ -49,12 +49,12 @@ int exec_replace(const char *fmt, ...)
 	char **argv = mem_alloc((argc + 1) * sizeof(char *));
 
 	if (!argv) {
-		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
 
 	if (strtok_toargv(st, argv) < 1) {
+		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}

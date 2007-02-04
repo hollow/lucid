@@ -18,8 +18,8 @@
 #include "strtok.h"
 
 int flist64_from_str(const char *str, const flist64_t list[],
-                  uint64_t *flags, uint64_t *mask,
-                  char clmod, char *delim)
+		uint64_t *flags, uint64_t *mask,
+		char clmod, char *delim)
 {
 	char *token;
 	int clear = 0;

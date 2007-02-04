@@ -27,9 +27,9 @@ uint32_t addr_hton(uint32_t addr)
 {
 	if (islitend())
 		return (addr >> 24) |
-		       ((addr & 0xff0000) >> 8) |
-		       ((addr & 0xff00  ) << 8) |
-		       (addr << 24);
+			((addr & 0xff0000) >> 8) |
+			((addr & 0xff00  ) << 8) |
+			(addr << 24);
 	else
 		return addr;
 }

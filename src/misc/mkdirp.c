@@ -62,7 +62,7 @@ int mkdirp(const char *path, mode_t mode)
 	}
 
 	if (ok && chmod(".", mode) == -1)
-		return -1;
+		ok = 0;
 
 	fchdir(curdir);
 	close(curdir);

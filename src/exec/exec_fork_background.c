@@ -50,12 +50,12 @@ int exec_fork_background(const char *fmt, ...)
 	char **argv = mem_alloc((argc + 1) * sizeof(char *));
 
 	if (!argv) {
-		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
 
 	if (strtok_toargv(st, argv) < 1) {
+		mem_free(argv);
 		strtok_free(st);
 		return -1;
 	}
@@ -70,18 +70,16 @@ int exec_fork_background(const char *fmt, ...)
 	case 0:
 		usleep(200);
 
-		strtok_free(st);
-
 		for (i = 0; i < 100; i++)
 			close(i);
 
 		execvp(argv[0], argv);
 
 	default:
+		mem_free(argv);
+		strtok_free(st);
 		signal(SIGCHLD, SIG_IGN);
 	}
 
-	mem_free(argv);
-	strtok_free(st);
 	return 0;
 }
