@@ -17,7 +17,6 @@
 # Generic configuration
 AC_PREREQ(2.59)
 AC_INIT(lucid, 0.1_rc1, hollow@gentoo.org)
-AC_CONFIG_HEADER([config.h])
 AC_GNU_SOURCE
 
 AC_CANONICAL_BUILD
@@ -48,7 +47,26 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 
 # Checks for header files.
-AC_HEADER_STDC
+AC_CHECK_HEADERS([dirent.h \
+				  errno.h \
+				  fcntl.h \
+				  netinet/in.h \
+				  signal.h \
+				  stdarg.h \
+				  stdbool.h \
+				  stddef.h \
+				  stdint.h \
+				  stdlib.h \
+				  string.h \
+				  syslog.h \
+				  sys/mman.h \
+				  sys/socket.h \
+				  sys/stat.h \
+				  sys/types.h \
+				  sys/wait.h \
+				  time.h \
+				  unistd.h],
+				  [], AC_MSG_ERROR([Required headers not found]))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -57,7 +75,6 @@ AC_C_INLINE
 # Checks for library functions.
 
 # Compiler settings
-CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE"
 CFLAGS="${CFLAGS} -std=gnu99 -pedantic"
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Winline"
 CFLAGS="${CFLAGS} -Wredundant-decls -Wcast-align -Wno-unused-parameter"
