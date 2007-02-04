@@ -15,6 +15,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 #include "misc.h"
 #include "open.h"
@@ -31,15 +33,21 @@ int copy_file(const char *src, const char *dst)
 	if (dstfd == -1)
 		return -1;
 
-	int len;
-	char buf[4096];
+	struct stat sb;
 
-	while ((len = read(srcfd, buf, 4096)) > 0)
-		if (write(dstfd, buf, len) == -1)
-			return -1;
-
-	if (len == -1)
+	if (fstat(srcfd, &sb) == -1)
 		return -1;
 
+	void *buf = mmap(0, sb.st_size, PROT_READ, MAP_PRIVATE, srcfd, 0);
+
+	if (buf == MAP_FAILED)
+		return -1;
+
+	if (write(dstfd, buf, sb.st_size) != sb.st_size) {
+		munmap(buf, sb.st_size);
+		return -1;
+	}
+
+	munmap(buf, sb.st_size);
 	return 0;
 }
