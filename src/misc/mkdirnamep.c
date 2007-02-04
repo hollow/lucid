@@ -15,7 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include <errno.h>
-#include <libgen.h>
 
 #include "mem.h"
 #include "misc.h"
@@ -23,18 +22,13 @@
 
 int mkdirnamep(const char *path, mode_t mode)
 {
-	char *buf, *dname;
-	int rc;
-
 	if (str_isempty(path))
 		return errno = EINVAL, -1;
 
-	buf   = str_dup(path);
-	dname = dirname(buf);
+	char *dname = str_path_dirname(path);
+	int rc      = mkdirp(dname, mode);
 
-	rc = mkdirp(dname, mode);
-
-	mem_free(buf);
+	mem_free(dname);
 
 	return rc;
 }
