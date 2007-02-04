@@ -236,6 +236,26 @@ int str_len(const char *str);
 
 
 /*!
+ * @brief parse directory component
+ *
+ * @param[in] path path to parse
+ *
+ * @return A pointer to the newly allocated string or NULL if insufficent memory
+ *         was available.
+ */
+char *str_path_dirname(const char *path);
+
+/*!
+ * @brief parse basename component
+ *
+ * @param[in] path path to parse
+ *
+ * @return A pointer to the newly allocated string or NULL if insufficent memory
+ *         was available.
+ */
+char *str_path_basename(const char *path);
+
+/*!
  * @brief concatenate dirname and basename
  *
  * @param[in] dirname  directory part

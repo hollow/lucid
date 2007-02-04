@@ -134,7 +134,9 @@ STR_C = str/str_check.c \
         str/str_dup.c \
         str/str_equal.c \
         str/str_len.c \
+        str/str_path_basename.c \
         str/str_path_concat.c \
+        str/str_path_dirname.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
         str/str_read.c \
@@ -179,7 +181,6 @@ WHIRLPOOL_C = whirlpool/whirlpool_add.c \
               whirlpool/whirlpool_digest.c \
               whirlpool/whirlpool_finalize.c \
               whirlpool/whirlpool_init.c \
-              whirlpool/whirlpool_internal.h \
               whirlpool/whirlpool_tables.h \
               whirlpool/whirlpool_transform.c
 

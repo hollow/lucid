@@ -21,11 +21,13 @@
 #include "whirlpool.h"
 
 void whirlpool_add(whirlpool_t * const context,
-                   const unsigned char * const src, unsigned long srcbits)
+		const unsigned char * const src, unsigned long srcbits)
 {
 	int i;
 	uint32_t b, carry;
-	int srcpos = 0; /* index of leftmost source uint8_t containing data (1 to 8 bits). */
+
+	/* index of leftmost source uint8_t containing data (1 to 8 bits). */
+	int srcpos = 0;
 
 	int gap      = (8 - ((int)srcbits & 7)) & 7; /* space on src[srcpos]. */
 	int rem      = context->bits & 7; /* occupied bits on buf[pos]. */

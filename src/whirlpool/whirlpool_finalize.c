@@ -21,7 +21,8 @@
 #include "mem.h"
 #include "whirlpool.h"
 
-void whirlpool_finalize(whirlpool_t * const context, unsigned char * const result)
+void whirlpool_finalize(whirlpool_t * const context,
+		unsigned char * const result)
 {
 	int i;
 	uint8_t *buf    = context->buf;

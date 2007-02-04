@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-#include "whirlpool_internal.h"
+#define R 10
 
 static
 const uint64_t C0[256] = {
