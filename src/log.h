@@ -36,9 +36,8 @@
 #ifndef _LUCID_LOG_H
 #define _LUCID_LOG_H
 
-#include <stdbool.h>
 #include <stdarg.h>
-#include <libgen.h>
+#include <stdbool.h>
 
 /*!
  * @brief multiplexer configuration data
@@ -83,8 +82,11 @@ void log_init(log_options_t *options);
 void log_internal(int level, int strerr, const char *fmt, va_list ap);
 
 /*! @brief simple trace helper */
-#define LOG_TRACEME log_debug("[trace] %s (%s:%d)", \
-                          __FUNCTION__, basename(__FILE__), __LINE__);
+#define LOG_TRACEME do { \
+	char *__trace_bn = str_path_basename(__FILE__); \
+	log_debug("[trace] %s (%s:%d)", __FUNCTION__, __trace_bn, __LINE__); \
+	mem_free(__trace_basename); \
+} while (0);
 
 /*!
  * @brief send EMERG level message to the multiplexer
