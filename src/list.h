@@ -202,10 +202,10 @@ void __list_splice(list_t *list, list_t *head)
 	list_t *first = list->next;
 	list_t *last = list->prev;
 	list_t *at = head->next;
-	
+
 	first->prev = head;
 	head->next = first;
-	
+
 	last->next = at;
 	at->prev = last;
 }

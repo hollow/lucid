@@ -42,7 +42,7 @@ int http_url_cmp(http_url_t *a, http_url_t *b);
 typedef enum {
 	// unknown header (always an error)
 	HTTP_HEADER_UNKNOWN,
-	
+
 	// general headers
 	HTTP_HEADER_CACHE_CONTROL,
 	HTTP_HEADER_CONNECTION,
@@ -53,7 +53,7 @@ typedef enum {
 	HTTP_HEADER_UPGRADE,
 	HTTP_HEADER_VIA,
 	HTTP_HEADER_WARNING,
-	
+
 	// request headers
 	HTTP_HEADER_ACCEPT,
 	HTTP_HEADER_ACCEPT_CHARSET,
@@ -74,7 +74,7 @@ typedef enum {
 	HTTP_HEADER_REFERER,
 	HTTP_HEADER_TE,
 	HTTP_HEADER_USER_AGENT,
-	
+
 	// response headers
 	HTTP_HEADER_ACCEPT_RANGES,
 	HTTP_HEADER_AGE,
@@ -85,7 +85,7 @@ typedef enum {
 	HTTP_HEADER_SERVER,
 	HTTP_HEADER_VARY,
 	HTTP_HEADER_WWW_AUTHENTICATE,
-	
+
 	// entity headers
 	HTTP_HEADER_ALLOW,
 	HTTP_HEADER_CONTENT_ENCODING,
@@ -139,11 +139,11 @@ int http_request_tostr(http_request_t *request, char **str);
 
 typedef enum {
 	HTTP_STATUS_UNKNOWN,
-	
+
 	// 1xx - Informational
 	HTTP_STATUS_CONTINUE,
 	HTTP_STATUS_SWITCHING_PROTOCOLS,
-	
+
 	// 2xx - Success
 	HTTP_STATUS_OK,
 	HTTP_STATUS_CREATED,
@@ -152,7 +152,7 @@ typedef enum {
 	HTTP_STATUS_NO_CONTENT,
 	HTTP_STATUS_RESET_CONTENT,
 	HTTP_STATUS_PARTIAL_CONTENT,
-	
+
 	// 3xx - Redirection
 	HTTP_STATUS_MULTIPLE_CHOICES,
 	HTTP_STATUS_MOVED_PERMANENTLY,
@@ -161,7 +161,7 @@ typedef enum {
 	HTTP_STATUS_NOT_MODIFIED,
 	HTTP_STATUS_USE_PROXY,
 	HTTP_STATUS_TEMPORARY_REDIRECT,
-	
+
 	// 4xx - client error
 	HTTP_STATUS_BAD_REQUEST,
 	HTTP_STATUS_UNAUTHORIZED,
@@ -181,7 +181,7 @@ typedef enum {
 	HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE,
 	HTTP_STATUS_REQUEST_RANGE_NOT_SATISFIABLE,
 	HTTP_STATUS_EXPECTATION_FAILED,
-	
+
 	// 5xx - server error
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
 	HTTP_STATUS_NOT_IMPLEMENTED,

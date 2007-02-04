@@ -27,29 +27,29 @@ int tcp_listen(const char *ip, int port, int backlog)
 {
 	int fd;
 	struct sockaddr_in inaddr;
-	
+
 	if (port < 1)
 		return errno = EINVAL, -1;
-	
+
 	mem_set(&inaddr, 0, sizeof(inaddr));
 	inaddr.sin_family = AF_INET;
 	inaddr.sin_port   = addr_htos(port);
-	
+
 	if (addr_from_str(ip, &inaddr.sin_addr.s_addr, 0) == 0)
 		return errno = EINVAL, -1;
-	
+
 	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 		return -1;
-	
+
 	if (bind(fd, (struct sockaddr *) &inaddr, sizeof(struct sockaddr_in)) == -1) {
 		close(fd);
 		return -1;
 	}
-	
+
 	if (listen(fd, backlog) == -1) {
 		close(fd);
 		return -1;
 	}
-	
+
 	return fd;
 }

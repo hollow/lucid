@@ -29,106 +29,106 @@ int http_response_fromstr(const char *str, http_response_t *response)
 	int rc = 0;
 	char *scpy, *cur, *resline;
 	strtok_t _st, *st = &_st, *p;
-	
+
 	scpy = cur = resline = str_dup(str);
-	
+
 	/* get response line */
 	cur = str_str(cur, "\r\n");
-	
+
 	if (!cur) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	mem_set(cur, 0, 2);
 	cur += 2;
-	
+
 	/* parse http version */
 	if (_lucid_sscanf(resline, "HTTP/%d.%d",
 	                  &(response->major), &(response->minor)) != 2) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	resline = str_chr(resline, ' ', str_len(resline));
-	
+
 	if (!resline) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	resline++;
-	
+
 	/* parse response status */
 	char *status = resline;
-	
+
 	resline = str_chr(status, ' ', str_len(status));
-	
+
 	if (!resline) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	*resline++ = '\0';
-	
+
 	if ((response->status = str_to_status(status)) == HTTP_STATUS_UNKNOWN) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	/* parse response reason */
 	response->reason = str_dup(resline);
-	
+
 	/* get headers */
 	if (!strtok_init_str(st, cur, "\r\n", 0)) {
 		mem_free(response->reason);
 		mem_free(scpy);
 		goto free;
 	}
-	
+
 	mem_free(scpy);
-	
+
 	http_header_t _hs, *hs = &_hs;
 	http_header_init(hs);
-	
+
 	http_header_name_t name;
 	char *value;
-	
+
 	strtok_for_each(st, p) {
 		value = str_chr(p->token, ':', str_len(p->token));
-		
+
 		if (!value) {
 			errno = EINVAL;
 			goto free;
 		}
-		
+
 		*value++ = '\0';
-		
+
 		name = str_to_headername(p->token);
-		
+
 		if (name == HTTP_HEADER_UNKNOWN) {
 			errno = EINVAL;
 			goto free;
 		}
-		
+
 		if (http_header_add(hs, name, value) == -1)
 			goto free;
 	}
-	
+
 	response->headers.name  = 0;
 	response->headers.value = 0;
-	
+
 	/* wow, this is ugly, but gcc does not like hs = &(response->headers) */
 	response->headers.list.next = hs->list.next;
 	response->headers.list.prev = hs->list.prev;
-	
+
 	goto out;
-	
+
 free:
 	mem_free(response->reason);
 	http_header_free(hs);
 	rc = -1;
-	
+
 out:
 	strtok_free(st);
 	return rc;

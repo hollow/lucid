@@ -25,19 +25,19 @@ int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 	va_list ap;
 	char *buf;
 	int rc;
-	
+
 	va_start(ap, fmt);
-	
+
 	if (_lucid_vasprintf(&buf, fmt, ap) == -1) {
 		va_end(ap);
 		return -1;
 	}
-	
+
 	va_end(ap);
-	
+
 	rc = stralloc_cats(dst, buf);
-	
+
 	mem_free(buf);
-	
+
 	return rc;
 }

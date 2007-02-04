@@ -27,27 +27,27 @@ log_options_t *_log_options = 0;
 void log_init(log_options_t *options)
 {
 	struct stat sb;
-	
+
 	if (options->file && (options->fd < 0 || fstat(options->fd, &sb) == -1))
 		options->file = false;
-	
+
 	if (options->stderr && fstat(STDERR_FILENO, &sb) == -1)
 		options->stderr = false;
-	
+
 	if (options->mask == 0)
 		options->mask = LOG_UPTO(LOG_INFO);
-	
+
 	if (!options->ident || str_len(options->ident) < 1)
 		options->ident = "(none)";
-	
+
 	options->flags &= ~LOG_PERROR;
-	
+
 	if (options->syslog) {
 		openlog(options->ident, options->flags, options->facility);
 		setlogmask(options->mask);
 	}
-	
+
 	_log_options = (log_options_t *) mem_alloc(sizeof(log_options_t));
-	
+
 	mem_cpy(_log_options, options, sizeof(log_options_t));
 }

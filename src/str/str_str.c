@@ -22,19 +22,19 @@ char *str_str(const char *str, const char *needle)
 	int i;
 	int slen = str_len(str);
 	int nlen = str_len(needle);
-	
+
 	if (nlen < 1)
 		return (char *) str;
-	
+
 	if (nlen > slen)
 		return 0;
-	
+
 	for (i = slen - nlen + 1; i; i--) {
 		if (mem_cmp(str, needle, nlen) == 0)
 			return (char *) str;
-		
+
 		str++;
 	}
-	
+
 	return 0;
 }

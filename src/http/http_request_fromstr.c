@@ -29,113 +29,113 @@ int http_request_fromstr(const char *str, http_request_t *request)
 	int rc = 0;
 	char *scpy, *cur, *reqline;
 	strtok_t _st, *st = &_st, *p;
-	
+
 	scpy = cur = reqline = str_dup(str);
-	
+
 	/* get request line */
 	cur = str_str(cur, "\r\n");
-	
+
 	if (cur) {
 		mem_set(cur, 0, 2);
 		cur += 2;
 	}
-	
+
 	/* parse request method */
 	char *method = reqline;
-	
+
 	reqline = str_chr(method, ' ', str_len(method));
-	
+
 	if (!reqline) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	*reqline++ = '\0';
-	
+
 	if ((request->method = str_to_method(method)) == HTTP_METHOD_UNKNOWN) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	/* parse request path */
 	char *path = reqline;
-	
+
 	reqline = str_chr(path, ' ', str_len(path));
-	
+
 	if (!reqline) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	*reqline++ = '\0';
-	
+
 	if (!str_path_isabs(path)) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	request->path = str_dup(path);
-	
+
 	/* parse http version */
 	if (_lucid_sscanf(reqline, "HTTP/%d.%d",
 	                  &(request->major), &(request->minor)) != 2) {
 		mem_free(scpy);
 		return errno = EINVAL, -1;
 	}
-	
+
 	if (!cur)
 		return 0;
-	
+
 	/* get headers */
 	if (!strtok_init_str(st, cur, "\r\n", 0)) {
 		mem_free(request->path);
 		mem_free(scpy);
 		goto free;
 	}
-	
+
 	mem_free(scpy);
-	
+
 	http_header_t _hs, *hs = &_hs;
 	http_header_init(hs);
-	
+
 	http_header_name_t name;
 	char *value;
-	
+
 	strtok_for_each(st, p) {
 		value = str_chr(p->token, ':', str_len(p->token));
-		
+
 		if (!value) {
 			errno = EINVAL;
 			goto free;
 		}
-		
+
 		*value++ = '\0';
-		
+
 		name = str_to_headername(p->token);
-		
+
 		if (name == HTTP_HEADER_UNKNOWN) {
 			errno = EINVAL;
 			goto free;
 		}
-		
+
 		if (http_header_add(hs, name, value) == -1)
 			goto free;
 	}
-	
+
 	request->headers.name  = 0;
 	request->headers.value = 0;
-	
+
 	/* wow, this is ugly, but gcc does not like hs = &(request->headers) */
 	request->headers.list.next = hs->list.next;
 	request->headers.list.prev = hs->list.prev;
-	
+
 	goto out;
-	
+
 free:
 	mem_free(request->path);
 	http_header_free(hs);
 	rc = -1;
-	
+
 out:
 	strtok_free(st);
 	return rc;

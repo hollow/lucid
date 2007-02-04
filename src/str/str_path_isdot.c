@@ -20,23 +20,23 @@
 int str_path_isdot(const char *str)
 {
 	int found = 0;
-	
+
 	if (str_isempty(str))
 		return 0;
-	
+
 	strtok_t _st, *st = &_st, *p;
-	
+
 	if (!strtok_init_str(st, str, "/", 0))
 		return 0;
-	
+
 	strtok_for_each(st, p) {
 		if (str_equal(p->token, ".") || str_equal(p->token, "..")) {
 			found = 1;
 			break;
 		}
 	}
-	
+
 	strtok_free(st);
-	
+
 	return found;
 }

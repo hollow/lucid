@@ -23,12 +23,12 @@ int str_read(int fd, char **str, int len)
 {
 	int buflen;
 	char *buf = mem_alloc(len + 1);
-	
+
 	if ((buflen = read(fd, buf, len)) == -1) {
 		mem_free(buf);
 		return -1;
 	}
-	
+
 	*str = buf;
 	return buflen;
 }

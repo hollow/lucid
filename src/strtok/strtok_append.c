@@ -21,16 +21,16 @@
 int strtok_append(strtok_t *st, const char *token)
 {
 	strtok_t *new;
-	
+
 	if (!(new = mem_alloc(sizeof(strtok_t))))
 		return -1;
-	
+
 	if (!(new->token = str_dup(token))) {
 		mem_free(new);
 		return -1;
 	}
-	
+
 	list_add_tail(&(new->list), &(st->list));
-	
+
 	return 0;
 }

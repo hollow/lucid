@@ -26,43 +26,43 @@
 int chroot_secure_chdir(const char *root, const char *dir)
 {
 	int orig_root, new_root;
-	
+
 	if ((orig_root = open_read("/")) == -1)
 		return -1;
-	
+
 	if (chdir(root) == -1)
 		return -1;
-	
+
 	if ((new_root = open_read(".")) == -1)
 		return -1;
-	
+
 	int dirfd;
 	int errno_orig;
-	
+
 	/* check cwdfd */
 	if (chroot_fd(new_root) == -1)
 		return -1;
-	
+
 	/* now go to dir in the chroot */
 	if (chdir(dir) == -1)
 		goto err;
-	
+
 	/* save a file descriptor of the target dir */
 	dirfd = open_read(".");
-	
+
 	if (dirfd == -1)
 		goto err;
-	
+
 	/* break out of the chroot */
 	chroot_fd(orig_root);
-	
+
 	/* now go to the saved target dir (but outside the chroot) */
 	if (fchdir(dirfd) == -1)
 		goto err2;
-	
+
 	close(dirfd);
 	return 0;
-	
+
 err2:
 	errno_orig = errno;
 	close(dirfd);

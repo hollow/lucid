@@ -25,13 +25,13 @@ void http_header_free(http_header_t *hs)
 	int errno_orig = errno;
 	http_header_t *p;
 	list_t *pos, *tmp;
-	
+
 	list_for_each_safe(pos, tmp, &(hs->list)) {
 		p = list_entry(pos, http_header_t, list);
 		list_del(pos);
 		mem_free(p->value);
 		mem_free(p);
 	}
-	
+
 	errno = errno_orig;
 }

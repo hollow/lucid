@@ -24,9 +24,9 @@ int stralloc_readyplus(stralloc_t *sa, size_t len)
 	if (sa->s) {
 		if (sa->len + len < len)
 			return errno = EINVAL, -1;
-		
+
 		return stralloc_ready(sa, sa->len + len);
 	}
-	
+
 	return stralloc_ready(sa, len);
 }

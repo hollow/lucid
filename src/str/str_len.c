@@ -19,9 +19,9 @@
 int str_len(const char *str)
 {
 	int i = 0;
-	
+
 	while (*str++)
 		i++;
-	
+
 	return i;
 }

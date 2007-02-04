@@ -22,44 +22,44 @@ strtok_t *strtok_init_str(strtok_t *st, const char *str, char *delim, int empty)
 {
 	strtok_t *new;
 	char *scpy, *cur, *token;
-	
+
 	INIT_LIST_HEAD(&(st->list));
-	
+
 	if (!str)
 		return st;
-	
+
 	scpy = cur = token = str_dup(str);
-	
+
 	if (!scpy)
 		return 0;
-	
+
 	while (token) {
 		cur = str_str(cur, delim);
-		
+
 		if (cur) {
 			mem_set(cur, 0, str_len(delim));
 			cur += str_len(delim);
 		}
-		
+
 		if (empty || !str_isempty(token)) {
 			if (!(new = mem_alloc(sizeof(strtok_t))))
 				goto free;
-			
+
 			if (!(new->token = str_dup(token)))
 				goto free;
-			
+
 			list_add_tail(&(new->list), &(st->list));
 		}
-		
+
 		token = cur;
 	}
-	
+
 	goto out;
-	
+
 free:
 	strtok_free(st);
 	st = 0;
-	
+
 out:
 	mem_free(scpy);
 	return st;

@@ -22,10 +22,10 @@ void strtok_delete(strtok_t *st, const char *token)
 {
 	strtok_t *p;
 	list_t *pos, *tmp;
-	
+
 	list_for_each_safe(pos, tmp, &(st->list)) {
 		p = list_entry(pos, strtok_t, list);
-		
+
 		if (str_equal(p->token, token)) {
 			list_del(pos);
 			mem_free(p->token);

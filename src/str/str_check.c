@@ -20,12 +20,12 @@
 int str_check(const char *str, int allowed)
 {
 	int i, n;
-	
+
 	if (!str)
 		return 1;
-	
+
 	n = str_len(str);
-	
+
 	for (i = 0; i < n; i++) {
 		if (allowed & CC_ALNUM  && char_isalnum (str[i])) continue;
 		if (allowed & CC_ALPHA  && char_isalpha (str[i])) continue;
@@ -40,9 +40,9 @@ int str_check(const char *str, int allowed)
 		if (allowed & CC_SPACE  && char_isspace (str[i])) continue;
 		if (allowed & CC_UPPER  && char_isupper (str[i])) continue;
 		if (allowed & CC_XDIGIT && char_isxdigit(str[i])) continue;
-		
+
 		return 0;
 	}
-	
+
 	return 1;
 }

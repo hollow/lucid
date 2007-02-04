@@ -20,6 +20,6 @@ int _lucid_sscanf(const char *str, const char *fmt, /*args*/ ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	
+
 	return _lucid_vsscanf(str, fmt, ap);
 }

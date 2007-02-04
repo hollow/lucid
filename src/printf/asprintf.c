@@ -20,6 +20,6 @@ int _lucid_asprintf(char **ptr, const char *fmt, /*args*/ ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	
+
 	return _lucid_vasprintf(ptr, fmt, ap);
 }

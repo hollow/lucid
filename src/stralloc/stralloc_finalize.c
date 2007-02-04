@@ -21,10 +21,10 @@
 char *stralloc_finalize(stralloc_t *sa)
 {
 	char *buf = mem_alloc(sa->len + 1);
-	
+
 	if (!buf)
 		return 0;
-	
+
 	mem_cpy(buf, sa->s, sa->len);
 	return buf;
 }

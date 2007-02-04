@@ -27,46 +27,46 @@ int mkdirp(const char *path, mode_t mode)
 {
 	int ok = 1;
 	struct stat sb;
-	
+
 	if (str_isempty(path) || str_path_isdot(path))
 		return errno = EINVAL, -1;
-	
+
 	strtok_t _st, *st = &_st, *p;
-	
+
 	int curdir = open_read(".");
-	
+
 	if (curdir == -1)
 		return -1;
-	
+
 	if (!strtok_init_str(st, path, "/", 0))
 		return -1;
-	
+
 	strtok_for_each(st, p) {
 		if (mkdir(p->token, 0755) == -1) {
 			if (errno != EEXIST || stat(p->token, &sb) == -1) {
 				ok = 0;
 				break;
 			}
-			
+
 			if (!S_ISDIR(sb.st_mode)) {
 				errno = ENOTDIR;
 				ok = 0;
 				break;
 			}
 		}
-		
+
 		if (chdir(p->token) == -1) {
 			ok = 0;
 			break;
 		}
 	}
-	
+
 	if (ok && chmod(".", mode) == -1)
 		return -1;
-	
+
 	fchdir(curdir);
 	close(curdir);
-	
+
 	strtok_free(st);
 	return ok ? 0 : -1;
 }

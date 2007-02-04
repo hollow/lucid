@@ -30,24 +30,24 @@ int str_readline(int fd, char **line)
 		case -1:
 			mem_free(buf);
 			return -1;
-		
+
 		case 0:
 			goto out;
-		
+
 		default:
 			if (c == '\n' || c == '\r')
 				goto out;
-			
+
 			if (len >= chunks * CHUNKSIZE) {
 				chunks++;
 				buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
 			}
-			
+
 			buf[len++] = c;
 			break;
 		}
 	}
-	
+
 out:
 	*line = buf;
 	return len;

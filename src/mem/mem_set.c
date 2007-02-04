@@ -19,9 +19,9 @@
 void *mem_set(void *s, int c, int n)
 {
 	unsigned char *p = s;
-	
+
 	while (n--)
 		*p++ = c;
-	
+
 	return s;
 }

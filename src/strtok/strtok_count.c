@@ -20,9 +20,9 @@ int strtok_count(strtok_t *st)
 {
 	list_t *pos;
 	int count = 0;
-	
+
 	list_for_each(pos, &(st->list))
 		count++;
-	
+
 	return count;
 }

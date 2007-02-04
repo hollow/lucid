@@ -25,23 +25,23 @@ int http_url_tostr(http_url_t *url, char **str)
 	char *buf;
 	int rc =  _lucid_asprintf(&buf, "http://%s:%d%s",
 	                          url->host, url->port, url->path);
-	
+
 	if (rc == -1)
 		return -1;
-	
+
 	*str = buf;
-	
+
 	if (!str_isempty(url->query)) {
 		rc = _lucid_asprintf(&buf, "%s?%s", *str, url->query);
-		
+
 		if (rc == -1) {
 			mem_free(*str);
 			return -1;
 		}
-		
+
 		mem_free(*str);
 		*str = buf;
 	}
-	
+
 	return 0;
 }

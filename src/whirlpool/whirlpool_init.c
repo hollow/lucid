@@ -24,12 +24,12 @@
 void whirlpool_init(whirlpool_t * const context)
 {
 	int i;
-	
+
 	mem_set(context->len, 0, LENGTHBYTES);
-	
+
 	context->bits = context->pos = 0;
 	context->buf[0]  = 0;
-	
+
 	for (i = 0; i < 8; i++)
 		context->hash[i] = 0L;
 }

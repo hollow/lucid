@@ -22,10 +22,10 @@ void http_header_del(http_header_t *hs, http_header_name_t name)
 {
 	http_header_t *p;
 	list_t *pos, *tmp;
-	
+
 	list_for_each_safe(pos, tmp, &(hs->list)) {
 		p = list_entry(pos, http_header_t, list);
-		
+
 		if (p->name == name) {
 			list_del(pos);
 			mem_free(p->value);

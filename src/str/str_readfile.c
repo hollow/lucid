@@ -23,27 +23,27 @@ int str_readfile(int fd, char **str)
 {
 	int chunks = 1, len = 0;
 	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
-	
+
 	for (;;) {
 		int bytes_read = read(fd, buf+len, CHUNKSIZE);
-		
+
 		if (bytes_read == -1) {
 			mem_free(buf);
 			return -1;
 		}
-		
+
 		len += bytes_read;
 		buf[len] = '\0';
-		
+
 		if (bytes_read == 0)
 			break;
-		
+
 		if (bytes_read == CHUNKSIZE) {
 			chunks++;
 			buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
 		}
 	}
-	
+
 	*str = buf;
 	return len;
 }

@@ -20,6 +20,6 @@ uint32_t i2v32(int index)
 {
 	if (index < 0 || index > 31)
 		return 0;
-	
+
 	return (1UL << index);
 }

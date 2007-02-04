@@ -143,11 +143,11 @@ static inline
 http_header_name_t str_to_headername(const char *str)
 {
 	int i;
-	
+
 	for (i = 0; i < sizeof(HEADERNAME_MAP)/sizeof(HEADERNAME_MAP[0]); i++)
 		if (str_equal(HEADERNAME_MAP[i].str, str))
 			return HEADERNAME_MAP[i].name;
-	
+
 	return HTTP_HEADER_UNKNOWN;
 }
 
@@ -155,11 +155,11 @@ static inline
 const char *headername_to_str(http_header_name_t name)
 {
 	int i;
-	
+
 	for (i = 0; i < sizeof(HEADERNAME_MAP)/sizeof(HEADERNAME_MAP[0]); i++)
 		if (HEADERNAME_MAP[i].name == name)
 			return HEADERNAME_MAP[i].str;
-	
+
 	return errno = EINVAL, NULL;
 }
 
@@ -167,11 +167,11 @@ static inline
 http_method_t str_to_method(const char *str)
 {
 	int i;
-	
+
 	for (i = 0; i < sizeof(METHOD_MAP)/sizeof(METHOD_MAP[0]); i++)
 		if (str_equal(METHOD_MAP[i].str, str))
 			return METHOD_MAP[i].name;
-	
+
 	return HTTP_METHOD_UNKNOWN;
 }
 
@@ -179,11 +179,11 @@ static inline
 const char *method_to_str(http_method_t name)
 {
 	int i;
-	
+
 	for (i = 0; i < sizeof(METHOD_MAP)/sizeof(METHOD_MAP[0]); i++)
 		if (METHOD_MAP[i].name == name)
 			return METHOD_MAP[i].str;
-	
+
 	return errno = EINVAL, NULL;
 }
 
@@ -191,11 +191,11 @@ static inline
 http_status_t str_to_status(const char *str)
 {
 	int i;
-	
+
 	for (i = 0; i < sizeof(STATUS_MAP)/sizeof(STATUS_MAP[0]); i++)
 		if (str_equal(STATUS_MAP[i].str, str))
 			return STATUS_MAP[i].name;
-	
+
 	return HTTP_STATUS_UNKNOWN;
 }
 
@@ -203,11 +203,11 @@ static inline
 const char *status_to_str(http_status_t name)
 {
 	int i;
-	
+
 	for (i = 0; i < sizeof(STATUS_MAP)/sizeof(STATUS_MAP[0]); i++)
 		if (STATUS_MAP[i].name == name)
 			return STATUS_MAP[i].str;
-	
+
 	return errno = EINVAL, NULL;
 }
 

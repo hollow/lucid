@@ -19,9 +19,9 @@
 void *mem_dup(const void *s, int n)
 {
 	void *d = mem_alloc(n);
-	
+
 	if (d)
 		return mem_cpy(d, s, n);
-	
+
 	return 0;
 }

@@ -35,10 +35,10 @@ void log_fd(int fd, int level, const char *msg)
 {
 	char timebuf[17];
 	time_t curtime = time(0);
-	
+
 	if (!(_log_options->mask & level))
 		return;
-	
+
 	switch (level) {
 		case LOG_EMERG:   _lucid_dprintf(fd, "[emrge]"); break;
 		case LOG_ALERT:   _lucid_dprintf(fd, "[alert]"); break;
@@ -50,45 +50,45 @@ void log_fd(int fd, int level, const char *msg)
 		case LOG_DEBUG:   _lucid_dprintf(fd, "[debug]"); break;
 		default:          _lucid_dprintf(fd, "[none ]"); break;
 	}
-	
+
 	if (_log_options->time) {
 		mem_set(timebuf, 0, 17);
 		strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
 		_lucid_dprintf(fd, " %s", timebuf);
 	}
-	
+
 	_lucid_dprintf(fd, " %s", _log_options->ident);
-	
+
 	if (_log_options->flags & LOG_PID)
 		_lucid_dprintf(fd, "[%d]", getpid());
-	
+
 	_lucid_dprintf(fd, ": %s\n", msg);
 }
 
 void log_internal(int level, int strerr, const char *fmt, va_list ap)
 {
 	char *buf, *msg;
-	
+
 	if (!_log_options)
 		return;
-	
+
 	_lucid_vasprintf(&msg, fmt, ap);
-	
+
 	if (strerr) {
 		buf = msg;
 		_lucid_asprintf(&msg, "%s: %s", buf, strerror(errno_orig));
 		mem_free(buf);
 	}
-	
+
 	if (_log_options->syslog)
 		syslog(_log_options->facility|level, "%s", msg);
-	
+
 	if (_log_options->stderr)
 		log_fd(STDERR_FILENO, level, msg);
-	
+
 	if (_log_options->file)
 		log_fd(_log_options->fd, level, msg);
-	
+
 	mem_free(msg);
 }
 

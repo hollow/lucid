@@ -19,10 +19,10 @@
 void *mem_chr(const void *s, int c, int n)
 {
 	const unsigned char *p = s;
-	
+
 	for (; n--; p++)
 		if (*p == c)
 			return (void *) p;
-	
+
 	return 0;
 }

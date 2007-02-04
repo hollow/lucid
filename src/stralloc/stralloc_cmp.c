@@ -20,17 +20,17 @@
 int stralloc_cmp(const stralloc_t *a, const stralloc_t *b)
 {
 	size_t i, j;
-	
+
 	for (i = 0;; ++i) {
 		if (i == a->len)
 			return i == b->len ? 0 : -1;
-		
+
 		if (i == b->len)
 			return 1;
-		
+
 		if ((j = ((unsigned char)(a->s[i]) - (unsigned char)(b->s[i]))))
 			return j;
 	}
-	
+
 	return j;
 }

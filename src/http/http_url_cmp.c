@@ -21,14 +21,14 @@
 int http_url_cmp(http_url_t *a, http_url_t *b)
 {
 	int rc = str_cmp(str_tolower(a->host), str_tolower(b->host));
-	
+
 	if (rc != 0)
 		return rc;
-	
+
 	rc = a->port - b->port;
-	
+
 	if (rc != 0)
 		return rc;
-	
+
 	return str_cmp(a->path, b->path);
 }

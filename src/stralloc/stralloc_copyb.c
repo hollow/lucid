@@ -22,7 +22,7 @@ int stralloc_copyb(stralloc_t *dst, const char *src, size_t len)
 {
 	if (stralloc_ready(dst, len) == -1)
 		return -1;
-	
+
 	mem_cpy(dst->s, src, len);
 	dst->len = len;
 	return 0;

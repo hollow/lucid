@@ -29,34 +29,34 @@ void whirlpool_finalize(whirlpool_t * const context, unsigned char * const resul
 	int bits        = context->bits;
 	int pos         = context->pos;
 	uint8_t *digest = result;
-	
+
 	/* append a '1'-bit */
 	buf[pos] |= 0x80U >> (bits & 7);
 	pos++; /* all remaining bits on the current uint8_t are set to zero. */
-	
+
 	/* pad with zero bits to complete (N*WBLOCKBITS - LENGTHBITS) bits */
 	if (pos > WBLOCKBYTES - LENGTHBYTES) {
 		if (pos < WBLOCKBYTES)
 			mem_set(&buf[pos], 0, WBLOCKBYTES - pos);
-		
+
 		/* process data block */
 		whirlpool_transform(context);
-		
+
 		/* reset buffer */
 		pos = 0;
 	}
-	
+
 	if (pos < WBLOCKBYTES - LENGTHBYTES)
 		mem_set(&buf[pos], 0, (WBLOCKBYTES - LENGTHBYTES) - pos);
-	
+
 	pos = WBLOCKBYTES - LENGTHBYTES;
-	
+
 	/* append bit length of hashed data */
 	mem_cpy(&buf[WBLOCKBYTES - LENGTHBYTES], len, LENGTHBYTES);
-	
+
 	/* process data block */
 	whirlpool_transform(context);
-	
+
 	/* return the completed message digest */
 	for (i = 0; i < DIGESTBYTES/8; i++) {
 		digest[0] = (uint8_t)(context->hash[i] >> 56);
@@ -69,7 +69,7 @@ void whirlpool_finalize(whirlpool_t * const context, unsigned char * const resul
 		digest[7] = (uint8_t)(context->hash[i]      );
 		digest += 8;
 	}
-	
+
 	context->bits = bits;
 	context->pos  = pos;
 }

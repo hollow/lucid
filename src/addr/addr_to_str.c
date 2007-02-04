@@ -20,17 +20,17 @@
 char *addr_to_str(uint32_t ip, uint32_t mask)
 {
 	char *buf;
-	
+
 	char *ipp   = (char *) &ip;
 	char *maskp = (char *) &mask;
-	
+
 	if (mask)
 		_lucid_asprintf(&buf, "%hhu.%hhu.%hhu.%hhu/%hhu.%hhu.%hhu.%hhu",
 		                      ipp[0],   ipp[1],   ipp[2],   ipp[3],
 		                      maskp[0], maskp[1], maskp[2], maskp[3]);
-	
+
 	else
 		_lucid_asprintf(&buf, "%hhu.%hhu.%hhu.%hhu", ipp[0],  ipp[1],  ipp[2],  ipp[3]);
-	
+
 	return buf;
 }

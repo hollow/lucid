@@ -25,16 +25,16 @@ int mkdirnamep(const char *path, mode_t mode)
 {
 	char *buf, *dname;
 	int rc;
-	
+
 	if (str_isempty(path))
 		return errno = EINVAL, -1;
-	
+
 	buf   = str_dup(path);
 	dname = dirname(buf);
-	
+
 	rc = mkdirp(dname, mode);
-	
+
 	mem_free(buf);
-	
+
 	return rc;
 }

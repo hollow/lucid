@@ -19,10 +19,10 @@
 char *str_chr(const char *str, int c, int n)
 {
 	char *p = (char *) str;
-	
+
 	for (; n; p++, n--)
 		if (*p == c)
 			return p;
-	
+
 	return 0;
 }

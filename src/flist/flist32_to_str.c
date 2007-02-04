@@ -23,18 +23,18 @@ char *flist32_to_str(const flist32_t list[], uint32_t val, char *delim)
 	int i;
 	char *buf;
 	stralloc_t _sa, *sa = &_sa;
-	
+
 	stralloc_init(sa);
-	
+
 	for (i = 0; list[i].key; i++)
 		if (val & list[i].val)
 			stralloc_catf(sa, "%s%s", list[i].key, delim);
-	
+
 	if (sa->len > 0)
 		sa->len -= str_len(delim);
-	
+
 	buf = stralloc_finalize(sa);
-	
+
 	stralloc_free(sa);
 	return buf;
 }

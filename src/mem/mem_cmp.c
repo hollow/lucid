@@ -21,10 +21,10 @@ int mem_cmp(const void *s1, const void *s2, int n)
 	int d, i;
 	const unsigned char *a = s1;
 	const unsigned char *b = s2;
-	
+
 	for (i = 0; i < n; i++)
 		if ((d = a[i] - b[i]) != 0)
 			return d;
-	
+
 	return 0;
 }

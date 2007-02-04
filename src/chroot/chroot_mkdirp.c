@@ -28,29 +28,29 @@ int chroot_mkdirp(const char *root, const char *dir, mode_t mode)
 {
 	int orig_root, new_root;
 	int errno_orig;
-	
+
 	if ((orig_root = open_read("/")) == -1)
 		return -1;
-	
+
 	if (chdir(root) == -1)
 		return -1;
-	
+
 	if ((new_root = open_read(".")) == -1)
 		return -1;
-	
+
 	/* check cwdfd */
 	if (chroot_fd(new_root) == -1)
 		return -1;
-	
+
 	/* now create the dir in the chroot */
 	if (mkdirp(dir, mode) == -1)
 		goto err;
-	
+
 	/* break out of the chroot */
 	chroot_fd(orig_root);
-	
+
 	return 0;
-	
+
 err:
 	errno_orig = errno;
 	chroot_fd(orig_root);

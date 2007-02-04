@@ -26,14 +26,14 @@ void log_close(void)
 {
 	if (!_log_options)
 		return;
-	
+
 	if (_log_options->syslog)
 		closelog();
-	
+
 	if (_log_options->file)
 		close(_log_options->fd);
-	
+
 	mem_free(_log_options);
-	
+
 	_log_options = 0;
 }

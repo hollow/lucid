@@ -20,6 +20,6 @@ int _lucid_snprintf(char *str, int size, const char *fmt, /*args*/ ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	
+
 	return _lucid_vsnprintf(str, size, fmt, ap);
 }

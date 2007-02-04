@@ -23,10 +23,10 @@ int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
 {
 	char *buf;
 	int buflen, len;
-	
+
 	buflen = _lucid_vasprintf(&buf, fmt, ap);
 	len = write(fd, buf, buflen);
 	mem_free(buf);
-	
+
 	return len;
 }

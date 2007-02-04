@@ -22,7 +22,7 @@ int stralloc_catb(stralloc_t *dst, const char *src, size_t len)
 {
 	if (stralloc_readyplus(dst, len) == -1)
 		return -1;
-	
+
 	mem_cpy(dst->s + dst->len, src, len);
 	dst->len += len;
 	return 0;

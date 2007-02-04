@@ -30,19 +30,19 @@ char *whirlpool_digest(const char *str)
 	char *buf;
 	uint8_t digest[DIGESTBYTES];
 	int i;
-	
+
 	whirlpool_init(&ctx);
 	whirlpool_add(&ctx, (const unsigned char * const) str, str_len(str)*8);
 	whirlpool_finalize(&ctx, digest);
-	
+
 	stralloc_init(&sa);
-	
+
 	for (i = 0; i < DIGESTBYTES; i++)
 		stralloc_catf(&sa, "%02X", digest[i]);
-	
+
 	buf = stralloc_finalize(&sa);
-	
+
 	stralloc_free(&sa);
-	
+
 	return buf;
 }

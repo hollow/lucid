@@ -20,9 +20,9 @@ void *mem_cpy(void *s1, const void *s2, int n)
 {
 	unsigned char       *a = s1;
 	const unsigned char *b = s2;
-	
+
 	while (n--)
 		*a++ = *b++;
-	
+
 	return s1;
 }

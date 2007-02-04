@@ -24,25 +24,25 @@ int flist32_from_str(const char *str, const flist32_t list[],
 	char *token;
 	int clear = 0;
 	uint32_t cur_flag;
-	
+
 	strtok_t _st, *st = &_st, *p;
-	
+
 	if (!strtok_init_str(st, str, delim, 0))
 		return -1;
-	
+
 	strtok_for_each(st, p) {
 		token = p->token;
-		
+
 		if (*token == clmod)
 			clear = 1;
-		
+
 		cur_flag = flist32_getval(list, token+clear);
-		
+
 		if (!cur_flag) {
 			strtok_free(st);
 			return -1;
 		}
-		
+
 		if (clear) {
 			*flags &= ~cur_flag;
 			*mask  |=  cur_flag;
@@ -51,8 +51,8 @@ int flist32_from_str(const char *str, const flist32_t list[],
 			*mask  |=  cur_flag;
 		}
 	}
-	
+
 	strtok_free(st);
-	
+
 	return 0;
 }

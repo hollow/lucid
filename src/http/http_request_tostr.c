@@ -24,41 +24,41 @@
 int http_request_tostr(http_request_t *request, char **str)
 {
 	stralloc_t _sa, *sa = &_sa;
-	
+
 	stralloc_init(sa);
-	
+
 	const char *method = method_to_str(request->method);
-	
+
 	if (!method) {
 		stralloc_free(sa);
 		return errno = EINVAL, -1;
 	}
-	
+
 	if (stralloc_catf(sa, "%s %s HTTP/%d.%d\r\n", method, request->path,
 	                  request->major, request->minor) == -1) {
 		stralloc_free(sa);
 		return -1;
 	}
-	
+
 	http_header_t *hs = &(request->headers), *p;
-	
+
 	http_header_for_each(hs, p) {
 		const char *name = headername_to_str(p->name);
-		
+
 		if (!name) {
 			stralloc_free(sa);
 			return errno = EINVAL, -1;
 		}
-		
+
 		if (stralloc_catf(sa, "%s: %s\r\n", name, p->value) == -1) {
 			stralloc_free(sa);
 			return -1;
 		}
 	}
-	
+
 	if (str)
 		*str = stralloc_finalize(sa);
-	
+
 	stralloc_free(sa);
 	return 0;
 }

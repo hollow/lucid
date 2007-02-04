@@ -54,7 +54,7 @@
  *
  * @{
  */
- 
+
 #ifndef _LUCID_STRALLOC_H
 #define _LUCID_STRALLOC_H
 

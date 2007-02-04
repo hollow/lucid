@@ -24,13 +24,13 @@ void strtok_free(strtok_t *st)
 	int errno_orig = errno;
 	strtok_t *p;
 	list_t *pos, *tmp;
-	
+
 	list_for_each_safe(pos, tmp, &(st->list)) {
 		p = list_entry(pos, strtok_t, list);
 		list_del(pos);
 		mem_free(p->token);
 		mem_free(p);
 	}
-	
+
 	errno = errno_orig;
 }

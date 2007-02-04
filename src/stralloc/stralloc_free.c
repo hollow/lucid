@@ -22,6 +22,6 @@ void stralloc_free(stralloc_t *sa)
 {
 	if (sa->s)
 		mem_free(sa->s);
-	
+
 	sa->s = 0;
 }

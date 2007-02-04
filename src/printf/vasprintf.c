@@ -22,25 +22,25 @@ int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
 	va_list ap2;
 	int len;
 	char *buf;
-	
+
 	/* don't consume the original ap, we'll need it again */
 	va_copy(ap2, ap);
-	
+
 	/* get required size */
 	len = _lucid_vsnprintf(0, 0, fmt, ap2);
-	
+
 	va_end(ap2);
-	
+
 	/* if size is 0, no buffer is allocated
 	** just set *ptr to NULL and return size */
 	if (len > 0) {
 		if (!(buf = mem_alloc(len + 1)))
 			return -1;
-		
+
 		_lucid_vsnprintf(buf, len + 1, fmt, ap);
-		
+
 		*ptr = buf;
 	}
-	
+
 	return len;
 }

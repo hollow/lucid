@@ -22,25 +22,25 @@ strtok_t *strtok_init_argv(strtok_t *st, char *argv[], int argc, int empty)
 {
 	int i;
 	strtok_t *new;
-	
+
 	INIT_LIST_HEAD(&(st->list));
-	
+
 	for (i = 0; i < argc; i++) {
 		if (!empty && str_isempty(argv[i]))
 			continue;
-		
+
 		if (!(new = mem_alloc(sizeof(strtok_t)))) {
 			strtok_free(st);
 			return 0;
 		}
-		
+
 		if (!(new->token = str_dup(argv[i]))) {
 			strtok_free(st);
 			return 0;
 		}
-		
+
 		list_add_tail(&(new->list), &(st->list));
 	}
-	
+
 	return st;
 }

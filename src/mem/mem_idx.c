@@ -20,10 +20,10 @@ int mem_idx(const void *s, int c, int n)
 {
 	int i;
 	const unsigned char *p = s;
-	
+
 	for (i = 0; n--, *p++; i++)
 		if (c == *p)
 			return i;
-	
+
 	return -1;
 }

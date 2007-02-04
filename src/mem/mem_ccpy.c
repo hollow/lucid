@@ -20,15 +20,15 @@ void *mem_ccpy(void *s1, const void *s2, int c, int n)
 {
 	unsigned char       *a = s1;
 	const unsigned char *b = s2;
-	
+
 	while (n--) {
 		*a++ = *b;
-		
+
 		if (*b == c)
 			return (void *) a;
-		
+
 		b++;
 	}
-	
+
 	return 0;
 }

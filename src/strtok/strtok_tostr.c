@@ -23,24 +23,24 @@ int strtok_tostr(strtok_t *st, char **str, char *delim)
 	int i = 0;
 	stralloc_t _sa, *sa = &_sa;
 	strtok_t *p;
-	
+
 	if (strtok_count(st) < 1)
 		return 0;
-	
+
 	stralloc_init(sa);
-	
+
 	strtok_for_each(st, p) {
 		if (stralloc_catf(sa, "%s%s", p->token, delim) == -1)
 			return -1;
-		
+
 		i++;
 	}
-	
+
 	if (sa->len > 0)
 		sa->len -= str_len(delim);
-	
+
 	*str = stralloc_finalize(sa);
-	
+
 	stralloc_free(sa);
 	return i;
 }

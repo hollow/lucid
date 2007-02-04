@@ -26,49 +26,49 @@
 int runlink(const char *path)
 {
 	struct stat sb;
-	
+
 	DIR *dp;
 	struct dirent *d;
-	
+
 	int status = 0;
 	char *p, *new_path;
-	
+
 	if (lstat(path, &sb) == -1) {
 		if (errno == ENOENT)
 			return 0;
 		else
 			return -1;
 	}
-	
+
 	if (S_ISDIR(sb.st_mode)) {
 		if (!(dp = opendir(path)))
 			return -1;
-		
+
 		while ((d = readdir(dp))) {
 			p = d->d_name;
-			
+
 			if (p && p[0] == '.' && (!p[1] || (p[1] == '.' && !p[2])))
 				continue;
-			
+
 			_lucid_asprintf(&new_path, "%s/%s", path, d->d_name);
-			
+
 			if (runlink(new_path) == -1)
 				status = -1;
-			
+
 			mem_free(new_path);
 		}
-		
+
 		if (closedir(dp) == -1)
 			return -1;
-		
+
 		if (rmdir(path) == -1)
 			return -1;
-		
+
 		return status;
 	}
-	
+
 	if (unlink(path) == -1)
 		return -1;
-	
+
 	return 0;
 }

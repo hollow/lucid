@@ -20,6 +20,6 @@ int _lucid_printf(const char *fmt, /*args*/ ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	
+
 	return _lucid_vprintf(fmt, ap);
 }

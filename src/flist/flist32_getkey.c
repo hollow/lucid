@@ -19,10 +19,10 @@
 const char *flist32_getkey(const flist32_t list[], uint32_t val)
 {
 	int i;
-	
+
 	for (i = 0; list[i].key; i++)
 		if (list[i].val == val)
 			return list[i].key;
-	
+
 	return 0;
 }

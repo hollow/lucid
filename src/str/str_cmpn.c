@@ -20,6 +20,6 @@ int str_cmpn(const char *str1, const char *str2, int n)
 {
 	while (--n && *str1 && *str2 && *str1 == *str2)
 		str1++, str2++;
-	
+
 	return *str1 - *str2;
 }

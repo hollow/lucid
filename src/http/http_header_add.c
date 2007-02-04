@@ -22,17 +22,17 @@
 int http_header_add(http_header_t *hs, http_header_name_t name, const char *value)
 {
 	http_header_t *new = mem_alloc(sizeof(http_header_t));
-	
+
 	if (!new)
 		return -1;
-	
+
 	new->name  = name;
 	new->value = str_dup(value);
-	
+
 	if (!new->value)
 		return -1;
-	
+
 	list_add_tail(&(new->list), &(hs->list));
-	
+
 	return 0;
 }

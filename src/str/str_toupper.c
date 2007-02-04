@@ -20,11 +20,11 @@
 char *str_toupper(char *str)
 {
 	char *p = str;
-	
+
 	while (*p) {
 		char_toupper(*p);
 		p++;
 	}
-	
+
 	return str;
 }
