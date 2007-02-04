@@ -1,3 +1,50 @@
+# ChangeLog for lucid
+
+	04 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add str_path_dirname() and str_path_basename()
+
+	03 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add copy_file()
+	Fix mkdirp() to create parent directories with 0755 instead of 0777
+
+	30 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Fix left/zero padding in vsnprintf()
+
+	29 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add ispath() and readsymlink()
+	Increase buffer size for str functions
+	Fix str_path_concat() to concat even if basename is relative to ./
+
+	27 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Fix off-by-one errors in vsnprintf()
+	Fix addr_from_str() to convert even if no storage supplied
+	Fix exec_fork_pipe() to close file descriptors on error
+
+	25 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Fix exec functions to not free argv before execvp()
+
+	12 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add preliminary HTTP protocol parser
+
+	11 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add memory allocator (mem)
+	Add stralloc_finalize()
+	Add str_cmpn() and str_str()
+	Fix str_isempty() to only check for linear whitespace
+
+	09 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add str_equal()
+	Add string tokenizer (strtok)
+	Move functions from io/ to str/
+	Remove functions from argv/ in favor of strtok/
+	Rename struct list to list_t
+	Split char macros from str/ to char/
+	Split memory function from str/ to mem/
+
+	15 Dec 2006; Benedikt Boehm <hollow@gentoo.org>:
+	Fix byte order handling
+	Add byte order functions for uint16_t
+
 *lucid-0.1_rc1 (03 Dec 2006)
 	
 	03 Dec 2006; Benedikt Böhm <hollow@gentoo.org>:
