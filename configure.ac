@@ -51,6 +51,7 @@ AC_CHECK_HEADERS([dirent.h \
 				  errno.h \
 				  fcntl.h \
 				  netinet/in.h \
+				  setjmp.h \
 				  signal.h \
 				  stdarg.h \
 				  stdbool.h \
