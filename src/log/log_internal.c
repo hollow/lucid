@@ -25,6 +25,7 @@
 #include "log.h"
 #include "mem.h"
 #include "printf.h"
+#include "str.h"
 
 extern log_options_t *_log_options;
 
@@ -83,6 +84,7 @@ int prio_to_syslog(int prio)
 	return -1;
 }
 
+static
 void log_internal(int prio, int strerr, const char *fmt, va_list ap)
 {
 	char *buf, *msg;
@@ -110,6 +112,17 @@ void log_internal(int prio, int strerr, const char *fmt, va_list ap)
 		log_fd(_log_options->log_fd, prio, msg);
 
 	mem_free(msg);
+}
+
+int log_traceme(const char *file, const char *func, int line)
+{
+	char *base = str_path_basename(file);
+
+	int rc = log_trace("@%s() in %s:%d", func, base, line);
+
+	mem_free(base);
+
+	return rc;
 }
 
 #define LOGFUNC(name, level, rc) \

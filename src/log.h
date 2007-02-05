@@ -58,6 +58,9 @@
 #define LOGO_PRIO  0x04 /*!< log the priority with each message */
 #define LOGO_IDENT 0x08 /*!< log the ident string with each message */
 
+/*! @brief simple trace helper */
+#define LOG_TRACEME log_traceme(__FILE__, __FUNCTION__, __LINE__);
+
 /*!
  * @brief multiplexer configuration data
  *
@@ -87,11 +90,6 @@ typedef struct {
  * @see log_options_t
  */
 void log_init(log_options_t *options);
-
-void log_internal(int level, int strerr, const char *fmt, va_list ap);
-
-/*! @brief simple trace helper */
-#define LOG_TRACEME log_trace(__FILE__, __FUNCTION__, __LINE__);
 
 /*!
  * @brief send ALERT level message to the multiplexer
@@ -176,6 +174,19 @@ int log_debug(const char *fmt, ...);
  * @see printf
  */
 int log_trace(const char *fmt, ...);
+
+/*!
+ * @brief send TRACE level message to the multiplexer
+ *
+ * @param[in] file File name
+ * @param[in] func Function name
+ * @param[in] line Line number
+ *
+ * @return EXIT_SUCCESS
+ *
+ * @see printf
+ */
+int log_traceme(const char *file, const char *func, int line);
 
 
 /*!
