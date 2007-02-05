@@ -88,9 +88,9 @@ int main(int argc, char *argv[])
 	int rc = EXIT_SUCCESS;
 	
 	log_options_t log_options = {
-		.ident  = "chroot",
-		.stderr = true,
-		.time   = false,
+		.log_ident  = "chroot",
+		.log_dest  = LOGD_STDERR,
+		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
 	
 	log_init(&log_options);

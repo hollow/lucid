@@ -37,40 +37,46 @@
 #define _LUCID_LOG_H
 
 #include <stdarg.h>
-#include <stdbool.h>
 
-#include "mem.h"
-#include "str.h"
+/* destinations */
+#define LOGD_SYSLOG 0x01 /*!< Log to syslog */
+#define LOGD_FILE   0x02 /*!< Log to a file */
+#define LOGD_STDERR 0x04 /*!< Log to STDERR */
+
+/* priorities */
+#define LOGP_ALERT 0 /*!< action must be taken immediately */
+#define LOGP_ERROR 1 /*!< error conditions */
+#define LOGP_WARN  2 /*!< warning conditions */
+#define LOGP_NOTE  3 /*!< normal but significant condition */
+#define LOGP_INFO  4 /*!< informational */
+#define LOGP_DEBUG 5 /*!< debug-level messages */
+#define LOGP_TRACE 6 /*!< trace messages */
+
+/* options */
+#define LOGO_PID   0x01 /*!< log the pid with each message */
+#define LOGO_TIME  0x02 /*!< log the time with each message */
+#define LOGO_PRIO  0x04 /*!< log the priority with each message */
+#define LOGO_IDENT 0x08 /*!< log the ident string with each message */
 
 /*!
  * @brief multiplexer configuration data
  *
- * - The string pointed to by ident is prepended to every message, and is
+ * - The string pointed to by log_ident is prepended to every message, and is
  *   typically set to the program name.
- * - The file argument enables (1) or disables (0) multiplexing to the
- *   file destination.
- * - The stderr argument enables (1) or disables (0) multiplexing to the
- *   stderr destination.
- * - The time argument enables (1) or disables (0) output of the time string in
- *   multiplexed messages; only used for the file and stderr destinations.
- * - The syslog argument enables (1) or disables (0) multiplexing to the
- *   syslog(3) destination.
- * - The flags argument specifies flags which control the operation of the
- *   multiplexer.
- * - The facility argument is used to specify what type of program is logging
+ * - The log_dest argument specifies the log destination
+ * - The log_facility argument is used to specify what type of program is logging
  *   the message; only used for the syslog(3) destination.
- * - The mask argument is the lower level bound of messages being multiplexed.
+ * - The log_opts argument specifies flags which control the operation of the
+ *   multiplexer.
+ * - The log_mask argument is the lower level bound of messages being multiplexed.
  */
 typedef struct {
-	char *ident;    /*!< program identifier */
-	bool  file;     /*!< file destination switch */
-	int   fd;       /*!< file descriptor */
-	bool  stderr;   /*!< stderr destination switch */
-	bool  time;     /*!< time output switch */
-	bool  syslog;   /*!< syslog destination switch */
-	int   flags;    /*!< control flags */
-	int   facility; /*!< program facility */
-	int   mask;     /*!< lower level bound */
+	char *log_ident;    /*!< program identifier */
+	int   log_dest;     /*!< file destination switch */
+	int   log_fd;       /*!< file descriptor for LOGD_FILE target */
+	int   log_facility; /*!< program facility */
+	int   log_opts;     /*!< control flags */
+	int   log_mask;     /*!< lower log level bound */
 } log_options_t;
 
 /*!
@@ -85,23 +91,7 @@ void log_init(log_options_t *options);
 void log_internal(int level, int strerr, const char *fmt, va_list ap);
 
 /*! @brief simple trace helper */
-#define LOG_TRACEME do { \
-	char *__trace_bn = str_path_basename(__FILE__); \
-	log_debug("[trace] %s (%s:%d)", __FUNCTION__, __trace_bn, __LINE__); \
-	mem_free(__trace_bn); \
-} while (0);
-
-/*!
- * @brief send EMERG level message to the multiplexer
- *
- * @param[in] fmt format string passed to printf
- * @param[in] ... variable number of arguments according to fmt
- *
- * @return EXIT_FAILURE
- *
- * @see printf
- */
-int log_emerg(const char *fmt, ...);
+#define LOG_TRACEME log_trace(__FILE__, __FUNCTION__, __LINE__);
 
 /*!
  * @brief send ALERT level message to the multiplexer
@@ -114,18 +104,6 @@ int log_emerg(const char *fmt, ...);
  * @see printf
  */
 int log_alert(const char *fmt, ...);
-
-/*!
- * @brief send CRIT level message to the multiplexer
- *
- * @param[in] fmt format string passed to printf
- * @param[in] ... variable number of arguments according to fmt
- *
- * @return EXIT_FAILURE
- *
- * @see printf
- */
-int log_crit(const char *fmt, ...);
 
 /*!
  * @brief send ERR level message to the multiplexer
@@ -187,17 +165,18 @@ int log_info(const char *fmt, ...);
  */
 int log_debug(const char *fmt, ...);
 
-
 /*!
- * @brief send EMERG level message to the multiplexer and exit(2)
+ * @brief send TRACE level message to the multiplexer
  *
  * @param[in] fmt format string passed to printf
  * @param[in] ... variable number of arguments according to fmt
  *
+ * @return EXIT_SUCCESS
+ *
  * @see printf
- * @see exit(2)
  */
-void log_emerg_and_die(const char *fmt, ...);
+int log_trace(const char *fmt, ...);
+
 
 /*!
  * @brief send ALERT level message to the multiplexer and exit(2)
@@ -209,17 +188,6 @@ void log_emerg_and_die(const char *fmt, ...);
  * @see exit(2)
  */
 void log_alert_and_die(const char *fmt, ...);
-
-/*!
- * @brief send CRIT level message to the multiplexer and exit(2)
- *
- * @param[in] fmt format string passed to printf
- * @param[in] ... variable number of arguments according to fmt
- *
- * @see printf
- * @see exit(2)
- */
-void log_crit_and_die(const char *fmt, ...);
 
 /*!
  * @brief send ERR level message to the multiplexer and exit(2)
@@ -234,18 +202,6 @@ void log_error_and_die(const char *fmt, ...);
 
 
 /*!
- * @brief send EMERG level message to the multiplexer and append strerror(errno)
- *
- * @param[in] fmt format string passed to printf
- * @param[in] ... variable number of arguments according to fmt
- *
- * @return EXIT_FAILURE
- *
- * @see printf
- */
-int log_pemerg(const char *fmt, ...);
-
-/*!
  * @brief send ALERT level message to the multiplexer and append strerror(errno)
  *
  * @param[in] fmt format string passed to printf
@@ -256,18 +212,6 @@ int log_pemerg(const char *fmt, ...);
  * @see printf
  */
 int log_palert(const char *fmt, ...);
-
-/*!
- * @brief send CRIT level message to the multiplexer and append strerror(errno)
- *
- * @param[in] fmt format string passed to printf
- * @param[in] ... variable number of arguments according to fmt
- *
- * @return EXIT_FAILURE
- *
- * @see printf
- */
-int log_pcrit(const char *fmt, ...);
 
 /*!
  * @brief send ERR level message to the multiplexer and append strerror(errno)
@@ -329,17 +273,18 @@ int log_pinfo(const char *fmt, ...);
  */
 int log_pdebug(const char *fmt, ...);
 
-
 /*!
- * @brief send EMERG level message to the multiplexer, append strerror(errno) and exit(2)
+ * @brief send TRACE level message to the multiplexer and append strerror(errno)
  *
  * @param[in] fmt format string passed to printf
  * @param[in] ... variable number of arguments according to fmt
  *
+ * @return EXIT_SUCCESS
+ *
  * @see printf
- * @see exit(2)
  */
-void log_pemerg_and_die(const char *fmt, ...);
+int log_ptrace(const char *fmt, ...);
+
 
 /*!
  * @brief send ALERT level message to the multiplexer, append strerror(errno) and exit(2)
@@ -351,17 +296,6 @@ void log_pemerg_and_die(const char *fmt, ...);
  * @see exit(2)
  */
 void log_palert_and_die(const char *fmt, ...);
-
-/*!
- * @brief send CRIT level message to the multiplexer, append strerror(errno) and exit(2)
- *
- * @param[in] fmt format string passed to printf
- * @param[in] ... variable number of arguments according to fmt
- *
- * @see printf
- * @see exit(2)
- */
-void log_pcrit_and_die(const char *fmt, ...);
 
 /*!
  * @brief send ERR level message to the multiplexer, append strerror(errno) and exit(2)

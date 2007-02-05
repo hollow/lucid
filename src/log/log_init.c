@@ -24,27 +24,56 @@
 
 log_options_t *_log_options = 0;
 
+#define MASK_PRIO(p) (1 << (p))
+
+static
+int mask_to_syslog(int mask)
+{
+	int newmask = 0;
+
+	if (mask & MASK_PRIO(LOGP_ALERT))
+		newmask |= MASK_PRIO(LOG_ALERT);
+	if (mask & MASK_PRIO(LOGP_ERROR))
+		newmask |= MASK_PRIO(LOG_ERR);
+	if (mask & MASK_PRIO(LOGP_WARN))
+		newmask |= MASK_PRIO(LOG_WARNING);
+	if (mask & MASK_PRIO(LOGP_NOTE))
+		newmask |= MASK_PRIO(LOG_NOTICE);
+	if (mask & MASK_PRIO(LOGP_INFO))
+		newmask |= MASK_PRIO(LOG_INFO);
+	if (mask & MASK_PRIO(LOGP_DEBUG))
+		newmask |= MASK_PRIO(LOG_DEBUG);
+
+	return newmask;
+}
+
 void log_init(log_options_t *options)
 {
 	struct stat sb;
 
-	if (options->file && (options->fd < 0 || fstat(options->fd, &sb) == -1))
-		options->file = false;
+	/* check file destination */
+	if (options->log_dest & LOGD_FILE)
+		if (options->log_fd < 0 || fstat(options->log_fd, &sb) == -1)
+			options->log_dest &= ~LOGD_FILE;
 
-	if (options->stderr && fstat(STDERR_FILENO, &sb) == -1)
-		options->stderr = false;
+	/* check if STDERR is available */
+	if (options->log_dest & LOGD_STDERR)
+		if (fstat(STDERR_FILENO, &sb) == -1)
+			options->log_dest &= ~LOGD_STDERR;
 
-	if (options->mask == 0)
-		options->mask = LOG_UPTO(LOG_INFO);
+	/* log up to LOGP_INFO if not specified */
+	if (options->log_mask == 0)
+		options->log_mask = ((1 << ((LOGP_INFO) + 1)) - 1);
 
-	if (!options->ident || str_len(options->ident) < 1)
-		options->ident = "(none)";
+	/* sanitize ident string */
+	if (str_isempty(options->log_ident))
+		options->log_ident = "(none)";
 
-	options->flags &= ~LOG_PERROR;
-
-	if (options->syslog) {
-		openlog(options->ident, options->flags, options->facility);
-		setlogmask(options->mask);
+	if (options->log_dest & LOGD_SYSLOG) {
+		openlog(options->log_ident,
+				options->log_opts & LOGO_PID ? LOG_PID : 0,
+				options->log_facility);
+		setlogmask(mask_to_syslog(options->log_mask));
 	}
 
 	_log_options = (log_options_t *) mem_alloc(sizeof(log_options_t));

@@ -27,11 +27,11 @@ void log_close(void)
 	if (!_log_options)
 		return;
 
-	if (_log_options->syslog)
+	if (_log_options->log_dest & LOGD_SYSLOG)
 		closelog();
 
-	if (_log_options->file)
-		close(_log_options->fd);
+	if (_log_options->log_dest & LOGD_FILE)
+		close(_log_options->log_fd);
 
 	mem_free(_log_options);
 

@@ -31,41 +31,59 @@ extern log_options_t *_log_options;
 static int errno_orig = 0;
 
 static
-void log_fd(int fd, int level, const char *msg)
+void log_fd(int fd, int prio, const char *msg)
 {
 	char timebuf[17];
 	time_t curtime = time(0);
 
-	if (!(_log_options->mask & level))
+	if (!(_log_options->log_mask & (1 << prio)))
 		return;
 
-	switch (level) {
-		case LOG_EMERG:   _lucid_dprintf(fd, "[emrge]"); break;
-		case LOG_ALERT:   _lucid_dprintf(fd, "[alert]"); break;
-		case LOG_CRIT:    _lucid_dprintf(fd, "[crit ]"); break;
-		case LOG_ERR:     _lucid_dprintf(fd, "[error]"); break;
-		case LOG_WARNING: _lucid_dprintf(fd, "[warn ]"); break;
-		case LOG_NOTICE:  _lucid_dprintf(fd, "[note ]"); break;
-		case LOG_INFO:    _lucid_dprintf(fd, "[info ]"); break;
-		case LOG_DEBUG:   _lucid_dprintf(fd, "[debug]"); break;
-		default:          _lucid_dprintf(fd, "[none ]"); break;
+	if (_log_options->log_opts & LOGO_PRIO) {
+		switch (prio) {
+			case LOGP_ALERT: _lucid_dprintf(fd, "[alert]"); break;
+			case LOGP_ERROR: _lucid_dprintf(fd, "[error]"); break;
+			case LOGP_WARN:  _lucid_dprintf(fd, "[warn ]"); break;
+			case LOGP_NOTE:  _lucid_dprintf(fd, "[note ]"); break;
+			case LOGP_INFO:  _lucid_dprintf(fd, "[info ]"); break;
+			case LOGP_DEBUG: _lucid_dprintf(fd, "[debug]"); break;
+			case LOGP_TRACE: _lucid_dprintf(fd, "[trace]"); break;
+			default:         _lucid_dprintf(fd, "[none ]"); break;
+		}
 	}
 
-	if (_log_options->time) {
+	if (_log_options->log_opts & LOGO_TIME) {
 		mem_set(timebuf, 0, 17);
 		strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
 		_lucid_dprintf(fd, " %s", timebuf);
 	}
 
-	_lucid_dprintf(fd, " %s", _log_options->ident);
+	if (_log_options->log_opts & LOGO_IDENT)
+		_lucid_dprintf(fd, " %s", _log_options->log_ident);
 
-	if (_log_options->flags & LOG_PID)
+	if (_log_options->log_opts & LOGO_PID)
 		_lucid_dprintf(fd, "[%d]", getpid());
 
-	_lucid_dprintf(fd, ": %s\n", msg);
+	_lucid_dprintf(fd, "%s%s\n",
+			_log_options->log_opts ? ": " : "", msg);
 }
 
-void log_internal(int level, int strerr, const char *fmt, va_list ap)
+static
+int prio_to_syslog(int prio)
+{
+	switch (prio) {
+		case LOGP_ALERT: return LOG_ALERT;
+		case LOGP_ERROR: return LOG_ERR;
+		case LOGP_WARN:  return LOG_WARNING;
+		case LOGP_NOTE:  return LOG_NOTICE;
+		case LOGP_INFO:  return LOG_INFO;
+		case LOGP_DEBUG: return LOG_DEBUG;
+	}
+
+	return -1;
+}
+
+void log_internal(int prio, int strerr, const char *fmt, va_list ap)
 {
 	char *buf, *msg;
 
@@ -80,14 +98,16 @@ void log_internal(int level, int strerr, const char *fmt, va_list ap)
 		mem_free(buf);
 	}
 
-	if (_log_options->syslog)
-		syslog(_log_options->facility|level, "%s", msg);
+	if (_log_options->log_dest & LOGD_SYSLOG) {
+		if ((prio = prio_to_syslog(prio)) >= 0)
+			syslog(_log_options->log_facility|prio, "%s", msg);
+	}
 
-	if (_log_options->stderr)
-		log_fd(STDERR_FILENO, level, msg);
+	if (_log_options->log_dest & LOGD_STDERR)
+		log_fd(STDERR_FILENO, prio, msg);
 
-	if (_log_options->file)
-		log_fd(_log_options->fd, level, msg);
+	if (_log_options->log_dest & LOGD_FILE)
+		log_fd(_log_options->log_fd, prio, msg);
 
 	mem_free(msg);
 }
@@ -100,14 +120,13 @@ int log_ ## name (const char *fmt, ...) { \
 	return rc; \
 }
 
-LOGFUNC(emerg,  LOG_EMERG,   EXIT_FAILURE)
-LOGFUNC(alert,  LOG_ALERT,   EXIT_FAILURE)
-LOGFUNC(crit,   LOG_CRIT,    EXIT_FAILURE)
-LOGFUNC(error,  LOG_ERR,     EXIT_FAILURE)
-LOGFUNC(warn,   LOG_WARNING, EXIT_SUCCESS)
-LOGFUNC(notice, LOG_NOTICE,  EXIT_SUCCESS)
-LOGFUNC(info,   LOG_INFO,    EXIT_SUCCESS)
-LOGFUNC(debug,  LOG_DEBUG,   EXIT_SUCCESS)
+LOGFUNC(alert,  LOGP_ALERT, EXIT_FAILURE)
+LOGFUNC(error,  LOGP_ERROR, EXIT_FAILURE)
+LOGFUNC(warn,   LOGP_WARN,  EXIT_SUCCESS)
+LOGFUNC(notice, LOGP_NOTE,  EXIT_SUCCESS)
+LOGFUNC(info,   LOGP_INFO,  EXIT_SUCCESS)
+LOGFUNC(debug,  LOGP_DEBUG, EXIT_SUCCESS)
+LOGFUNC(trace,  LOGP_TRACE, EXIT_SUCCESS)
 
 #define LOGFUNCDIE(name, level) \
 void log_ ## name ## _and_die(const char *fmt, ...) { \
@@ -117,10 +136,8 @@ void log_ ## name ## _and_die(const char *fmt, ...) { \
 	exit(EXIT_FAILURE); \
 }
 
-LOGFUNCDIE(emerg, LOG_EMERG)
-LOGFUNCDIE(alert, LOG_ALERT)
-LOGFUNCDIE(crit,  LOG_CRIT)
-LOGFUNCDIE(error, LOG_ERR)
+LOGFUNCDIE(alert, LOGP_ALERT)
+LOGFUNCDIE(error, LOGP_ERROR)
 
 #define LOGPFUNC(name, level, rc) \
 int log_p ## name (const char *fmt, ...) { \
@@ -131,14 +148,13 @@ int log_p ## name (const char *fmt, ...) { \
 	return rc; \
 }
 
-LOGPFUNC(emerg,  LOG_EMERG,   EXIT_FAILURE)
-LOGPFUNC(alert,  LOG_ALERT,   EXIT_FAILURE)
-LOGPFUNC(crit,   LOG_CRIT,    EXIT_FAILURE)
-LOGPFUNC(error,  LOG_ERR,     EXIT_FAILURE)
-LOGPFUNC(warn,   LOG_WARNING, EXIT_SUCCESS)
-LOGPFUNC(notice, LOG_NOTICE,  EXIT_SUCCESS)
-LOGPFUNC(info,   LOG_INFO,    EXIT_SUCCESS)
-LOGPFUNC(debug,  LOG_DEBUG,   EXIT_SUCCESS)
+LOGPFUNC(alert,  LOGP_ALERT, EXIT_FAILURE)
+LOGPFUNC(error,  LOGP_ERROR, EXIT_FAILURE)
+LOGPFUNC(warn,   LOGP_WARN,  EXIT_SUCCESS)
+LOGPFUNC(notice, LOGP_NOTE,  EXIT_SUCCESS)
+LOGPFUNC(info,   LOGP_INFO,  EXIT_SUCCESS)
+LOGPFUNC(debug,  LOGP_DEBUG, EXIT_SUCCESS)
+LOGPFUNC(trace,  LOGP_TRACE, EXIT_SUCCESS)
 
 #define LOGPFUNCDIE(name, level) \
 void log_p ## name ## _and_die(const char *fmt, ...) { \
@@ -149,7 +165,5 @@ void log_p ## name ## _and_die(const char *fmt, ...) { \
 	exit(EXIT_FAILURE); \
 }
 
-LOGPFUNCDIE(emerg, LOG_EMERG)
-LOGPFUNCDIE(alert, LOG_ALERT)
-LOGPFUNCDIE(crit,  LOG_CRIT)
-LOGPFUNCDIE(error, LOG_ERR)
+LOGPFUNCDIE(alert, LOGP_ALERT)
+LOGPFUNCDIE(error, LOGP_ERROR)

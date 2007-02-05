@@ -194,9 +194,9 @@ int main(int argc, char *argv[])
 	int rc = EXIT_SUCCESS;
 	
 	log_options_t log_options = {
-		.ident  = "flist",
-		.stderr = true,
-		.time   = false,
+		.log_ident  = "flist",
+		.log_dest  = LOGD_STDERR,
+		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
 	
 	log_init(&log_options);
