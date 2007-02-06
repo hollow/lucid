@@ -43,6 +43,8 @@ int mask_to_syslog(int mask)
 		newmask |= MASK_PRIO(LOG_INFO);
 	if (mask & MASK_PRIO(LOGP_DEBUG))
 		newmask |= MASK_PRIO(LOG_DEBUG);
+	if (mask & MASK_PRIO(LOGP_TRACE))
+		newmask |= MASK_PRIO(LOG_DEBUG);
 
 	return newmask;
 }
