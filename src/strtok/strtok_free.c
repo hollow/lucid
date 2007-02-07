@@ -28,7 +28,10 @@ void strtok_free(strtok_t *st)
 	list_for_each_safe(pos, tmp, &(st->list)) {
 		p = list_entry(pos, strtok_t, list);
 		list_del(pos);
-		mem_free(p->token);
+
+		if (p->token)
+			mem_free(p->token);
+
 		mem_free(p);
 	}
 
