@@ -100,16 +100,16 @@ void log_internal(int prio, int strerr, const char *fmt, va_list ap)
 		mem_free(buf);
 	}
 
-	if (_log_options->log_dest & LOGD_SYSLOG) {
-		if ((prio = prio_to_syslog(prio)) >= 0)
-			syslog(_log_options->log_facility|prio, "%s", msg);
-	}
-
 	if (_log_options->log_dest & LOGD_STDERR)
 		log_fd(STDERR_FILENO, prio, msg);
 
 	if (_log_options->log_dest & LOGD_FILE)
 		log_fd(_log_options->log_fd, prio, msg);
+
+	if (_log_options->log_dest & LOGD_SYSLOG) {
+		if ((prio = prio_to_syslog(prio)) >= 0)
+			syslog(_log_options->log_facility|prio, "%s", msg);
+	}
 
 	mem_free(msg);
 }
