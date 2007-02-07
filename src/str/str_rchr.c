@@ -16,36 +16,17 @@
 
 #include "str.h"
 
-char *str_path_dirname(const char *path)
+char *str_rchr(const char *str, int c, int n)
 {
-	/* empty string */
-	if (str_isempty(path))
-		return str_dup(".");
+	const char *last = 0;
 
-	/* string consisting entirely of '/' */
-	const char *p = path;
+	for (; n; str++, n--) {
+		if (*str == c)
+			last = str;
 
-	while (*p && *p == '/')
-		p++;
+		if (!*str)
+			return (char *) last;
+	}
 
-	if (!*p)
-		return str_dup("/");
-
-	char *dirname = str_dup(path);
-
-	char *q = dirname + str_len(dirname) - 1;
-
-	/* skip trailing '/' */
-	while (*q == '/' && q != dirname)
-		q--;
-
-	/* skip last portion of the path */
-	while (*q != '/' && q != dirname)
-		q--;
-
-	/* remove trailing '/' */
-	while (*q == '/' && q != dirname)
-		*q-- = '\0';
-
-	return dirname;
+	return (char *) last;
 }

@@ -16,7 +16,6 @@
 
 #include "mem.h"
 #include "str.h"
-#include "strtok.h"
 
 char *str_path_basename(const char *path)
 {
@@ -31,13 +30,22 @@ char *str_path_basename(const char *path)
 	if (!*path)
 		return str_dup("/");
 
-	strtok_t _st, *st = &_st;
-	strtok_init_str(st, path, "/", 0);
+	char *bn, *p, *buf = str_dup(path);
 
-	strtok_prev(&st);
+	while ((p = str_rchr(buf, '/', str_len(buf)))) {
+		if (p[1] == 0) {
+			if (p == buf)
+				break;
+			else
+				*p = 0;
+		}
 
-	char *basename = str_dup(st->token);
+		else {
+			bn = str_dup(buf + 1);
+			mem_free(buf);
+			return bn;
+		}
+	}
 
-	strtok_free(st);
-	return basename;
+	return buf;
 }

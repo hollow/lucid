@@ -139,6 +139,7 @@ STR_C = str/str_check.c \
         str/str_path_dirname.c \
         str/str_path_isabs.c \
         str/str_path_isdot.c \
+        str/str_rchr.c \
         str/str_read.c \
         str/str_readfile.c \
         str/str_readline.c \

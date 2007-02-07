@@ -215,6 +215,18 @@ char *str_dup(const char *str);
 char *str_chr(const char *str, int c, int n);
 
 /*!
+ * @brief scan string for character beginning at the end
+ *
+ * @param[in] str string to scan
+ * @param[in] c   character to look for
+ * @param[in] n   scan first n bytes
+ *
+ * @return A pointer to the matched character or NULL if the character is not
+ *         found.
+ */
+char *str_rchr(const char *str, int c, int n);
+
+/*!
  * @brief locate a substring
  *
  * @param[in] str    string to scan

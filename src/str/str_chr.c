@@ -18,11 +18,9 @@
 
 char *str_chr(const char *str, int c, int n)
 {
-	char *p = (char *) str;
-
-	for (; n; p++, n--)
-		if (*p == c)
-			return p;
+	for (; n; str++, n--)
+		if (*str == c)
+			return (char *) str;
 
 	return 0;
 }
