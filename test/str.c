@@ -84,6 +84,53 @@ int str_check_t(void)
 }
 
 static
+int str_path_basedirname_t(void)
+{
+	int i, rc = 0;
+	char *dirname, *basename;
+	
+	struct test {
+		char *path;
+		char *dirname;
+		char *basename;
+	} T[] = {
+		{ "/usr/lib", "/usr",  "lib" },
+		{ "/usr/",    "/",     "usr" },
+		{ "usr",      ".",     "usr" },
+		{ "/",        "/",     "/"   },
+		{ ".",        ".",     "."   },
+		{ "..",       ".",     ".."  },
+		{ "/////",    "/",     "/"   },
+		{ "//f//",    "/",     "f"   },
+		{ "//f//g",   "/f",    "g"   },
+		{ "../..//.", "../..", "."   },
+	};
+	
+	int TS = sizeof(T) / sizeof(T[0]);
+	
+	for (i = 0; i < TS; i++) {
+		basename = str_path_basename(T[i].path);
+		dirname  = str_path_dirname(T[i].path);
+		
+		if (basename && dirname &&
+				(strcmp(basename, T[i].basename) != 0 ||
+				strcmp(dirname, T[i].dirname) != 0))
+			rc += log_error("[%s/%02d] E[%s,%s] R[%s,%s]",
+					__FUNCTION__, i,
+					T[i].dirname, T[i].basename,
+					dirname, basename);
+		
+		if (basename)
+			mem_free(basename);
+
+		if (dirname)
+			mem_free(dirname);
+	}
+	
+	return rc;
+}
+
+static
 int str_path_concat_t(void)
 {
 	int i, rc = 0;
@@ -258,6 +305,7 @@ int main(int argc, char *argv[])
 	log_init(&log_options);
 	
 	rc += str_check_t();
+	rc += str_path_basedirname_t();
 	rc += str_path_concat_t();
 	rc += str_path_isabs_t();
 	rc += str_path_isdot_t();

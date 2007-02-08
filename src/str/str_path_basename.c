@@ -23,29 +23,37 @@ char *str_path_basename(const char *path)
 	if (str_isempty(path))
 		return str_dup(".");
 
-	/* string consisting entirely of '/' */
+	/* skip prefixing '/' */
 	while (*path && *path == '/')
 		path++;
 
+	/* string consisting entirely of '/' */
 	if (!*path)
 		return str_dup("/");
 
-	char *bn, *p, *buf = str_dup(path);
+	char *p, *buf = str_dup(path);
 
 	while ((p = str_rchr(buf, '/', str_len(buf)))) {
-		if (p[1] == 0) {
-			if (p == buf)
-				break;
-			else
-				*p = 0;
-		}
+		/* remove trailing lash */
+		if (p[1] == 0 && p != buf)
+			*p = 0;
 
-		else {
-			bn = str_dup(buf + 1);
-			mem_free(buf);
-			return bn;
-		}
+		/* no trailing slash anymore */
+		else
+			break;
 	}
 
-	return buf;
+	char *bn;
+
+	/* if a non-trailing slash was found, return everything after it */
+	if (p)
+		bn = str_dup(p + 1);
+
+	/* otherwise buf already contains basename */
+	else
+		bn = str_dup(buf);
+
+	mem_free(buf);
+
+	return bn;
 }

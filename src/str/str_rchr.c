@@ -18,15 +18,9 @@
 
 char *str_rchr(const char *str, int c, int n)
 {
-	const char *last = 0;
-
-	for (; n; str++, n--) {
+	for (str += n - 1; n; str--, n--)
 		if (*str == c)
-			last = str;
+			return (char *) str;
 
-		if (!*str)
-			return (char *) last;
-	}
-
-	return (char *) last;
+	return 0;
 }

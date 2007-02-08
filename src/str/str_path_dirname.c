@@ -14,38 +14,53 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include "mem.h"
 #include "str.h"
 
 char *str_path_dirname(const char *path)
 {
-	/* empty string */
-	if (str_isempty(path))
+	/* empty string or '..' */
+	if (str_isempty(path) || str_equal(path, ".."))
 		return str_dup(".");
 
-	/* string consisting entirely of '/' */
-	const char *p = path;
+	/* skip prefixing '/' but preserve exactly one */
+	while (*path && *(path+1) && *path == '/' && *(path+1) == '/')
+		path++;
 
-	while (*p && *p == '/')
-		p++;
+	int found = 0;
+	char *p, *buf = str_dup(path);
 
-	if (!*p)
-		return str_dup("/");
+	while ((p = str_rchr(buf, '/', str_len(buf)))) {
+		/* remove trailing slash */
+		if (p[1] == 0 && p != buf)
+			*p = 0;
 
-	char *dirname = str_dup(path);
+		/* no basename was found until yet */
+		else if (!found) {
+			*p = 0;
+			found = 1;
+		}
 
-	char *q = dirname + str_len(dirname) - 1;
+		/* a basename was found and no trailing slash anymore */
+		else
+			break;
+	}
 
-	/* skip trailing '/' */
-	while (*q == '/' && q != dirname)
-		q--;
+	char *dn;
 
-	/* skip last portion of the path */
-	while (*q != '/' && q != dirname)
-		q--;
+	/* path consists only of basename and slashes */
+	if (str_isempty(buf))
+		dn = str_dup("/");
 
-	/* remove trailing '/' */
-	while (*q == '/' && q != dirname)
-		*q-- = '\0';
+	/* path is relative or absolute, basename was stripped */
+	else if (p)
+		dn = str_dup(buf);
 
-	return dirname;
+	/* path is relative, no basename was stripped */
+	else
+		dn = str_dup(".");
+
+	mem_free(buf);
+
+	return dn;
 }
