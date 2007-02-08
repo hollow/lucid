@@ -15,156 +15,34 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include <unistd.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 
 #include "misc.h"
-#include "open.h"
-
-static sigjmp_buf __copy_file_sigjmp_env;
-
-static
-void __copy_file_sigbus_handler(int sig)
-{
-	siglongjmp(__copy_file_sigjmp_env, 1);
-}
-
-static
-void __copy_file_sparse_memcpy(void *dst, const void *src, int len)
-{
-	/* although sparse memcpy is not as efficient as pure read/write
-	 * we decrease instructions by about 60% using int instead of
-	 * char for most of the copy operation */
-	int *dsti = dst;
-	const int *srci = src;
-
-	int leni = len / sizeof(int);
-	int rest = len - sizeof(int) * leni;
-
-	int i;
-
-	for (i = 0; i < leni; srci++, dsti++, i++) {
-		if (*srci != 0)
-			*dsti = *srci;
-	}
-
-	char *dstc = (void *) dsti;
-	const char *srcc = (const void *) srci;
-
-	for (i = 0; i < rest; srcc++, dstc++, i++) {
-		if (*srcc != 0)
-			*dstc = *srcc;
-	}
-}
-
-#define CHUNKSIZE (16*1024*1024) /* 16M */
+#include "str.h"
 
 int copy_file(const char *src, const char *dst)
 {
-	int errno_orig;
-	int rc = -1, bufsize = 0;
-	int srcfd = -1, dstfd = -1;
-	void *srcbuf = MAP_FAILED, *dstbuf = MAP_FAILED;
+	char *srcdname = str_path_dirname(src);
+	char *srcbname = str_path_basename(src);
+	char *dstdname = str_path_dirname(dst);
+	char *dstbname = str_path_basename(dst);
 
-	/* install SIGBUS handler for mmap */
-	void (*oldhandler)(int) = signal(SIGBUS, __copy_file_sigbus_handler);
+	int srcdirfd = open(srcdname, O_RDONLY|O_DIRECTORY);
 
-	/* open source and destination files */
-	srcfd = open(src, O_RDONLY|O_NOCTTY|O_NONBLOCK|O_NOFOLLOW|O_LARGEFILE);
+	if (srcdirfd == -1)
+		return -1;
 
-	if (srcfd == -1)
-		goto out;
+	int dstdirfd = open(dstdname, O_RDONLY|O_DIRECTORY);
 
-	/* get file length */
-	struct stat sb;
+	if (dstdirfd == -1)
+		return -1;
 
-	if (fstat(srcfd, &sb) == -1)
-		goto out;
+	int rc = copy_fileat(srcdirfd, srcbname, dstdirfd, dstbname);
 
-	/* open destination file */
-	dstfd = open(dst, O_RDWR|O_CREAT|O_EXCL|O_NOCTTY, 0200);
+	mem_free(dstbname);
+	mem_free(dstdname);
+	mem_free(srcbname);
+	mem_free(srcdname);
 
-	if (dstfd == -1)
-		goto out;
-
-	if (sb.st_size < 1) {
-		rc = 0;
-		goto out;
-	}
-
-	/* create sparse file */
-	if (ftruncate(dstfd, sb.st_size) == -1)
-		goto out_unlink;
-
-	/* save environment for non-local jump */
-	if (sigsetjmp(__copy_file_sigjmp_env, 1) != 0)
-		goto out_unlink;
-
-	int offset = 0;
-
-	while (offset < sb.st_size) {
-		bufsize = sb.st_size - offset;
-		bufsize = bufsize > CHUNKSIZE ? CHUNKSIZE : bufsize;
-
-		/* map source file */
-		srcbuf = mmap(0, bufsize, PROT_READ, MAP_SHARED, srcfd, offset);
-
-		if (srcbuf == MAP_FAILED)
-			goto out_unlink;
-
-		/* map destination file */
-		dstbuf = mmap(0, bufsize, PROT_WRITE, MAP_SHARED, dstfd, offset);
-
-		if (dstbuf == MAP_FAILED)
-			goto out_unlink;
-
-		offset += bufsize;
-
-		/* advise to sequential order (more aggressive read ahead) */
-		madvise(srcbuf, bufsize, MADV_SEQUENTIAL);
-		madvise(dstbuf, bufsize, MADV_SEQUENTIAL);
-
-		/* copy memory area with sparse support */
-		__copy_file_sparse_memcpy(dstbuf, srcbuf, bufsize);
-
-		munmap(srcbuf, bufsize);
-		srcbuf = MAP_FAILED;
-
-		munmap(dstbuf, bufsize);
-		dstbuf = MAP_FAILED;
-	}
-
-	rc = 0;
-	goto out_unmap;
-
-out_unlink:
-	errno_orig = errno;
-	unlink(dst);
-	errno = errno_orig;
-
-out_unmap:
-	errno_orig = errno;
-
-	if (srcbuf && srcbuf != MAP_FAILED)
-		munmap(srcbuf, bufsize);
-
-	if (dstbuf && dstbuf != MAP_FAILED)
-		munmap(dstbuf, bufsize);
-
-	errno = errno_orig;
-
-out:
-	errno_orig = errno;
-
-	signal(SIGBUS, oldhandler);
-
-	close(srcfd);
-	close(dstfd);
-
-	errno = errno_orig;
 	return rc;
 }
