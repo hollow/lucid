@@ -138,26 +138,14 @@ int runlink(const char *path);
 char *readsymlink(const char *path);
 
 /*!
- * @brief copy a file at specified dirs
- *
- * @param[in] srcdirfd path to read from
- * @param[in] src      path to read from
- * @param[in] dstdirfd path to write to
- * @param[in] dst      path to write to
- *
- * @return 0 on success, -1 on error with errno set
- */
-int copy_fileat(int srcdirfd, const char *src, int dstdirfd, const char *dst);
-
-/*!
  * @brief copy a file
  *
- * @param[in] src path to read from
- * @param[in] dst path to write to
+ * @param[in] srcfd filedescriptor to read from
+ * @param[in] dstfd filedescriptor to write to
  *
  * @return 0 on success, -1 on error with errno set
  */
-int copy_file(const char *src, const char *dst);
+int copy_file(int srcfd, int dstfd);
 
 #endif
 
