@@ -1,5 +1,13 @@
 # ChangeLog for lucid
 
+	07 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add str_rchr()
+	Fix segfault in strtok_free if given pointer
+		into st is not the list head
+
+	05 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Rewrite most of the log multiplexer
+
 	04 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
 	Add str_path_dirname() and str_path_basename()
 
