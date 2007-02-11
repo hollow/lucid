@@ -48,7 +48,7 @@ int flist32_from_str_t(void)
 {
 	int i, ret, rc = 0;
 	uint32_t flags, mask;
-	
+
 	struct test {
 		char *str;
 		int ret;
@@ -62,9 +62,9 @@ int flist32_from_str_t(void)
 		{ "A,B,~C",    0, NODE_A|NODE_B, NODE_A|NODE_B|NODE_C },
 		{ "A,~B,D,C", -1, NODE_A,        NODE_A|NODE_B },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		flags = mask = 0;
 		
@@ -78,7 +78,7 @@ int flist32_from_str_t(void)
 			                T[i].ret, T[i].flags, T[i].mask,
 			                ret,      flags,      mask);
 	}
-	
+
 	return rc;
 }
 
@@ -87,7 +87,7 @@ int flist64_from_str_t(void)
 {
 	int i, ret, rc = 0;
 	uint64_t flags, mask;
-	
+
 	struct test {
 		char *str;
 		int ret;
@@ -101,9 +101,9 @@ int flist64_from_str_t(void)
 		{ "A,D,~E",    0, NODE_A|NODE_D, NODE_A|NODE_D|NODE_E },
 		{ "A,~D,F,E", -1, NODE_A,        NODE_A|NODE_D },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		flags = mask = 0;
 		
@@ -117,7 +117,7 @@ int flist64_from_str_t(void)
 			                T[i].ret, T[i].flags, T[i].mask,
 			                ret,      flags,      mask);
 	}
-	
+
 	return rc;
 }
 
@@ -126,7 +126,7 @@ int flist32_to_str_t(void)
 {
 	int i, rc = 0;
 	char *str = NULL;
-	
+
 	struct test {
 		uint32_t flags;
 		char *str;
@@ -137,9 +137,9 @@ int flist32_to_str_t(void)
 		{ NODE_A|NODE_B, "A,B" },
 		{ ~0UL,          "A,B,C" },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		if (str)
 			mem_free(str);
@@ -151,7 +151,7 @@ int flist32_to_str_t(void)
 			                __FUNCTION__, i,
 			                T[i].str, str);
 	}
-	
+
 	return rc;
 }
 
@@ -160,7 +160,7 @@ int flist64_to_str_t(void)
 {
 	int i, rc = 0;
 	char *str = NULL;
-	
+
 	struct test {
 		uint64_t flags;
 		char *str;
@@ -171,9 +171,9 @@ int flist64_to_str_t(void)
 		{ NODE_A|NODE_B, "A,B" },
 		{ ~0ULL,         "A,B,C,D,E" },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		if (str)
 			mem_free(str);
@@ -185,28 +185,28 @@ int flist64_to_str_t(void)
 			                __FUNCTION__, i,
 			                T[i].str, str);
 	}
-	
+
 	return rc;
 }
 
 int main(int argc, char *argv[])
 {
 	int rc = EXIT_SUCCESS;
-	
+
 	log_options_t log_options = {
 		.log_ident  = "flist",
 		.log_dest  = LOGD_STDERR,
 		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
-	
+
 	log_init(&log_options);
-	
+
 	rc += flist32_from_str_t();
 	rc += flist64_from_str_t();
 	rc += flist32_to_str_t();
 	rc += flist64_to_str_t();
-	
+
 	log_close();
-	
+
 	return rc;
 }

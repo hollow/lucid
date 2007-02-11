@@ -28,7 +28,7 @@ int str_check_t(void)
 {
 	int i, res, rc = 0;
 	char allchars[128];
-	
+
 	struct test {
 		char *str;
 		int allowed;
@@ -63,14 +63,14 @@ int str_check_t(void)
 		{ allchars,          0,        0 },
 		{ allchars,         ~0,        1 },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < 127; i++)
 		allchars[i] = i + 1;
-	
+
 	allchars[127] = 0;
-	
+
 	for (i = 0; i < TS; i++) {
 		res = str_check(T[i].str, T[i].allowed);
 		
@@ -79,7 +79,7 @@ int str_check_t(void)
 			                __FUNCTION__, i,
 			                T[i].res, res);
 	}
-	
+
 	return rc;
 }
 
@@ -88,7 +88,7 @@ int str_path_basedirname_t(void)
 {
 	int i, rc = 0;
 	char *dirname, *basename;
-	
+
 	struct test {
 		char *path;
 		char *dirname;
@@ -105,9 +105,9 @@ int str_path_basedirname_t(void)
 		{ "//f//g",   "/f",    "g"   },
 		{ "../..//.", "../..", "."   },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		basename = str_path_basename(T[i].path);
 		dirname  = str_path_dirname(T[i].path);
@@ -126,7 +126,7 @@ int str_path_basedirname_t(void)
 		if (dirname)
 			mem_free(dirname);
 	}
-	
+
 	return rc;
 }
 
@@ -135,7 +135,7 @@ int str_path_concat_t(void)
 {
 	int i, rc = 0;
 	char *path;
-	
+
 	struct test {
 		char *dirname;
 		char *basename;
@@ -153,9 +153,9 @@ int str_path_concat_t(void)
 		{ "/a/../c", "d",    "/a/../c/d" },
 		{ "/a/../c", "../d", NULL },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		path = str_path_concat(T[i].dirname, T[i].basename);
 		
@@ -172,7 +172,7 @@ int str_path_concat_t(void)
 		if (path)
 			mem_free(path);
 	}
-	
+
 	return rc;
 }
 
@@ -181,7 +181,7 @@ int str_path_isabs_t(void)
 {
 	int i, res, rc = 0;
 	char *buf;
-	
+
 	struct test {
 		char *str;
 		int res;
@@ -197,9 +197,9 @@ int str_path_isabs_t(void)
 		{ "/a/./d/e",   0 },
 		{ "/a/\n/d/e",  0 },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		buf = strdup(T[i].str);
 		res = str_path_isabs(buf);
@@ -210,7 +210,7 @@ int str_path_isabs_t(void)
 			                __FUNCTION__, i,
 			                T[i].res, res);
 	}
-	
+
 	return rc;
 }
 
@@ -219,7 +219,7 @@ int str_path_isdot_t(void)
 {
 	int i, res, rc = 0;
 	char *buf;
-	
+
 	struct test {
 		char *str;
 		int res;
@@ -237,9 +237,9 @@ int str_path_isdot_t(void)
 		{ "/a/./d/e",   1 },
 		{ "/a/\n/d/e",  0 },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		buf = strdup(T[i].str);
 		res = str_path_isdot(buf);
@@ -250,7 +250,7 @@ int str_path_isdot_t(void)
 			                __FUNCTION__, i,
 			                T[i].res, res);
 	}
-	
+
 	return rc;
 }
 
@@ -258,18 +258,18 @@ static
 int str_tolower_t(void)
 {
 	int rc = 0;
-	
+
 	char orig[]  = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	               "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-	
+
 	char lower[] = "!\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz"
 	               "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-	
+
 	char *buf = str_tolower(orig);
-	
+
 	if (strcmp(buf, lower))
 		rc += log_error("[%s]\nE[%s]\nR[%s]", __FUNCTION__, lower, buf);
-	
+
 	return rc;
 }
 
@@ -277,33 +277,33 @@ static
 int str_toupper_t(void)
 {
 	int rc = 0;
-	
+
 	char orig[] = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	               "[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-	
+
 	char upper[] = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	               "[\\]^_`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~";
-	
+
 	char *buf = str_toupper(orig);
-	
+
 	if (strcmp(buf, upper))
 		rc += log_error("[%s]\nE[%s]\nR[%s]", __FUNCTION__, upper, buf);
-	
+
 	return rc;
 }
 
 int main(int argc, char *argv[])
 {
 	int rc = EXIT_SUCCESS;
-	
+
 	log_options_t log_options = {
 		.log_ident  = "str",
 		.log_dest  = LOGD_STDERR,
 		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
-	
+
 	log_init(&log_options);
-	
+
 	rc += str_check_t();
 	rc += str_path_basedirname_t();
 	rc += str_path_concat_t();
@@ -311,8 +311,8 @@ int main(int argc, char *argv[])
 	rc += str_path_isdot_t();
 	rc += str_tolower_t();
 	rc += str_toupper_t();
-	
+
 	log_close();
-	
+
 	return rc;
 }

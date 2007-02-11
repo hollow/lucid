@@ -27,7 +27,7 @@ int addr_from_str_t(void)
 {
 	int i, ret, rc = 0;
 	uint32_t ip, mask;
-	
+
 	struct test {
 		char *str;
 		int ret;
@@ -46,9 +46,9 @@ int addr_from_str_t(void)
 		{ "1.2.3.4/9",            3, 0x01020304, 0xff800000 },
 		{ "1.2.3.4/255.255.0.0",  3, 0x01020304, 0xffff0000 },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		ip = mask = 0;
 		
@@ -62,7 +62,7 @@ int addr_from_str_t(void)
 			                T[i].ret, addr_ntoh(T[i].ip), addr_ntoh(T[i].mask),
 			                ret, ip, mask);
 	}
-	
+
 	return rc;
 }
 
@@ -71,7 +71,7 @@ int addr_to_str_t(void)
 {
 	int i, rc = 0;
 	char *str;
-	
+
 	struct test {
 		uint32_t ip;
 		uint32_t mask;
@@ -84,9 +84,9 @@ int addr_to_str_t(void)
 		{ 0x01020304, 0xff800000, "1.2.3.4/255.128.0.0" },
 		{ 0xc0a80020, 0xffffff00, "192.168.0.32/255.255.255.0" },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		str = addr_to_str(addr_hton(T[i].ip), addr_hton(T[i].mask));
 		
@@ -95,26 +95,26 @@ int addr_to_str_t(void)
 			                __FUNCTION__, i,
 			                T[i].str, str);
 	}
-	
+
 	return rc;
 }
 
 int main(int argc, char *argv[])
 {
 	int rc = EXIT_SUCCESS;
-	
+
 	log_options_t log_options = {
 		.log_ident = "addr",
 		.log_dest  = LOGD_STDERR,
 		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
-	
+
 	log_init(&log_options);
-	
+
 	rc += addr_from_str_t();
 	rc += addr_to_str_t();
-	
+
 	log_close();
-	
+
 	return rc;
 }

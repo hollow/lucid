@@ -27,7 +27,7 @@ int i2v32_t(void)
 {
 	int i, rc = 0;
 	uint32_t value;
-	
+
 	struct test {
 		int      index;
 		uint32_t value;
@@ -42,9 +42,9 @@ int i2v32_t(void)
 		{ 32, 0x00000000 }, /* out of bounds */
 		{ 33, 0x00000000 }, /* out of bounds */
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		value = i2v32(T[i].index);
 		
@@ -52,7 +52,7 @@ int i2v32_t(void)
 			rc += log_error("[%s/%02d] E[%#.8lx] R[%#.8lx]",
 			                __FUNCTION__, i, T[i].value, value);
 	}
-	
+
 	return rc;
 }
 
@@ -61,7 +61,7 @@ int i2v64_t(void)
 {
 	int i, rc = 0;
 	uint64_t value;
-	
+
 	struct test {
 		int      index;
 		uint64_t value;
@@ -76,9 +76,9 @@ int i2v64_t(void)
 		{ 64, 0x0000000000000000 }, /* out of bounds */
 		{ 65, 0x0000000000000000 }, /* out of bounds */
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		value = i2v64(T[i].index);
 		
@@ -86,7 +86,7 @@ int i2v64_t(void)
 			rc += log_error("[%s/%02d] E[%#.16llx] R[%#.16llx]",
 			                __FUNCTION__, i, T[i].value, value);
 	}
-	
+
 	return rc;
 }
 
@@ -95,7 +95,7 @@ int v2i32_t(void)
 {
 	int i, rc = 0;
 	uint32_t value;
-	
+
 	struct test {
 		uint32_t value;
 		int      index;
@@ -106,9 +106,9 @@ int v2i32_t(void)
 		{ 0x80000000,  31 },
 		{ 0x00abcdef,  23 }, /* highest bit counts */
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		value = v2i32(T[i].value);
 		
@@ -116,7 +116,7 @@ int v2i32_t(void)
 			rc += log_error("[%s/%02d] E[%02u] R[%02u]",
 			                __FUNCTION__, i, T[i].index, index);
 	}
-	
+
 	return rc;
 }
 
@@ -125,7 +125,7 @@ int v2i64_t(void)
 {
 	int i, rc = 0;
 	uint64_t value;
-	
+
 	struct test {
 		uint64_t value;
 		int      index;
@@ -137,9 +137,9 @@ int v2i64_t(void)
 		{ 0xabcdef1234567890, 63 }, /* highest bit counts */
 		{ 0x000000000000abcd, 15 }, /* highest bit counts */
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		value = v2i64(T[i].value);
 		
@@ -147,29 +147,29 @@ int v2i64_t(void)
 			rc += log_error("[%s/%02d] E[%02u] R[%02u]",
 			                __FUNCTION__, i, T[i].index, index);
 	}
-	
+
 	return rc;
 }
 
 int main(int argc, char *argv[])
 {
 	int rc = EXIT_SUCCESS;
-	
+
 	log_options_t log_options = {
 		.log_ident  = "bitmap",
 		.log_dest  = LOGD_STDERR,
 		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
-	
+
 	log_init(&log_options);
-	
+
 	rc += i2v32_t();
 	rc += i2v64_t();
-	
+
 	rc += v2i32_t();
 	rc += v2i64_t();
-	
+
 	log_close();
-	
+
 	return rc;
 }

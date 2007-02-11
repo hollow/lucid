@@ -28,12 +28,12 @@ int whirlpool_digest_t(void)
 {
 	int i, rc = 0;
 	char *digest = NULL;
-	
+
 	char astring[1000001];
-	
+
 	bzero(astring, 1000001);
 	memset(astring, 'a', 1000000);
-	
+
 	struct test {
 		char *str;
 		const char *digest;
@@ -120,9 +120,9 @@ int whirlpool_digest_t(void)
 		  "8C6008AD677F7712"
 		  "6953B226E4ED8B01" },
 	};
-	
+
 	int TS = sizeof(T) / sizeof(T[0]);
-	
+
 	for (i = 0; i < TS; i++) {
 		if (digest)
 			mem_free(digest);
@@ -134,25 +134,25 @@ int whirlpool_digest_t(void)
 			                __FUNCTION__, i,
 			                T[i].digest, digest);
 	}
-	
+
 	return rc;
 }
 
 int main(int argc, char *argv[])
 {
 	int rc = EXIT_SUCCESS;
-	
+
 	log_options_t log_options = {
 		.log_ident  = "whirlpool",
 		.log_dest  = LOGD_STDERR,
 		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
-	
+
 	log_init(&log_options);
-	
+
 	rc += whirlpool_digest_t();
-	
+
 	log_close();
-	
+
 	return rc;
 }

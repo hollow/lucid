@@ -31,76 +31,76 @@ int chroot_secure_chdir_t(void)
 	int fd;
 	char path[PATH_MAX];
 	char *tempd, tempt[] = "/tmp/chroottest-XXXXXX";
-	
+
 	if ((fd = open(".", O_RDONLY|O_DIRECTORY)) == -1)
 		return log_perror("[%s] open(.)", __FUNCTION__);
-	
+
 	struct stat sbcwd;
-	
+
 	if (stat(".", &sbcwd) == -1)
 		return log_perror("[%s] stat(.)", __FUNCTION__);
-	
+
 	if (!(tempd = mkdtemp(tempt)))
 		return log_perror("[%s] mkdtemp(%s)", __FUNCTION__, tempt);
-	
+
 	snprintf(path, PATH_MAX, "%s/etc", tempd);
-	
+
 	if (mkdir(path, 0755) == -1)
 		return log_perror("[%s] mkdir(%s)", __FUNCTION__, path);
-	
+
 	struct stat sb;
-	
+
 	if (stat(path, &sb) == -1)
 		return log_perror("[%s] stat(%s)", __FUNCTION__, path);
-	
+
 	snprintf(path, PATH_MAX, "%s/link", tempd);
-	
+
 	if (symlink("/etc", path) == -1)
 		return log_perror("[%s] symlink(/etc, %s)", __FUNCTION__, path);
-	
+
 	if (chroot_secure_chdir(tempd, "/link") == -1)
 		return log_perror("[%s] chroot_secure_chdir(%s, /link)", __FUNCTION__, tempd);
-	
+
 	struct stat sb2;
-	
+
 	if (stat(".", &sb2) == -1)
 		return log_perror("[%s] stat(.)", __FUNCTION__);
-	
+
 	if (sb.st_dev != sb2.st_dev || sb.st_ino != sb2.st_ino)
 		return log_error("[%s/01] E[%llu,%lu] R[%llu,%lu]", __FUNCTION__,
 		                 sb.st_dev, sb.st_ino, sb2.st_dev, sb2.st_ino);
-	
+
 	if (fchdir(fd) == -1)
 		return log_perror("[%s] fchdir(%d)", __FUNCTION__, fd);
-	
+
 	if (stat(".", &sb2) == -1)
 		return log_perror("[%s] stat(.)", __FUNCTION__);
-	
+
 	if (sbcwd.st_dev != sb2.st_dev || sbcwd.st_ino != sb2.st_ino)
 		return log_error("[%s/02] E[%llu,%lu] R[%llu,%lu]", __FUNCTION__,
 		                 sbcwd.st_dev, sbcwd.st_ino, sb2.st_dev, sb2.st_ino);
-	
+
 	return 0;
 }
 
 int main(int argc, char *argv[])
 {
 	int rc = EXIT_SUCCESS;
-	
+
 	log_options_t log_options = {
 		.log_ident  = "chroot",
 		.log_dest  = LOGD_STDERR,
 		.log_opts  = LOGO_PRIO|LOGO_IDENT,
 	};
-	
+
 	log_init(&log_options);
-	
+
 	if (getuid() != 0)
 		return log_info("This test needs root privileges; please run `sudo make check`");
-	
+
 	rc += chroot_secure_chdir_t();
-	
+
 	log_close();
-	
+
 	return rc;
 }
