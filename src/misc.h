@@ -88,6 +88,17 @@ int isfile(const char *path);
 int islink(const char *path);
 
 /*!
+ * @brief check if given path is a top-level mount point
+ *
+ * @param[in] path path to check
+ *
+ * @return 1 on success, 0 otherwise
+ *
+ * @see stat(2)
+ */
+int ismount(const char *path);
+
+/*!
  * @brief recursive mkdir(2) with dirname(3)
  *
  * @param[in] path path to create

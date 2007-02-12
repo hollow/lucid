@@ -101,6 +101,7 @@ MISC_C = misc/copy_file.c \
          misc/isdir.c \
          misc/isfile.c \
          misc/islink.c \
+         misc/ismount.c \
          misc/ispath.c \
          misc/mkdirnamep.c \
          misc/mkdirp.c \
