@@ -132,6 +132,7 @@ STR_C = str/str_check.c \
         str/str_cmp.c \
         str/str_cmpn.c \
         str/str_cpy.c \
+        str/str_cpyn.c \
         str/str_dup.c \
         str/str_equal.c \
         str/str_len.c \

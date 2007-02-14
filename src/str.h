@@ -193,6 +193,17 @@ int str_equal(const char *str1, const char *str2);
 char *str_cpy(char *dst, const char *src);
 
 /*!
+ * @brief copy a string
+ *
+ * @param[out] dst destination string
+ * @param[in]  src source string
+ * @param[in]  n   copy at most n bytes
+ *
+ * @return A pointer to dst.
+ */
+char *str_cpyn(char *dst, const char *src, int n);
+
+/*!
  * @brief duplicate a string
  *
  * @param[in] str source string
