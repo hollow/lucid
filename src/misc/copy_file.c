@@ -37,13 +37,13 @@ static
 void __copy_file_sparse_memcpy(void *dst, const void *src, int len)
 {
 	/* although sparse memcpy is not as efficient as pure read/write
-	 * we decrease instructions by about 60% using int instead of
+	 * we decrease instructions by about 50-80% using long instead of
 	 * char for most of the copy operation */
-	int *dsti = dst;
-	const int *srci = src;
+	long *dsti = dst;
+	const long *srci = src;
 
-	int leni = len / sizeof(int);
-	int rest = len - sizeof(int) * leni;
+	int leni = len / sizeof(long);
+	int rest = len - sizeof(long) * leni;
 
 	int i;
 
