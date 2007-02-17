@@ -89,7 +89,7 @@ void whirlpool_add(whirlpool_t * const context,
 	/* all remaining data fits on buf[pos],
 	 * and there still remains some space.
 	 */
-	if (rem + srcbits < 8) 
+	if (rem + srcbits < 8)
 		bits += srcbits;
 
 	else {

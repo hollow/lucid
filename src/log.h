@@ -24,7 +24,7 @@
  * runtime. Another call to log_init() will replace the previous connection.
  *
  * log_init() opens a connection to the multiplexer for a program. The options
- * argument is a pointer to a log_options_t structure used for the multiplexer 
+ * argument is a pointer to a log_options_t structure used for the multiplexer
  * configuration.
  *
  * @see log_options_t

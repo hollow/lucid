@@ -22,7 +22,7 @@
  * Version 2, June 1991
  *
  * @verbatim
-Copyright (C) 1989, 1991 Free Software Foundation, Inc.  
+Copyright (C) 1989, 1991 Free Software Foundation, Inc.
 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 Everyone is permitted to copy and distribute verbatim copies
@@ -135,7 +135,7 @@ of this license document, but changing it is not allowed.@endverbatim
  * separate works. But when you distribute the same sections as part of a whole
  * which is a work based on the Program, the distribution of the whole must be
  * on the terms of this License, whose permissions for other licensees extend to
- * the entire whole, and thus to each and every part regardless of who wrote it. 
+ * the entire whole, and thus to each and every part regardless of who wrote it.
  *
  * Thus, it is not the intent of this section to claim rights or contest your
  * rights to work written entirely by you; rather, the intent is to exercise the
