@@ -47,7 +47,7 @@ int i2v32_t(void)
 
 	for (i = 0; i < TS; i++) {
 		value = i2v32(T[i].index);
-		
+
 		if (value != T[i].value)
 			rc += log_error("[%s/%02d] E[%#.8lx] R[%#.8lx]",
 			                __FUNCTION__, i, T[i].value, value);
@@ -81,7 +81,7 @@ int i2v64_t(void)
 
 	for (i = 0; i < TS; i++) {
 		value = i2v64(T[i].index);
-		
+
 		if (value != T[i].value)
 			rc += log_error("[%s/%02d] E[%#.16llx] R[%#.16llx]",
 			                __FUNCTION__, i, T[i].value, value);
@@ -111,7 +111,7 @@ int v2i32_t(void)
 
 	for (i = 0; i < TS; i++) {
 		value = v2i32(T[i].value);
-		
+
 		if (value != T[i].index)
 			rc += log_error("[%s/%02d] E[%02u] R[%02u]",
 			                __FUNCTION__, i, T[i].index, index);
@@ -142,7 +142,7 @@ int v2i64_t(void)
 
 	for (i = 0; i < TS; i++) {
 		value = v2i64(T[i].value);
-		
+
 		if (value != T[i].index)
 			rc += log_error("[%s/%02d] E[%02u] R[%02u]",
 			                __FUNCTION__, i, T[i].index, index);

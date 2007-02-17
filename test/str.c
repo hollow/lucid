@@ -73,7 +73,7 @@ int str_check_t(void)
 
 	for (i = 0; i < TS; i++) {
 		res = str_check(T[i].str, T[i].allowed);
-		
+
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",
 			                __FUNCTION__, i,
@@ -111,7 +111,7 @@ int str_path_basedirname_t(void)
 	for (i = 0; i < TS; i++) {
 		basename = str_path_basename(T[i].path);
 		dirname  = str_path_dirname(T[i].path);
-		
+
 		if (basename && dirname &&
 				(strcmp(basename, T[i].basename) != 0 ||
 				strcmp(dirname, T[i].dirname) != 0))
@@ -119,7 +119,7 @@ int str_path_basedirname_t(void)
 					__FUNCTION__, i,
 					T[i].dirname, T[i].basename,
 					dirname, basename);
-		
+
 		if (basename)
 			mem_free(basename);
 
@@ -158,17 +158,17 @@ int str_path_concat_t(void)
 
 	for (i = 0; i < TS; i++) {
 		path = str_path_concat(T[i].dirname, T[i].basename);
-		
+
 		if (path == NULL && T[i].path == NULL)
 			continue;
-		
+
 		if ((path == NULL && T[i].path != NULL) ||
 		    (path != NULL && T[i].path == NULL) ||
 		    strcmp(path, T[i].path) != 0)
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,
 			                T[i].path, path);
-		
+
 		if (path)
 			mem_free(path);
 	}
@@ -204,7 +204,7 @@ int str_path_isabs_t(void)
 		buf = strdup(T[i].str);
 		res = str_path_isabs(buf);
 		mem_free(buf);
-		
+
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",
 			                __FUNCTION__, i,
@@ -244,7 +244,7 @@ int str_path_isdot_t(void)
 		buf = strdup(T[i].str);
 		res = str_path_isdot(buf);
 		mem_free(buf);
-		
+
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",
 			                __FUNCTION__, i,

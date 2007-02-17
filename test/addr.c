@@ -51,9 +51,9 @@ int addr_from_str_t(void)
 
 	for (i = 0; i < TS; i++) {
 		ip = mask = 0;
-		
+
 		ret = addr_from_str(T[i].str, &ip, &mask);
-		
+
 		if (ret  != T[i].ret ||
 		    ip   != addr_ntoh(T[i].ip)  ||
 		    mask != addr_ntoh(T[i].mask))
@@ -89,7 +89,7 @@ int addr_to_str_t(void)
 
 	for (i = 0; i < TS; i++) {
 		str = addr_to_str(addr_hton(T[i].ip), addr_hton(T[i].mask));
-		
+
 		if (!str || strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,

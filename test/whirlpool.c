@@ -126,9 +126,9 @@ int whirlpool_digest_t(void)
 	for (i = 0; i < TS; i++) {
 		if (digest)
 			mem_free(digest);
-		
+
 		digest = whirlpool_digest(T[i].str);
-		
+
 		if (strcmp(digest, T[i].digest))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,

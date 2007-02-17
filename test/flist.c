@@ -67,9 +67,9 @@ int flist32_from_str_t(void)
 
 	for (i = 0; i < TS; i++) {
 		flags = mask = 0;
-		
+
 		ret = flist32_from_str(T[i].str, list32, &flags, &mask, '~', ",");
-		
+
 		if (ret   != T[i].ret ||
 		    flags != T[i].flags  ||
 		    mask  != T[i].mask)
@@ -106,9 +106,9 @@ int flist64_from_str_t(void)
 
 	for (i = 0; i < TS; i++) {
 		flags = mask = 0;
-		
+
 		ret = flist64_from_str(T[i].str, list64, &flags, &mask, '~', ",");
-		
+
 		if (ret   != T[i].ret ||
 		    flags != T[i].flags  ||
 		    mask  != T[i].mask)
@@ -143,9 +143,9 @@ int flist32_to_str_t(void)
 	for (i = 0; i < TS; i++) {
 		if (str)
 			mem_free(str);
-		
+
 		str = flist32_to_str(list32, T[i].flags, ",");
-		
+
 		if (strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,
@@ -177,9 +177,9 @@ int flist64_to_str_t(void)
 	for (i = 0; i < TS; i++) {
 		if (str)
 			mem_free(str);
-		
+
 		str = flist64_to_str(list64, T[i].flags, ",");
-		
+
 		if (strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,
