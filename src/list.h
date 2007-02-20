@@ -57,12 +57,8 @@ typedef struct list_head {
 	struct list_head *next, *prev;
 } list_t;
 
-/*! @brief list head initialization */
-#define LIST_HEAD_INIT(name) { &(name), &(name) }
-
-/*! @brief list head creation */
-#define LIST_HEAD(name) \
-	list_t name = LIST_HEAD_INIT(name)
+#define LIST_NODE_ALLOC(TYPE, NAME) \
+	TYPE *NAME = mem_alloc(sizeof(TYPE))
 
 static inline void INIT_LIST_HEAD(list_t *list)
 {
