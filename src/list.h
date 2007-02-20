@@ -38,6 +38,8 @@
 
 #include <stddef.h>
 
+#include "mem.h"
+
 /*! @brief get container of list head */
 #define container_of(ptr, type, member) \
 	((type *)((char *)(ptr) - offsetof(type, member)))
