@@ -38,7 +38,11 @@
 
 #include <stddef.h>
 
+#ifdef _LUCID_BUILD_
 #include "mem.h"
+#else
+#include <lucid/mem.h>
+#endif
 
 /*! @brief get container of list head */
 #define container_of(ptr, type, member) \

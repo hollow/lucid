@@ -81,6 +81,7 @@ CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Winline"
 CFLAGS="${CFLAGS} -Wredundant-decls -Wcast-align -Wno-unused-parameter"
 
 # Site settings
+AC_DEFINE(_LUCID_BUILD_, 1)
 
 # Final info page
 AC_CONFIG_COMMANDS_PRE([SUMMARY="$PACKAGE_STRING configured successfully:
