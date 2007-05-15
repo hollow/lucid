@@ -1,5 +1,8 @@
 # ChangeLog for lucid
 
+	12 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add ismount()
+
 	07 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
 	Add str_rchr()
 	Fix segfault in strtok_free if given pointer
@@ -30,9 +33,6 @@
 
 	25 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
 	Fix exec functions to not free argv before execvp()
-
-	12 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
-	Add preliminary HTTP protocol parser
 
 	11 Jan 2007; Benedikt Boehm <hollow@gentoo.org>:
 	Add memory allocator (mem)
