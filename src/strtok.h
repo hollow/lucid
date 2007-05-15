@@ -23,7 +23,11 @@
 #ifndef _LUCID_STRTOK_H
 #define _LUCID_STRTOK_H
 
+#ifdef _LUCID_BUILD_
 #include "list.h"
+#else
+#include <lucid/list.h>
+#endif
 
 typedef struct {
 	list_t list;
