@@ -14,6 +14,8 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+INCLUDES = -I$(top_srcdir)/include -I$(top_builddir)/include
+
 noinst_HEADERS = doxygen/examples.h \
                  doxygen/license.h \
                  doxygen/main.h
@@ -33,6 +35,7 @@ pkginclude_HEADERS = addr.h \
                      str.h \
                      stralloc.h \
                      strtok.h \
+                     sys.h \
                      tcp.h \
                      whirlpool.h
 
@@ -76,7 +79,6 @@ MEM_C = mem/mem_alloc.c \
         mem/mem_cmp.c \
         mem/mem_cpy.c \
         mem/mem_dup.c \
-        mem/mem_freeall.c \
         mem/mem_free.c \
         mem/mem_idx.c \
         mem/mem_internal.h \
@@ -163,6 +165,28 @@ STRTOK_C = strtok/strtok_append.c \
            strtok/strtok_toargv.c \
            strtok/strtok_tostr.c
 
+SYS_C = sys/alpha.h \
+        sys/arm.h \
+        sys/cris.h \
+        sys/frv.h \
+        sys/h8300.h \
+        sys/i386.h \
+        sys/ia64.h \
+        sys/m32r.h \
+        sys/m68k.h \
+        sys/mips.h \
+        sys/parisc.h \
+        sys/powerpc.h \
+        sys/s390.h \
+        sys/sh64.h \
+        sys/sh.h \
+        sys/sparc.h \
+        sys/sparc64.h \
+        sys/sys.c \
+        sys/syscall.h \
+        sys/v850.h \
+        sys/x86_64.h
+
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
 
@@ -190,6 +214,7 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(STR_C) \
                      $(STRALLOC_C) \
                      $(STRTOK_C) \
+                     $(SYS_C) \
                      $(TCP_C) \
                      $(WHIRLPOOL_C)
 

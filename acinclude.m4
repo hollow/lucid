@@ -310,3 +310,79 @@ esac
 #echo DX_FLAG_ps=$DX_FLAG_ps
 #echo DX_ENV=$DX_ENV
 ])
+
+## Copyright 2007 Benedikt Böhm <hollow@gentoo.org>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the
+## Free Software Foundation, Inc.,
+## 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+AC_DEFUN([LUCID_CHECK_ARCH],
+[
+	AC_MSG_CHECKING([system architecture])
+
+	AC_LANG_PUSH(C)
+	AC_LANG_CONFTEST([
+#if 	defined(__alpha__)
+ARCH=alpha
+#elif	defined(__arm__)
+ARCH=arm
+#elif	defined(__cris__)
+ARCH=cris
+#elif	defined(__frv__)
+ARCH=frv
+#elif	defined(__H8300__)
+ARCH=h8300
+#elif	defined(__i386__)
+ARCH=i386
+#elif	defined(__ia64__)
+ARCH=ia64
+#elif	defined(__M32R__)
+ARCH=m32r
+#elif	defined(__m68000__)
+ARCH=m68k
+#elif	defined(__mips__)
+ARCH=mips
+#elif	defined(__hppa__)
+ARCH=parisc
+#elif	defined(__powerpc__)
+ARCH=powerpc
+#elif	defined(__s390__)
+ARCH=s390
+#elif	defined(__sh__) && !defined(__SH5__)
+ARCH=sh
+#elif	defined(__sh__) &&  defined(__SH5__)
+ARCH=sh64
+#elif	defined(__sparc__) && !defined(__arch64__)
+ARCH=sparc
+#elif	defined(__sparc__) &&  defined(__arch64__)
+ARCH=sparc64
+#elif	defined(__v850__)
+ARCH=v850
+#elif	defined(__x86_64__)
+ARCH=x86_64
+#endif
+])
+
+	eval $(${CPP} conftest.c | ${EGREP} '^ARCH=.*$')
+
+	if test x"$ARCH" = x; then
+		AC_MSG_ERROR([Unknown system architecture])
+	else
+		AC_SUBST(ARCH)
+		AC_MSG_RESULT([$ARCH])
+	fi
+
+	AC_LANG_POP
+])

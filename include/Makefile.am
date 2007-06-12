@@ -14,17 +14,5 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-SUBDIRS = include src test
-
-include aminclude.am
-
-MOSTLYCLEANFILES = $(DX_CLEANFILES)
-EXTRA_DIST = $(DX_CONFIG)
-
-dist-hook: doxygen-doc
-	rm -rf $(top_builddir)/$(DX_DOCDIR)/latex \
-		$(top_builddir)/$(DX_DOCDIR)/lucid.tag \
-		$(top_builddir)/$(DX_DOCDIR)/html/*.md5 \
-		$(top_builddir)/$(DX_DOCDIR)/html/*.map \
-		$(top_builddir)/$(DX_DOCDIR)/html/*.dot
-	mv $(top_builddir)/$(DX_DOCDIR) $(distdir)/
+all-local:
+	$(LN_S) $(srcdir)/asm-@ARCH@ $(builddir)/asm

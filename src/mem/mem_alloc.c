@@ -14,37 +14,106 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <stdlib.h>
+#include <errno.h>
+#include <sys/types.h>
 
 #include "mem.h"
+#include "sys.h"
+
 #include "mem_internal.h"
 
-_mem_pool_t *_mem_pool = 0;
+mem_chunk_t *__small_mem[8];
+
+#ifndef PROT_READ
+#define PROT_READ       0x1             /* page can be read */
+#endif
+
+#ifndef PROT_WRITE
+#define PROT_WRITE      0x2             /* page can be written */
+#endif
+
+#ifndef MAP_PRIVATE
+#define MAP_PRIVATE     0x02            /* Changes are private */
+#endif
+
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS   0x20            /* don't use a file */
+#endif
+
+static inline
+void *do_mmap(size_t size)
+{
+	return sys_mmap(0, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+}
+
+static inline
+void *__small_malloc(size_t n)
+{
+	mem_chunk_t *ptr;
+	int idx;
+
+	idx = get_index(n);
+	ptr = __small_mem[idx];
+
+	/* no free blocks */
+	if (ptr == 0) {
+		ptr = do_mmap(CHUNK_SIZE);
+
+		if (ptr == MAP_FAILED)
+			return MAP_FAILED;
+
+		__small_mem[idx] = ptr;
+
+		int i, nr = __SMALL_NR(n) - 1;
+
+		for (i = 0; i < nr ; i++) {
+			ptr->next = (void *)(((char *) ptr) + n);
+			ptr       = ptr->next;
+		}
+
+		ptr->next = 0;
+
+		ptr = __small_mem[idx];
+	}
+
+	/* get a free block */
+	__small_mem[idx] = ptr->next;
+	ptr->next = 0;
+
+	return ptr;
+}
 
 void *mem_alloc(int n)
 {
-	if (!_mem_pool) {
-		if ((_mem_pool = malloc(sizeof(_mem_pool_t))) == NULL)
-			return NULL;
+	mem_chunk_t *ptr;
+	size_t need;
 
-		INIT_LIST_HEAD(&(_mem_pool->list));
+	if (!n)
+		return errno = ENOMEM, (void *)0;
+
+	n += sizeof(mem_chunk_t);
+
+	if (n < sizeof(mem_chunk_t))
+		return errno = ENOMEM, (void *)0;
+
+	if (n <= __MAX_SMALL_SIZE) {
+		need = GET_SIZE(n);
+		ptr = __small_malloc(need);
 	}
 
-	_mem_pool_t *new;
+	else {
+		need = PAGE_ALIGN(n);
 
-	if ((new = malloc(sizeof(_mem_pool_t))) == NULL)
-		return NULL;
-
-	new->len = n;
-
-	if ((new->mem = malloc(new->len)) == NULL) {
-		free(new);
-		return NULL;
+		if (!need)
+			ptr = MAP_FAILED;
+		else
+			ptr = do_mmap(need);
 	}
 
-	mem_set(new->mem, 0, new->len);
+	if (ptr == MAP_FAILED)
+		return errno = ENOMEM, (void *)0;
 
-	list_add_tail(&(new->list), &(_mem_pool->list));
+	ptr->size = need;
 
-	return new->mem;
+	return CHUNK_RET(ptr);
 }
