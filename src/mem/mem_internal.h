@@ -17,50 +17,18 @@
 #ifndef _LUCID_MEM_INTERNAL_H
 #define _LUCID_MEM_INTERNAL_H
 
-#include <sys/types.h>
+#include "list.h"
 
-#include "sys.h"
-
-/* memory chunks */
 typedef struct {
-	void *next;
-	int   size;
-} mem_chunk_t;
+	list_t list;
+	void *mem;
+	int len;
+} _mem_pool_t;
 
-#define CHUNK_START(b)  ((void *)(((char *)(b))-sizeof(mem_chunk_t)))
-#define CHUNK_RET(b)    ((void *)(((char *)(b))+sizeof(mem_chunk_t)))
+extern _mem_pool_t *_mem_pool;
 
-#define CHUNK_SIZE      sys_getpagesize()
-#define PAGE_ALIGN(s)   (((s)+CHUNK_SIZE-1)&(unsigned long)(~(CHUNK_SIZE-1)))
-
-/* mmap helper */
-#ifndef MAP_FAILED
-#define MAP_FAILED ((void*)-1)
-#endif
-
-/* small memory */
-extern mem_chunk_t *__small_mem[8];
-
-#define __SMALL_NR(i)		(CHUNK_SIZE/(i))
-
-#define __MIN_SMALL_SIZE	__SMALL_NR(256)		/*   16 /   32 */
-#define __MAX_SMALL_SIZE	__SMALL_NR(2)		/* 2048 / 4096 */
-
-#define GET_SIZE(s)		(__MIN_SMALL_SIZE<<get_index((s)))
-
-static inline
-size_t get_index(size_t _size)
-{
-	size_t idx  = 0;
-	size_t size = (_size - 1) & (CHUNK_SIZE - 1);
-	size >>= (CHUNK_SIZE == 4096) ? 4 : 5;
-
-	while (size) {
-		size >>= 1;
-		++idx;
-	}
-
-	return idx;
-}
+#define mem_for_each(pool, p) list_for_each_entry(p, &(pool->list), list)
+#define mem_for_each_safe(pool, p, tmp) \
+	list_for_each_entry_safe(p, tmp, &(pool->list), list)
 
 #endif

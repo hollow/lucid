@@ -14,43 +14,28 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <stdlib.h>
 #include <errno.h>
-#include <sys/types.h>
 
 #include "mem.h"
-#include "sys.h"
-
 #include "mem_internal.h"
 
-static inline
-void __small_free(void *_ptr, size_t size)
+void mem_free(void *s)
 {
-	mem_chunk_t *ptr = CHUNK_START(_ptr);
-	size_t       idx = get_index(size);
+	int errno_orig = errno;
+	_mem_pool_t *p;
 
-	/* allways zero out small mem */
-	char *p = (char *) ptr;
+	mem_for_each(_mem_pool, p)
+		if (p->mem == s)
+			break;
 
-	while (size--)
-		*p++ = 0;
+	if (p->mem != s)
+		return;
 
-	ptr->next = __small_mem[idx];
-	__small_mem[idx] = ptr;
-}
+	list_del(&(p->list));
 
-/* public functions */
-void mem_free(void *ptr)
-{
-	size_t size;
+	free(p->mem);
+	free(p);
 
-	if (ptr) {
-		size = ((mem_chunk_t *) CHUNK_START(ptr))->size;
-
-		if (size) {
-			if (size <= __MAX_SMALL_SIZE)
-				__small_free(ptr, size);
-			else
-				sys_munmap(CHUNK_START(ptr), size);
-		}
-	}
+	errno = errno_orig;
 }

@@ -82,12 +82,10 @@ CFLAGS="${CFLAGS} -Wredundant-decls -Wcast-align -Wno-unused-parameter"
 
 # Site settings
 AC_DEFINE(_LUCID_BUILD_, 1)
-LUCID_CHECK_ARCH
 
 # Final info page
 AC_CONFIG_COMMANDS_PRE([SUMMARY="$PACKAGE_STRING configured successfully:
 
-                     ARCH: $ARCH
                        CC: $CC ($($CC --version | head -n1))
                  CPPFLAGS: '$CPPFLAGS'
                    CFLAGS: '$CFLAGS'
@@ -99,7 +97,6 @@ AC_CONFIG_COMMANDS_PRE([SUMMARY="$PACKAGE_STRING configured successfully:
 
 # Output
 AC_CONFIG_FILES([Makefile
-                 include/Makefile
                  src/Makefile
                  test/Makefile])
 

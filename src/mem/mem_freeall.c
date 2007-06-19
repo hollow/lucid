@@ -14,25 +14,21 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <errno.h>
+#include <stdlib.h>
 
-#include "asm/unistd.h"
-#include "asm/page.h"
+#include "mem.h"
+#include "mem_internal.h"
 
-#include "sys.h"
-#include "syscall.h"
-
-/* getpagesize */
-#ifdef __NR_getpagesize
-_syscall0(int, getpagesize)
-#else
-int sys_getpagesize(void)
+void mem_freeall(void)
 {
-	return PAGE_SIZE;
-}
-#endif
+	_mem_pool_t *p, *tmp;
 
-/* mmap & friends */
-_syscall6(void *, mmap, void *, start, size_t, length, int, prot, int, flags, int, fd, off_t, off)
-_syscall4(void *, mremap, void *, old, size_t, old_size, size_t, new_size, int, flags)
-_syscall2(int, munmap, void *, start, size_t, length)
+	if (!_mem_pool)
+		return;
+
+	mem_for_each_safe(_mem_pool, p, tmp) {
+		list_del(&(p->list));
+		free(p->mem);
+		free(p);
+	}
+}
