@@ -16,7 +16,7 @@
 
 # Generic configuration
 AC_PREREQ(2.59)
-AC_INIT(lucid, 0.1_rc1, hollow@gentoo.org)
+AC_INIT(lucid, 0.1_rc2, hollow@gentoo.org)
 AC_GNU_SOURCE
 
 AC_CANONICAL_BUILD
