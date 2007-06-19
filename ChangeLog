@@ -1,5 +1,13 @@
 # ChangeLog for lucid
 
+*lucid-0.1_rc2 (19 Jun 2007)
+
+	20 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Add LIST_NODE_ALLOC
+
+	16 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
+	Use 64-bit integer in copy_file() if possible
+
 	12 Feb 2007; Benedikt Boehm <hollow@gentoo.org>:
 	Add ismount()
 

@@ -17,7 +17,7 @@ ver=${ver/,}
 
 echo "Creating release tag... "
 
-svn copy ${svnroot}/trunk ${svnroot}/tags/release-${ver} \
+svn copy ${svnroot}/series-0.1 ${svnroot}/tags/release-${ver} \
 	-m "Tagging the ${ver} release of the ${proj} project" &>/dev/null || die "svn copy failed"
 
 
