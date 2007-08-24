@@ -16,34 +16,18 @@
 
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 
 #include "mem.h"
-#include "sys.h"
 
 #include "mem_internal.h"
 
 mem_chunk_t *__small_mem[8];
 
-#ifndef PROT_READ
-#define PROT_READ       0x1             /* page can be read */
-#endif
-
-#ifndef PROT_WRITE
-#define PROT_WRITE      0x2             /* page can be written */
-#endif
-
-#ifndef MAP_PRIVATE
-#define MAP_PRIVATE     0x02            /* Changes are private */
-#endif
-
-#ifndef MAP_ANONYMOUS
-#define MAP_ANONYMOUS   0x20            /* don't use a file */
-#endif
-
 static inline
 void *do_mmap(size_t size)
 {
-	return sys_mmap(0, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+	return mmap(0, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
 }
 
 static inline

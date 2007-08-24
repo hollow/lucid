@@ -16,15 +16,11 @@
 
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 
 #include "mem.h"
-#include "sys.h"
 
 #include "mem_internal.h"
-
-#ifndef MREMAP_MAYMOVE
-#define MREMAP_MAYMOVE     1
-#endif
 
 void *mem_realloc(void *ptr, int size)
 {
@@ -68,7 +64,7 @@ void *mem_realloc(void *ptr, int size)
 
 		else {
 			size  = PAGE_ALIGN(size);
-			chunk = sys_mremap(chunk, chunk->size, size, MREMAP_MAYMOVE);
+			chunk = mremap(chunk, chunk->size, size, MREMAP_MAYMOVE);
 
 			if (chunk != MAP_FAILED) {
 				chunk->size = size;

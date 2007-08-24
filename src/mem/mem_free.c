@@ -16,9 +16,9 @@
 
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 
 #include "mem.h"
-#include "sys.h"
 
 #include "mem_internal.h"
 
@@ -50,7 +50,7 @@ void mem_free(void *ptr)
 			if (size <= __MAX_SMALL_SIZE)
 				__small_free(ptr, size);
 			else
-				sys_munmap(CHUNK_START(ptr), size);
+				munmap(CHUNK_START(ptr), size);
 		}
 	}
 }

@@ -35,7 +35,6 @@ pkginclude_HEADERS = addr.h \
                      str.h \
                      stralloc.h \
                      strtok.h \
-                     sys.h \
                      tcp.h \
                      whirlpool.h
 
@@ -165,28 +164,6 @@ STRTOK_C = strtok/strtok_append.c \
            strtok/strtok_toargv.c \
            strtok/strtok_tostr.c
 
-SYS_C = sys/alpha.h \
-        sys/arm.h \
-        sys/cris.h \
-        sys/frv.h \
-        sys/h8300.h \
-        sys/i386.h \
-        sys/ia64.h \
-        sys/m32r.h \
-        sys/m68k.h \
-        sys/mips.h \
-        sys/parisc.h \
-        sys/powerpc.h \
-        sys/s390.h \
-        sys/sh64.h \
-        sys/sh.h \
-        sys/sparc.h \
-        sys/sparc64.h \
-        sys/sys.c \
-        sys/syscall.h \
-        sys/v850.h \
-        sys/x86_64.h
-
 TCP_C = tcp/tcp_connect.c \
         tcp/tcp_listen.c
 
@@ -214,7 +191,6 @@ libucid_la_SOURCES = $(ADDR_C) \
                      $(STR_C) \
                      $(STRALLOC_C) \
                      $(STRTOK_C) \
-                     $(SYS_C) \
                      $(TCP_C) \
                      $(WHIRLPOOL_C)
 

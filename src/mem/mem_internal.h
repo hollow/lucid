@@ -17,9 +17,8 @@
 #ifndef _LUCID_MEM_INTERNAL_H
 #define _LUCID_MEM_INTERNAL_H
 
+#include <unistd.h>
 #include <sys/types.h>
-
-#include "sys.h"
 
 /* memory chunks */
 typedef struct {
@@ -30,13 +29,8 @@ typedef struct {
 #define CHUNK_START(b)  ((void *)(((char *)(b))-sizeof(mem_chunk_t)))
 #define CHUNK_RET(b)    ((void *)(((char *)(b))+sizeof(mem_chunk_t)))
 
-#define CHUNK_SIZE      sys_getpagesize()
+#define CHUNK_SIZE      getpagesize()
 #define PAGE_ALIGN(s)   (((s)+CHUNK_SIZE-1)&(unsigned long)(~(CHUNK_SIZE-1)))
-
-/* mmap helper */
-#ifndef MAP_FAILED
-#define MAP_FAILED ((void*)-1)
-#endif
 
 /* small memory */
 extern mem_chunk_t *__small_mem[8];
