@@ -14,67 +14,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-
-#include "mem.h"
-
-#include "mem_internal.h"
+#include <stdlib.h>
 
 void *mem_realloc(void *ptr, int size)
 {
-	if (!ptr)
-		return mem_alloc(size);
-
-	if (!size) {
-		mem_free(ptr);
-		return (void *)0;
-	}
-
-	mem_chunk_t *chunk = CHUNK_START(ptr);
-	size_t need = size + sizeof(mem_chunk_t);
-
-	if (need < sizeof(mem_chunk_t))
-		return errno = ENOMEM, (void *)0;
-
-	need = (need <= __MAX_SMALL_SIZE) ? GET_SIZE(need) : PAGE_ALIGN(need);
-
-	if (chunk->size != need) {
-		if ((chunk->size <= __MAX_SMALL_SIZE)) {
-			void *new = mem_alloc(size);
-
-			if (new) {
-				if (size > chunk->size)
-					size = chunk->size;
-
-				if (size) {
-					char *a = new, *b = ptr;
-					size -= sizeof(mem_chunk_t);
-
-					while (size--)
-						*a++ = *b++;
-				}
-
-				mem_free(ptr);
-			}
-
-			return new;
-		}
-
-		else {
-			size  = PAGE_ALIGN(size);
-			chunk = mremap(chunk, chunk->size, size, MREMAP_MAYMOVE);
-
-			if (chunk != MAP_FAILED) {
-				chunk->size = size;
-				return CHUNK_RET(chunk);
-			}
-		}
-	}
-
-	else
-		return ptr;
-
-	return errno = ENOMEM, (void *)0;
+	return realloc(ptr, size);
 }

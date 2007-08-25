@@ -78,7 +78,6 @@ set(MEM_SRCS
 	mem/mem_dup.c
 	mem/mem_free.c
 	mem/mem_idx.c
-	mem/mem_internal.h
 	mem/mem_realloc.c
 	mem/mem_set.c
 )
