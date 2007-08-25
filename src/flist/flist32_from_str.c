@@ -19,7 +19,7 @@
 
 int flist32_from_str(const char *str, const flist32_t list[],
 		uint32_t *flags, uint32_t *mask,
-		char clmod, char *delim)
+		char clmod, const char *delim)
 {
 	char *token;
 	int clear = 0;

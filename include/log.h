@@ -74,12 +74,12 @@
  * - The log_mask argument is the lower level bound of messages being multiplexed.
  */
 typedef struct {
-	char *log_ident;    /*!< program identifier */
-	int   log_dest;     /*!< file destination switch */
-	int   log_fd;       /*!< file descriptor for LOGD_FILE target */
-	int   log_facility; /*!< program facility */
-	int   log_opts;     /*!< control flags */
-	int   log_mask;     /*!< lower log level bound */
+	const char *log_ident; /*!< program identifier */
+	int   log_dest;        /*!< file destination switch */
+	int   log_fd;          /*!< file descriptor for LOGD_FILE target */
+	int   log_facility;    /*!< program facility */
+	int   log_opts;        /*!< control flags */
+	int   log_mask;        /*!< lower log level bound */
 } log_options_t;
 
 /*!

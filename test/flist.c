@@ -50,7 +50,7 @@ int flist32_from_str_t(void)
 	uint32_t flags, mask;
 
 	struct test {
-		char *str;
+		const char *str;
 		int ret;
 		uint32_t flags;
 		uint32_t mask;
@@ -89,7 +89,7 @@ int flist64_from_str_t(void)
 	uint64_t flags, mask;
 
 	struct test {
-		char *str;
+		const char *str;
 		int ret;
 		uint64_t flags;
 		uint64_t mask;
@@ -129,13 +129,13 @@ int flist32_to_str_t(void)
 
 	struct test {
 		uint32_t flags;
-		char *str;
+		const char *str;
 	} T[] = {
 		{ 0, "" },
-		{ NODE_B,        "B" },
-		{ NODE_A|0x2,    "A" },
-		{ NODE_A|NODE_B, "A,B" },
-		{ ~0UL,          "A,B,C" },
+		{ NODE_B,         "B" },
+		{ NODE_A|0x2,     "A" },
+		{ NODE_A|NODE_B,  "A,B" },
+		{ (uint32_t)~0UL, "A,B,C" },
 	};
 
 	int TS = sizeof(T) / sizeof(T[0]);
@@ -163,7 +163,7 @@ int flist64_to_str_t(void)
 
 	struct test {
 		uint64_t flags;
-		char *str;
+		const char *str;
 	} T[] = {
 		{ 0, "" },
 		{ NODE_B,        "B" },

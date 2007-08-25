@@ -37,6 +37,7 @@ void *mem_alloc(int n);
  *
  * @param[out] s1 pointer to destination block
  * @param[in]  s2 pointer to source block
+ * @param[in]  c  character to be found
  * @param[in]  n  copy first n bytes of s2
  *
  * @return A pointer to s1.

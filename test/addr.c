@@ -29,7 +29,7 @@ int addr_from_str_t(void)
 	uint32_t ip, mask;
 
 	struct test {
-		char *str;
+		const char *str;
 		int ret;
 		uint32_t ip;
 		uint32_t mask;
@@ -75,7 +75,7 @@ int addr_to_str_t(void)
 	struct test {
 		uint32_t ip;
 		uint32_t mask;
-		char *str;
+		const char *str;
 	} T[] = {
 		{ 0,          0,          "0.0.0.0" },
 		{ 0xffffffff, 0,          "255.255.255.255" },

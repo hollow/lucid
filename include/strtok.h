@@ -41,6 +41,7 @@ typedef struct {
  * @param[out] st    tokenizer to initialize
  * @param[in]  argv  argument vector
  * @param[in]  argc  argument vector size
+ * @param[in]  empty convert empty tokens
  *
  * @return A pointer to st.
  */
@@ -56,7 +57,7 @@ strtok_t *strtok_init_argv(strtok_t *st, char *argv[], int argc, int empty);
  *
  * @return A pointer to st.
  */
-strtok_t *strtok_init_str(strtok_t *st, const char *str, char *delim, int empty);
+strtok_t *strtok_init_str(strtok_t *st, const char *str, const char *delim, int empty);
 
 /*!
  * @brief deallocate string tokenizer
@@ -116,8 +117,7 @@ char *strtok_next(strtok_t **st);
  * @brief convert string tokenizer to argument vector
  *
  * @param[out] st   tokenizer to convert
- * @param[in]  argv pointer to an argument vector
- * @param[in]  argc pointer to number of elements stored in argv
+ * @param[in]  argv argument vector big enough to hold all tokens
  *
  * @param 0 on success, -1 on error with errno set.
  */
@@ -126,8 +126,9 @@ int strtok_toargv(strtok_t *st, char **argv);
 /*!
  * @brief convert string tokenizer to character array
  *
- * @param[out] st  tokenizer to convert
- * @param[in]  str pointer to a string
+ * @param[out] st     tokenizer to convert
+ * @param[in]  str    pointer to a string
+ * @param[in]  delim  token delimiter
  *
  * @param 0 on success, -1 on error with errno set.
  */

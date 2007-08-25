@@ -35,7 +35,7 @@ int whirlpool_digest_t(void)
 	memset(astring, 'a', 1000000);
 
 	struct test {
-		char *str;
+		const char *str;
 		const char *digest;
 	} T[] = {
 		{ "",

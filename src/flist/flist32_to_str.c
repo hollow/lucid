@@ -18,7 +18,7 @@
 #include "str.h"
 #include "stralloc.h"
 
-char *flist32_to_str(const flist32_t list[], uint32_t val, char *delim)
+char *flist32_to_str(const flist32_t list[], uint32_t val, const char *delim)
 {
 	int i;
 	char *buf;

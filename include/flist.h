@@ -106,7 +106,7 @@ const char *flist32_getkey(const flist32_t list[], uint32_t val);
  */
 int flist32_from_str(const char *str, const flist32_t list[],
                      uint32_t *flags, uint32_t *mask,
-                     char clmod, char *delim);
+                     char clmod, const char *delim);
 
 /*!
  * @brief convert bit mask to flag list string
@@ -121,7 +121,7 @@ int flist32_from_str(const char *str, const flist32_t list[],
  * @note if no flag was found or the bitmap was empty, an empty string is
  *       returned, not NULL
  */
-char *flist32_to_str(const flist32_t list[], uint32_t val, char *delim);
+char *flist32_to_str(const flist32_t list[], uint32_t val, const char *delim);
 
 
 
@@ -180,7 +180,7 @@ const char *flist64_getkey(const flist64_t list[], uint64_t val);
  */
 int flist64_from_str(const char *str, const flist64_t list[],
                      uint64_t *flags, uint64_t *mask,
-                     char clmod, char *delim);
+                     char clmod, const char *delim);
 
 /*!
  * @brief convert bit mask to flag list string
@@ -195,7 +195,7 @@ int flist64_from_str(const char *str, const flist64_t list[],
  * @note if no flag was found or the bitmap was empty, an empty string is
  *       returned, not NULL
  */
-char *flist64_to_str(const flist64_t list[], uint64_t val, char *delim);
+char *flist64_to_str(const flist64_t list[], uint64_t val, const char *delim);
 
 #endif
 

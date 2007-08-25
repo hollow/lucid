@@ -18,7 +18,7 @@
 #include "str.h"
 #include "stralloc.h"
 
-char *flist64_to_str(const flist64_t list[], uint64_t val, char *delim)
+char *flist64_to_str(const flist64_t list[], uint64_t val, const char *delim)
 {
 	int i;
 	char *buf;

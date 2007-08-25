@@ -1,1 +1,17 @@
-See doc/html/index.html
+The lucid library combines a lot of useful functions i wrote for my projects.
+There are a lot of custom functions for strings, doubly-linked lists, bitmaps
+and flag lists, input/output, cryptogrpahic digests, and tcp connections.
+
+Some of these functions, especially string and list functions, are completely
+self-contained and do not rely on libc. This makes integration in foreign
+projects as easy as possible.
+
+On the other hand, functions for input/output or chroot are just wrappers
+around libc library functions, but may still be usefull to others as well.
+
+The size of functions range from a few hundred bytes to about 30K. For details
+please read the API documentation at
+http://people.linux-vserver.org/~hollow/lucid/doc/
+
+You can download all releases from
+http://people.linux-vserver.org/~hollow/lucid

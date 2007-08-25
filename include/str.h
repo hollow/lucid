@@ -349,7 +349,7 @@ int str_toumax(const char *str, unsigned long long int *val, int base, int n);
  * @brief read a line of input
  *
  * @param[in]  fd   file descriptor to read from
- * @param[out] line pointer to a string
+ * @param[out] str  pointer to a string
  *
  * @return bytes on success, -1 on error with errno set
  *
@@ -365,7 +365,7 @@ int str_readline(int fd, char **str);
  * @brief read until end of file
  *
  * @param[in]  fd   file descriptor to read from
- * @param[out] file pointer to a string
+ * @param[out] str  pointer to a string
  *
  * @return bytes on success, -1 on error with errno set
  *

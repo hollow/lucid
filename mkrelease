@@ -12,29 +12,17 @@ die() {
 	exit ${2:-1}
 }
 
-ver=`grep AC_INIT configure.ac | awk '{ print $2 }'`
-ver=${ver/,}
+mkdir -p build &>/dev/null
+pushd build &>/dev/null || die "popd failed"
 
-echo "Creating release tag... "
+cmake .. || die "cmake failed"
+make doc || die "make doc failed"
+make package_source || die "make package_source failed"
+for i in *.tar.bz2 *.tar.gz; do md5sum $i > $i.md5; done
 
-svn copy ${svnroot}/trunk ${svnroot}/tags/release-${ver} \
-	-m "Tagging the ${ver} release of the ${proj} project" &>/dev/null || die "svn copy failed"
+ver=$(grep CPACK_PACKAGE_VERSION CPackSourceConfig.cmake | sed 's/.*"\(.*\)".*/\1/g')
 
-
-echo "Running autotools..."
-
-make -f Makefile.svn &>/dev/null || die "make failed"
-mkdir build &>/dev/null
-pushd build/ &>/dev/null || die "popd failed"
-
-echo "Make dist tarball..."
-../configure &>/dev/null || die "configure failed"
-make dist &>/dev/null || die "make dist failed"
-
-for i in *.tar.bz2 *.tar.gz; do
-	md5sum $i > $i.md5
-done
-
-echo "Tarball ist at `pwd`"
+echo svn copy ${svnroot}/trunk ${svnroot}/tags/release-${ver} \
+	-m "Tagging the ${ver} release of the ${proj} project" || die "svn copy failed"
 
 popd &>/dev/null || die "popd failed"

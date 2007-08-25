@@ -30,7 +30,7 @@ int str_check_t(void)
 	char allchars[128];
 
 	struct test {
-		char *str;
+		const char *str;
 		int allowed;
 		int res;
 	} T[] = {
@@ -90,9 +90,9 @@ int str_path_basedirname_t(void)
 	char *dirname, *basename;
 
 	struct test {
-		char *path;
-		char *dirname;
-		char *basename;
+		const char *path;
+		const char *dirname;
+		const char *basename;
 	} T[] = {
 		{ "/usr/lib", "/usr",  "lib" },
 		{ "/usr/",    "/",     "usr" },
@@ -137,9 +137,9 @@ int str_path_concat_t(void)
 	char *path;
 
 	struct test {
-		char *dirname;
-		char *basename;
-		char *path;
+		const char *dirname;
+		const char *basename;
+		const char *path;
 	} T[] = {
 		{ "",        "",     NULL },
 		{ "/",       "",     "//" }, /* ugly but valid */
@@ -183,7 +183,7 @@ int str_path_isabs_t(void)
 	char *buf;
 
 	struct test {
-		char *str;
+		const char *str;
 		int res;
 	} T[] = {
 		{ "",           0 },
@@ -221,7 +221,7 @@ int str_path_isdot_t(void)
 	char *buf;
 
 	struct test {
-		char *str;
+		const char *str;
 		int res;
 	} T[] = {
 		{ "",           0 },

@@ -18,7 +18,7 @@
 #include "str.h"
 #include "strtok.h"
 
-strtok_t *strtok_init_str(strtok_t *st, const char *str, char *delim, int empty)
+strtok_t *strtok_init_str(strtok_t *st, const char *str, const char *delim, int empty)
 {
 	strtok_t *new;
 	char *scpy, *cur, *token;

@@ -1,0 +1,1 @@
+Run `cmake . && make && sudo make install'.
