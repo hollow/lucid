@@ -44,17 +44,6 @@ set(EXEC_SRCS
 	exec/exec_replace.c
 )
 
-set(FLIST_SRCS
-	flist/flist32_from_str.c
-	flist/flist32_getkey.c
-	flist/flist32_getval.c
-	flist/flist32_to_str.c
-	flist/flist64_from_str.c
-	flist/flist64_getkey.c
-	flist/flist64_getval.c
-	flist/flist64_to_str.c
-)
-
 set(RTTI_SRCS
 	rtti/array.c
 	rtti/bool.c
@@ -66,37 +55,6 @@ set(RTTI_SRCS
 	rtti/rtti.c
 	rtti/string.c
 	rtti/struct.c
-)
-
-set(STRALLOC_SRCS
-	stralloc/stralloc_catb.c
-	stralloc/stralloc_cat.c
-	stralloc/stralloc_catf.c
-	stralloc/stralloc_catm.c
-	stralloc/stralloc_cats.c
-	stralloc/stralloc_cmp.c
-	stralloc/stralloc_copyb.c
-	stralloc/stralloc_copy.c
-	stralloc/stralloc_copys.c
-	stralloc/stralloc_finalize.c
-	stralloc/stralloc_free.c
-	stralloc/stralloc_init.c
-	stralloc/stralloc_ready.c
-	stralloc/stralloc_readyplus.c
-	stralloc/stralloc_zero.c
-)
-
-set(STRTOK_SRCS
-	strtok/strtok_append.c
-	strtok/strtok_count.c
-	strtok/strtok_delete.c
-	strtok/strtok_free.c
-	strtok/strtok_init_argv.c
-	strtok/strtok_init_str.c
-	strtok/strtok_next.c
-	strtok/strtok_prev.c
-	strtok/strtok_toargv.c
-	strtok/strtok_tostr.c
 )
 
 set(WHIRLPOOL_SRCS
@@ -114,15 +72,15 @@ set(lucid_SRCS
 	base64.c
 	${CHROOT_SRCS}
 	${EXEC_SRCS}
-	${FLIST_SRCS}
+	flist.c
 	log.c
 	mem.c
 	printf.c
 	${RTTI_SRCS}
 	scanf.c
 	str.c
-	${STRALLOC_SRCS}
-	${STRTOK_SRCS}
+	stralloc.c
+	strtok.c
 	uio.c
 	${WHIRLPOOL_SRCS}
 )
