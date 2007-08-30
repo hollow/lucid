@@ -4,6 +4,10 @@ add_executable(addr addr.c)
 target_link_libraries(addr ucid)
 add_test(addr addr)
 
+add_executable(base64 base64.c)
+target_link_libraries(base64 ucid)
+add_test(base64 base64)
+
 add_executable(bitmap bitmap.c)
 target_link_libraries(bitmap ucid)
 add_test(bitmap bitmap)
@@ -15,6 +19,10 @@ add_test(chroot chroot)
 add_executable(flist flist.c)
 target_link_libraries(flist ucid)
 add_test(flist flist)
+
+add_executable(rtti rtti.c)
+target_link_libraries(rtti ucid)
+add_test(rtti rtti)
 
 add_executable(str str.c)
 target_link_libraries(str ucid)

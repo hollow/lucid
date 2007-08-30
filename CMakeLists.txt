@@ -24,7 +24,6 @@ add_definitions(
 	-Wcast-align
 	-Wpointer-arith
 	-Wwrite-strings
-	-Wformat=2
 	-Winline
 	-Wredundant-decls
 	-Wno-unused-parameter

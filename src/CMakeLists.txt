@@ -115,6 +115,19 @@ set(PRINTF_SRCS
 	printf/vsnprintf.c
 )
 
+set(RTTI_SRCS
+	rtti/array.c
+	rtti/bool.c
+	rtti/data.c
+	rtti/float.c
+	rtti/int.c
+	rtti/internal.h
+	rtti/pointer.c
+	rtti/rtti.c
+	rtti/string.c
+	rtti/struct.c
+)
+
 set(SCANF_SRCS
 	scanf/sscanf.c
 	scanf/vsscanf.c
@@ -193,6 +206,7 @@ set(WHIRLPOOL_SRCS
 set(lucid_SRCS
 	${ADDR_SRCS}
 	${BITMAP_SRCS}
+	base64.c
 	${CHROOT_SRCS}
 	${EXEC_SRCS}
 	${FLIST_SRCS}
@@ -201,6 +215,7 @@ set(lucid_SRCS
 	${MISC_SRCS}
 	${OPEN_SRCS}
 	${PRINTF_SRCS}
+	${RTTI_SRCS}
 	${SCANF_SRCS}
 	${STR_SRCS}
 	${STRALLOC_SRCS}

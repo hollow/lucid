@@ -14,18 +14,21 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "str.h"
+/*!
+ * @defgroup base64 base64 encoding/decoding functions
+ * @{
+ */
 
-int str_cmpn(const char *str1, const char *str2, int n)
-{
-	if (!str1 && !str2)
-		return 0;
+#ifndef _LUCID_BASE64_H
+#define _LUCID_BASE64_H
 
-	if (!str1 || !str2)
-		return 1;
+#include <sys/types.h>
 
-	while (--n && *str1 && *str2 && *str1 == *str2)
-		str1++, str2++;
+#define BASE64_LENGTH(N) ((((N) + 2) / 3) * 4)
 
-	return *str1 - *str2;
-}
+char *base64_encode(const void *data, size_t n);
+void *base64_decode(const char *buf);
+
+#endif
+
+/*! @} base64 */
