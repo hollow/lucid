@@ -18,7 +18,7 @@
 #include <errno.h>
 
 #include "chroot.h"
-#include "open.h"
+#include "uio.h"
 
 /* go to <dir> in <root> as root
 ** going into the chroot before doing chdir(dir) prevents symlink attacks
@@ -27,13 +27,13 @@ int chroot_secure_chdir(const char *root, const char *dir)
 {
 	int orig_root, new_root;
 
-	if ((orig_root = open_read("/")) == -1)
+	if ((orig_root = uio_open("/", "r", 0)) == -1)
 		return -1;
 
 	if (chdir(root) == -1)
 		return -1;
 
-	if ((new_root = open_read(".")) == -1)
+	if ((new_root = uio_open(".", "r", 0)) == -1)
 		return -1;
 
 	int dirfd;
@@ -48,7 +48,7 @@ int chroot_secure_chdir(const char *root, const char *dir)
 		goto err;
 
 	/* save a file descriptor of the target dir */
-	dirfd = open_read(".");
+	dirfd = uio_open(".", "r", 0);
 
 	if (dirfd == -1)
 		goto err;

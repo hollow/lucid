@@ -1,20 +1,21 @@
 SET(lucid_HDRS
 	addr.h
+	base64.h
 	bitmap.h
 	char.h
 	chroot.h
 	exec.h
 	flist.h
+	list.h
 	log.h
 	mem.h
-	misc.h
-	open.h
 	printf.h
+	rtti.h
 	scanf.h
 	str.h
 	stralloc.h
 	strtok.h
-	tcp.h
+	uio.h
 	whirlpool.h
 )
 

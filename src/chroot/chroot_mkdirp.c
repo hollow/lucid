@@ -18,24 +18,23 @@
 #include <errno.h>
 
 #include "chroot.h"
-#include "misc.h"
-#include "open.h"
+#include "uio.h"
 
 /* go to <dir> in <root> as root
 ** going into the chroot before doing chdir(dir) prevents symlink attacks
 ** and hence is safer */
-int chroot_mkdirp(const char *root, const char *dir, mode_t mode)
+int chroot_mkdir(const char *root, const char *dir, mode_t mode)
 {
 	int orig_root, new_root;
 	int errno_orig;
 
-	if ((orig_root = open_read("/")) == -1)
+	if ((orig_root = uio_open("/", "r", 0)) == -1)
 		return -1;
 
 	if (chdir(root) == -1)
 		return -1;
 
-	if ((new_root = open_read(".")) == -1)
+	if ((new_root = uio_open(".", "r", 0)) == -1)
 		return -1;
 
 	/* check cwdfd */
@@ -43,7 +42,7 @@ int chroot_mkdirp(const char *root, const char *dir, mode_t mode)
 		return -1;
 
 	/* now create the dir in the chroot */
-	if (mkdirp(dir, mode) == -1)
+	if (uio_mkdir(dir, mode) == -1)
 		goto err;
 
 	/* break out of the chroot */

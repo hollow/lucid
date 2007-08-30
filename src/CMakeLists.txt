@@ -55,32 +55,6 @@ set(FLIST_SRCS
 	flist/flist64_to_str.c
 )
 
-set(MEM_SRCS
-	mem/mem_alloc.c
-	mem/mem_ccpy.c
-	mem/mem_chr.c
-	mem/mem_cmp.c
-	mem/mem_cpy.c
-	mem/mem_dup.c
-	mem/mem_free.c
-	mem/mem_idx.c
-	mem/mem_realloc.c
-	mem/mem_set.c
-)
-
-set(MISC_SRCS
-	misc/copy_file.c
-	misc/isdir.c
-	misc/isfile.c
-	misc/islink.c
-	misc/ismount.c
-	misc/ispath.c
-	misc/mkdirnamep.c
-	misc/mkdirp.c
-	misc/readsymlink.c
-	misc/runlink.c
-)
-
 set(RTTI_SRCS
 	rtti/array.c
 	rtti/bool.c
@@ -92,31 +66,6 @@ set(RTTI_SRCS
 	rtti/rtti.c
 	rtti/string.c
 	rtti/struct.c
-)
-
-set(STR_SRCS
-	str/str_check.c
-	str/str_chr.c
-	str/str_cmp.c
-	str/str_cmpn.c
-	str/str_cpy.c
-	str/str_cpyn.c
-	str/str_dup.c
-	str/str_equal.c
-	str/str_len.c
-	str/str_path_basename.c
-	str/str_path_concat.c
-	str/str_path_dirname.c
-	str/str_path_isabs.c
-	str/str_path_isdot.c
-	str/str_rchr.c
-	str/str_read.c
-	str/str_readfile.c
-	str/str_readline.c
-	str/str_str.c
-	str/str_tolower.c
-	str/str_toumax.c
-	str/str_toupper.c
 )
 
 set(STRALLOC_SRCS
@@ -167,15 +116,14 @@ set(lucid_SRCS
 	${EXEC_SRCS}
 	${FLIST_SRCS}
 	log.c
-	${MEM_SRCS}
-	${MISC_SRCS}
-	open.c
+	mem.c
 	printf.c
 	${RTTI_SRCS}
 	scanf.c
-	${STR_SRCS}
+	str.c
 	${STRALLOC_SRCS}
 	${STRTOK_SRCS}
+	uio.c
 	${WHIRLPOOL_SRCS}
 )
 

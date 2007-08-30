@@ -27,10 +27,10 @@
  * than zero if str1 is found, respectively, to be less than, to match, or be
  * greater than str2.
  *
- * The strcpy() function copies the string pointed to by src (including the
+ * The str_cpy() function copies the string pointed to by src (including the
  * terminating `\\0' character) to the array pointed to by dst. The strings may
  * not overlap, and the destination string dst must be large enough to receive
- * the copy. The strncpy() function is similar, except that not more than n
+ * the copy. The str_cpyn() function is similar, except that not more than n
  * bytes of src are copied. Thus, if there is no null byte among the first n
  * bytes of src, the result will not be null-terminated.
  *
@@ -340,59 +340,6 @@ char *str_toupper(char *str);
  * @return Number of bytes read from str
  */
 int str_toumax(const char *str, unsigned long long int *val, int base, int n);
-
-
-/*! bytes read at a time */
-#define CHUNKSIZE 4096
-
-/*!
- * @brief read a line of input
- *
- * @param[in]  fd   file descriptor to read from
- * @param[out] str  pointer to a string
- *
- * @return bytes on success, -1 on error with errno set
- *
- * @note The caller should free obtained memory for line using free(3)
- *
- * @see malloc(3)
- * @see free(3)
- * @see read(2)
- */
-int str_readline(int fd, char **str);
-
-/*!
- * @brief read until end of file
- *
- * @param[in]  fd   file descriptor to read from
- * @param[out] str  pointer to a string
- *
- * @return bytes on success, -1 on error with errno set
- *
- * @note The caller should free obtained memory for file using free(3)
- *
- * @see malloc(3)
- * @see free(3)
- * @see read(2)
- */
-int str_readfile(int fd, char **str);
-
-/*!
- * @brief read exact number of bytes
- *
- * @param[in]  fd  file descriptor to read from
- * @param[out] str pointer to a string
- * @param[in]  len bytes to be read
- *
- * @return bytes read on success, -1 on error with errno set
- *
- * @note The caller should free obtained memory for str using free(3)
- *
- * @see malloc(3)
- * @see free(3)
- * @see read(2)
- */
-int str_read(int fd, char **str, int len);
 
 #endif
 
