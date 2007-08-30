@@ -14,6 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <unistd.h>
+
 #include "mem.h"
 #include "printf.h"
 #include "str.h"
@@ -539,4 +541,81 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 	va_end(ap);
 
 	return idx;
+}
+
+int _lucid_asprintf(char **ptr, const char *fmt, /*args*/ ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	return _lucid_vasprintf(ptr, fmt, ap);
+}
+
+int _lucid_dprintf(int fd, const char *fmt, /*args*/ ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	return _lucid_vdprintf(fd, fmt, ap);
+}
+
+int _lucid_printf(const char *fmt, /*args*/ ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	return _lucid_vprintf(fmt, ap);
+}
+
+int _lucid_snprintf(char *str, int size, const char *fmt, /*args*/ ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	return _lucid_vsnprintf(str, size, fmt, ap);
+}
+
+int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
+{
+	va_list ap2;
+	int len;
+	char *buf;
+
+	/* don't consume the original ap, we'll need it again */
+	va_copy(ap2, ap);
+
+	/* get required size */
+	len = _lucid_vsnprintf(0, 0, fmt, ap2);
+
+	va_end(ap2);
+
+	/* if size is 0, no buffer is allocated
+	** just set *ptr to NULL and return size */
+	if (len > 0) {
+		if (!(buf = mem_alloc(len + 1)))
+			return -1;
+
+		_lucid_vsnprintf(buf, len + 1, fmt, ap);
+
+		*ptr = buf;
+	}
+
+	return len;
+}
+
+int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
+{
+	char *buf;
+	int buflen, len;
+
+	buflen = _lucid_vasprintf(&buf, fmt, ap);
+	len = write(fd, buf, buflen);
+	mem_free(buf);
+
+	return len;
+}
+
+int _lucid_vprintf(const char *fmt, va_list ap)
+{
+	return _lucid_vdprintf(1, fmt, ap);
 }

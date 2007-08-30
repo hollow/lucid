@@ -381,3 +381,11 @@ int _lucid_vsscanf(const char *str, const char *fmt, va_list _ap)
 	va_end(ap);
 	return converted;
 }
+
+int _lucid_sscanf(const char *str, const char *fmt, /*args*/ ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+
+	return _lucid_vsscanf(str, fmt, ap);
+}

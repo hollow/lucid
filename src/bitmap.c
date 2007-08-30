@@ -14,11 +14,46 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <fcntl.h>
+#include "bitmap.h"
 
-#include "open.h"
-
-int open_trunc(const char *filename)
+uint32_t i2v32(int index)
 {
-	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT|O_TRUNC, 0666);
+	if (index < 0 || index > 31)
+		return 0;
+
+	return (1UL << index);
+}
+
+uint64_t i2v64(int index)
+{
+	if (index < 0 || index > 63)
+		return 0;
+
+	return (1ULL << index);
+}
+
+int v2i32(uint32_t val)
+{
+	int index = 0;
+
+	if (val == 0)
+		return -1;
+
+	while ((val = val >> 1))
+		index++;
+
+	return index;
+}
+
+int v2i64(uint64_t val)
+{
+	int index = 0;
+
+	if (val == 0)
+		return -1;
+
+	while ((val = val >> 1))
+		index++;
+
+	return index;
 }

@@ -14,12 +14,36 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "bitmap.h"
+#include <fcntl.h>
 
-uint64_t i2v64(int index)
+#include "open.h"
+
+int open_append(const char *filename)
 {
-	if (index < 0 || index > 63)
-		return 0;
+	return open(filename, O_WRONLY|O_NONBLOCK|O_APPEND|O_CREAT, 0666);
+}
 
-	return (1ULL << index);
+int open_excl(const char *filename)
+{
+	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT|O_EXCL, 0666);
+}
+
+int open_read(const char *filename)
+{
+	return open(filename, O_RDONLY|O_NONBLOCK);
+}
+
+int open_rw(const char *filename)
+{
+	return open(filename, O_RDWR|O_NONBLOCK|O_CREAT, 0666);
+}
+
+int open_trunc(const char *filename)
+{
+	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT|O_TRUNC, 0666);
+}
+
+int open_write(const char *filename)
+{
+	return open(filename, O_WRONLY|O_NONBLOCK|O_CREAT, 0666);
 }

@@ -21,15 +21,104 @@
 #include <syslog.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include "log.h"
 #include "mem.h"
 #include "printf.h"
 #include "str.h"
 
-extern log_options_t *_log_options;
+#define MASK_PRIO(p) (1 << (p))
+
+log_options_t *_log_options = NULL;
 
 static int errno_orig = 0;
+
+static
+int mask_to_syslog(int mask)
+{
+	int newmask = 0;
+
+	if (mask & MASK_PRIO(LOGP_ALERT))
+		newmask |= MASK_PRIO(LOG_ALERT);
+	if (mask & MASK_PRIO(LOGP_ERROR))
+		newmask |= MASK_PRIO(LOG_ERR);
+	if (mask & MASK_PRIO(LOGP_WARN))
+		newmask |= MASK_PRIO(LOG_WARNING);
+	if (mask & MASK_PRIO(LOGP_NOTE))
+		newmask |= MASK_PRIO(LOG_NOTICE);
+	if (mask & MASK_PRIO(LOGP_INFO))
+		newmask |= MASK_PRIO(LOG_INFO);
+	if (mask & MASK_PRIO(LOGP_DEBUG))
+		newmask |= MASK_PRIO(LOG_DEBUG);
+
+	return newmask;
+}
+
+static
+int prio_to_syslog(int prio)
+{
+	switch (prio) {
+		case LOGP_ALERT: return LOG_ALERT;
+		case LOGP_ERROR: return LOG_ERR;
+		case LOGP_WARN:  return LOG_WARNING;
+		case LOGP_NOTE:  return LOG_NOTICE;
+		case LOGP_INFO:  return LOG_INFO;
+		case LOGP_DEBUG: return LOG_DEBUG;
+	}
+
+	return -1;
+}
+
+void log_init(log_options_t *options)
+{
+	struct stat sb;
+
+	/* check file destination */
+	if (options->log_dest & LOGD_FILE)
+		if (options->log_fd < 0 || fstat(options->log_fd, &sb) == -1)
+			options->log_dest &= ~LOGD_FILE;
+
+	/* check if STDERR is available */
+	if (options->log_dest & LOGD_STDERR)
+		if (fstat(STDERR_FILENO, &sb) == -1)
+			options->log_dest &= ~LOGD_STDERR;
+
+	/* log up to LOGP_INFO if not specified */
+	if (options->log_mask == 0)
+		options->log_mask = ((1 << ((LOGP_INFO) + 1)) - 1);
+
+	/* sanitize ident string */
+	if (str_isempty(options->log_ident))
+		options->log_ident = "(none)";
+
+	if (options->log_dest & LOGD_SYSLOG) {
+		openlog(options->log_ident,
+				options->log_opts & LOGO_PID ? LOG_PID : 0,
+				options->log_facility);
+		setlogmask(mask_to_syslog(options->log_mask));
+	}
+
+	_log_options = (log_options_t *) mem_alloc(sizeof(log_options_t));
+
+	mem_cpy(_log_options, options, sizeof(log_options_t));
+}
+
+void log_close(void)
+{
+	if (!_log_options)
+		return;
+
+	if (_log_options->log_dest & LOGD_SYSLOG)
+		closelog();
+
+	if (_log_options->log_dest & LOGD_FILE)
+		close(_log_options->log_fd);
+
+	mem_free(_log_options);
+
+	_log_options = 0;
+}
 
 static
 void log_fd(int fd, int prio, const char *msg)
@@ -67,21 +156,6 @@ void log_fd(int fd, int prio, const char *msg)
 
 	_lucid_dprintf(fd, "%s%s\n",
 			_log_options->log_opts ? ": " : "", msg);
-}
-
-static
-int prio_to_syslog(int prio)
-{
-	switch (prio) {
-		case LOGP_ALERT: return LOG_ALERT;
-		case LOGP_ERROR: return LOG_ERR;
-		case LOGP_WARN:  return LOG_WARNING;
-		case LOGP_NOTE:  return LOG_NOTICE;
-		case LOGP_INFO:  return LOG_INFO;
-		case LOGP_DEBUG: return LOG_DEBUG;
-	}
-
-	return -1;
 }
 
 static

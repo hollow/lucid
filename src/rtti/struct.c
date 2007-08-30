@@ -141,9 +141,6 @@ int rtti_struct_decode(const rtti_t *type, const char *buf, void *data)
 
 	CHECK_TYPE(STRUCT);
 
-	if (type->init(type, data) == -1)
-		return -1;
-
 	SKIP_SPACE(p);
 	SKIP_CHAR(p, '{') {
 		PARSE_ERROR(EINVAL, buf, p);

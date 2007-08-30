@@ -31,14 +31,6 @@ set(ADDR_SRCS
 	addr/addr_to_str.c
 )
 
-set(BITMAP_SRCS
-	bitmap/i2v32.c
-	bitmap/i2v64.c
-	bitmap/v2i32.c
-	bitmap/v2i64.c
-)
-
-
 set(CHROOT_SRCS
 	chroot/chroot_fd.c
 	chroot/chroot_mkdirp.c
@@ -61,12 +53,6 @@ set(FLIST_SRCS
 	flist/flist64_getkey.c
 	flist/flist64_getval.c
 	flist/flist64_to_str.c
-)
-
-set(LOG_SRCS
-	log/log_close.c
-	log/log_init.c
-	log/log_internal.c
 )
 
 set(MEM_SRCS
@@ -95,26 +81,6 @@ set(MISC_SRCS
 	misc/runlink.c
 )
 
-set(OPEN_SRCS
-	open/open_append.c
-	open/open_excl.c
-	open/open_read.c
-	open/open_rw.c
-	open/open_trunc.c
-	open/open_write.c
-)
-
-set(PRINTF_SRCS
-	printf/asprintf.c
-	printf/dprintf.c
-	printf/printf.c
-	printf/snprintf.c
-	printf/vasprintf.c
-	printf/vdprintf.c
-	printf/vprintf.c
-	printf/vsnprintf.c
-)
-
 set(RTTI_SRCS
 	rtti/array.c
 	rtti/bool.c
@@ -126,11 +92,6 @@ set(RTTI_SRCS
 	rtti/rtti.c
 	rtti/string.c
 	rtti/struct.c
-)
-
-set(SCANF_SRCS
-	scanf/sscanf.c
-	scanf/vsscanf.c
 )
 
 set(STR_SRCS
@@ -189,11 +150,6 @@ set(STRTOK_SRCS
 	strtok/strtok_tostr.c
 )
 
-set(TCP_SRCS
-	tcp/tcp_connect.c
-	tcp/tcp_listen.c
-)
-
 set(WHIRLPOOL_SRCS
 	whirlpool/whirlpool_add.c
 	whirlpool/whirlpool_digest.c
@@ -205,22 +161,21 @@ set(WHIRLPOOL_SRCS
 
 set(lucid_SRCS
 	${ADDR_SRCS}
-	${BITMAP_SRCS}
+	bitmap.c
 	base64.c
 	${CHROOT_SRCS}
 	${EXEC_SRCS}
 	${FLIST_SRCS}
-	${LOG_SRCS}
+	log.c
 	${MEM_SRCS}
 	${MISC_SRCS}
-	${OPEN_SRCS}
-	${PRINTF_SRCS}
+	open.c
+	printf.c
 	${RTTI_SRCS}
-	${SCANF_SRCS}
+	scanf.c
 	${STR_SRCS}
 	${STRALLOC_SRCS}
 	${STRTOK_SRCS}
-	${TCP_SRCS}
 	${WHIRLPOOL_SRCS}
 )
 
