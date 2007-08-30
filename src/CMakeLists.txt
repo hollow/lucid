@@ -48,6 +48,7 @@ set(RTTI_SRCS
 	rtti/array.c
 	rtti/bool.c
 	rtti/data.c
+	rtti/flist.c
 	rtti/float.c
 	rtti/int.c
 	rtti/internal.h

@@ -139,10 +139,7 @@ typedef struct rtti_data_s {
 	void *data;
 } rtti_data_t;
 
-typedef int rtti_data_encoder_t(const void *data, size_t n, char **buf);
-typedef int rtti_data_decoder_t(const char *buf, const void **data);
-
-#define RTTI_DATA_TYPE(encoder, decoder) { \
+#define RTTI_DATA_TYPE { \
 	sizeof(rtti_data_t), \
 	"data", \
 	RTTI_TYPE_PRIMITIVE, \
@@ -152,7 +149,7 @@ typedef int rtti_data_decoder_t(const char *buf, const void **data);
 	rtti_data_encode, \
 	rtti_data_decode, \
 	rtti_data_free, \
-	{ { (void *)(encoder) }, { (void *)(decoder) }, { NULL } \
+	{ { NULL }, { NULL }, { NULL } \
 }
 
 extern rtti_copy_t   rtti_data_copy;
@@ -160,6 +157,25 @@ extern rtti_equal_t  rtti_data_equal;
 extern rtti_encode_t rtti_data_encode;
 extern rtti_decode_t rtti_data_decode;
 extern rtti_uninit_t rtti_data_free;
+
+/* flist type */
+#define RTTI_FLIST_TYPE(size, list, delim, clmod) { \
+	sizeof(flag ## size ## _t), \
+	"flist" #size, \
+	RTTI_TYPE_PRIMITIVE, \
+	rtti_region_init, \
+	rtti_region_copy, \
+	rtti_region_equal, \
+	rtti_flist ## size ## _encode, \
+	rtti_flist ## size ## _decode, \
+	rtti_nothing_free, \
+	{ { (void *)(list) }, { (void *)(delim) }, { (void *)(clmod) } } \
+}
+
+extern rtti_encode_t rtti_flist32_encode;
+extern rtti_decode_t rtti_flist32_decode;
+extern rtti_encode_t rtti_flist64_encode;
+extern rtti_decode_t rtti_flist64_decode;
 
 /* floating point type */
 #define RTTI_FLOAT_TYPE(type, pri_arg, sign) { \

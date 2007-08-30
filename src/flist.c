@@ -41,8 +41,7 @@ uint32_t flist32_getval(const flist32_t list[], const char *key)
 	return 0;
 }
 
-int flist32_from_str(const char *str, const flist32_t list[],
-		uint32_t *flags, uint32_t *mask,
+int flist32_decode(const char *str, const flist32_t list[], flag32_t *flag32,
 		char clmod, const char *delim)
 {
 	char *token;
@@ -59,6 +58,8 @@ int flist32_from_str(const char *str, const flist32_t list[],
 
 		if (*token == clmod)
 			clear = 1;
+		else
+			clear = 0;
 
 		cur_flag = flist32_getval(list, token+clear);
 
@@ -68,11 +69,11 @@ int flist32_from_str(const char *str, const flist32_t list[],
 		}
 
 		if (clear) {
-			*flags &= ~cur_flag;
-			*mask  |=  cur_flag;
+			flag32->flag &= ~cur_flag;
+			flag32->mask |=  cur_flag;
 		} else {
-			*flags |=  cur_flag;
-			*mask  |=  cur_flag;
+			flag32->flag |=  cur_flag;
+			flag32->mask |=  cur_flag;
 		}
 	}
 
@@ -81,7 +82,8 @@ int flist32_from_str(const char *str, const flist32_t list[],
 	return 0;
 }
 
-char *flist32_to_str(const flist32_t list[], uint32_t val, const char *delim)
+char *flist32_encode(const flist32_t list[], const flag32_t *flag32,
+		char clmod, const char *delim)
 {
 	int i;
 	char *buf;
@@ -89,9 +91,13 @@ char *flist32_to_str(const flist32_t list[], uint32_t val, const char *delim)
 
 	stralloc_init(sa);
 
-	for (i = 0; list[i].key; i++)
-		if (val & list[i].val)
-			stralloc_catf(sa, "%s%s", list[i].key, delim);
+	for (i = 0; list[i].key; i++) {
+		if (flag32->mask & list[i].val) {
+			if (!(flag32->flag & list[i].val))
+				stralloc_catb(sa, &clmod, 1);
+			stralloc_catm(sa, list[i].key, delim, NULL);
+		}
+	}
 
 	if (sa->len > 0)
 		sa->len -= str_len(delim);
@@ -124,8 +130,7 @@ uint64_t flist64_getval(const flist64_t list[], const char *key)
 	return 0;
 }
 
-int flist64_from_str(const char *str, const flist64_t list[],
-		uint64_t *flags, uint64_t *mask,
+int flist64_decode(const char *str, const flist64_t list[], flag64_t *flag64,
 		char clmod, const char *delim)
 {
 	char *token;
@@ -142,6 +147,8 @@ int flist64_from_str(const char *str, const flist64_t list[],
 
 		if (*token == clmod)
 			clear = 1;
+		else
+			clear = 0;
 
 		cur_flag = flist64_getval(list, token+clear);
 
@@ -151,11 +158,11 @@ int flist64_from_str(const char *str, const flist64_t list[],
 		}
 
 		if (clear) {
-			*flags &= ~cur_flag;
-			*mask  |=  cur_flag;
+			flag64->flag &= ~cur_flag;
+			flag64->mask |=  cur_flag;
 		} else {
-			*flags |=  cur_flag;
-			*mask  |=  cur_flag;
+			flag64->flag |=  cur_flag;
+			flag64->mask |=  cur_flag;
 		}
 	}
 
@@ -164,7 +171,8 @@ int flist64_from_str(const char *str, const flist64_t list[],
 	return 0;
 }
 
-char *flist64_to_str(const flist64_t list[], uint64_t val, const char *delim)
+char *flist64_encode(const flist64_t list[], const flag64_t *flag64,
+		char clmod, const char *delim)
 {
 	int i;
 	char *buf;
@@ -172,9 +180,13 @@ char *flist64_to_str(const flist64_t list[], uint64_t val, const char *delim)
 
 	stralloc_init(sa);
 
-	for (i = 0; list[i].key; i++)
-		if (val & list[i].val)
-			stralloc_catf(sa, "%s%s", list[i].key, delim);
+	for (i = 0; list[i].key; i++) {
+		if (flag64->mask & list[i].val) {
+			if (!(flag64->flag & list[i].val))
+				stralloc_catb(sa, &clmod, 1);
+			stralloc_catm(sa, list[i].key, delim, NULL);
+		}
+	}
 
 	if (sa->len > 0)
 		sa->len -= str_len(delim);

@@ -51,6 +51,11 @@
 
 #include <stdint.h>
 
+typedef struct {
+	uint32_t flag;
+	uint32_t mask;
+} flag32_t;
+
 /*! @brief 32 bit list object */
 typedef struct {
 	const char *key;    /*!< Node key (must be unique) */
@@ -104,9 +109,8 @@ const char *flist32_getkey(const flist32_t list[], uint32_t val);
  *
  * @return 0 on success, -1 on error with errno set
  */
-int flist32_from_str(const char *str, const flist32_t list[],
-                     uint32_t *flags, uint32_t *mask,
-                     char clmod, const char *delim);
+int flist32_decode(const char *str, const flist32_t list[], flag32_t *flag32,
+		char clmod, const char *delim);
 
 /*!
  * @brief convert bit mask to flag list string
@@ -121,9 +125,14 @@ int flist32_from_str(const char *str, const flist32_t list[],
  * @note if no flag was found or the bitmap was empty, an empty string is
  *       returned, not NULL
  */
-char *flist32_to_str(const flist32_t list[], uint32_t val, const char *delim);
+char *flist32_encode(const flist32_t list[], const flag32_t *flag32,
+		char clmod, const char *delim);
 
 
+typedef struct {
+	uint64_t flag;
+	uint64_t mask;
+} flag64_t;
 
 /*! @brief 64 bit list object */
 typedef struct {
@@ -178,9 +187,8 @@ const char *flist64_getkey(const flist64_t list[], uint64_t val);
  * @note this functions does not reset the flags or mask argument to an empty
  *       bitmap, thus allowing incremental changes to the map.
  */
-int flist64_from_str(const char *str, const flist64_t list[],
-                     uint64_t *flags, uint64_t *mask,
-                     char clmod, const char *delim);
+int flist64_decode(const char *str, const flist64_t list[], flag64_t *flag64,
+		char clmod, const char *delim);
 
 /*!
  * @brief convert bit mask to flag list string
@@ -195,7 +203,8 @@ int flist64_from_str(const char *str, const flist64_t list[],
  * @note if no flag was found or the bitmap was empty, an empty string is
  *       returned, not NULL
  */
-char *flist64_to_str(const flist64_t list[], uint64_t val, const char *delim);
+char *flist64_encode(const flist64_t list[], const flag64_t *flag64,
+		char clmod, const char *delim);
 
 #endif
 

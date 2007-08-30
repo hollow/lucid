@@ -21,9 +21,10 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "rtti.h"
+#include "flist.h"
 #include "log.h"
 #include "mem.h"
+#include "rtti.h"
 #include "str.h"
 
 static
@@ -92,6 +93,82 @@ int rtti_bool32_decode_t(void)
 					__FUNCTION__, k, T[k].ret, T[k].n, T[k].e, ret, buf, errno);
 
 		i = k;
+	}
+
+	return rc;
+}
+
+#define NODE_A 0x0001
+#define NODE_B 0x0008
+#define NODE_C 0x0800
+
+FLIST32_START(test_list)
+FLIST32_NODE(NODE, A)
+FLIST32_NODE(NODE, B)
+FLIST32_NODE(NODE, C)
+FLIST32_END
+
+static
+int rtti_flist_encode_t(void)
+{
+	const rtti_t flist_type = RTTI_FLIST_TYPE(32, test_list, ",", '~');
+	int i, ret, rc = 0;
+	char *buf;
+
+	struct test {
+		flag32_t flag32;
+		const char *s;
+		int ret;
+	} T[] = {
+		{ { 0, 0 },                         "\"\"",     2 },
+		{ { NODE_A, NODE_A },               "\"A\"",    3 },
+		{ { NODE_A|NODE_B, NODE_A|NODE_B }, "\"A,B\"",  5 },
+		{ { NODE_B, NODE_A|NODE_B },        "\"~A,B\"", 6 },
+	};
+
+	int TS = sizeof(T) / sizeof(T[0]);
+
+	for (i = 0; i < TS; i++) {
+		ret = rtti_encode(&flist_type, NULL, &T[i].flag32, &buf);
+
+		if (ret  != T[i].ret || !str_equal(buf, T[i].s))
+			rc += log_error("[%s/%02d] E[%d,%s] R[%d,%s]",
+					__FUNCTION__, i, T[i].ret, T[i].s, ret, buf);
+
+		if (buf)
+			mem_free(buf);
+	}
+
+	return rc;
+}
+
+static
+int rtti_flist_decode_t(void)
+{
+	const rtti_t flist_type = RTTI_FLIST_TYPE(32, test_list, ",", '~');
+	int i, ret, rc = 0;
+	flag32_t buf;
+
+	struct test {
+		flag32_t flag32;
+		const char *s;
+		int ret;
+	} T[] = {
+		{ { 0, 0 },                         "\"\"",     2 },
+		{ { NODE_A, NODE_A },               "\"A\"",    3 },
+		{ { NODE_A|NODE_B, NODE_A|NODE_B }, "\"A,B\"",  5 },
+		{ { NODE_B, NODE_A|NODE_B },        "\"~A,B\"", 6 },
+	};
+
+	int TS = sizeof(T) / sizeof(T[0]);
+
+	for (i = 0; i < TS; i++) {
+		buf.flag = buf.mask = 0;
+		ret = rtti_decode(&flist_type, NULL, T[i].s, &buf);
+
+		if (ret != T[i].ret || buf.flag != T[i].flag32.flag || buf.mask != T[i].flag32.mask)
+			rc += log_error("[%s/%02d] E[%d,%"PRIx32",%"PRIx32"] R[%d,%"PRIx32",%"PRIx32"]",
+					__FUNCTION__, i, T[i].ret, T[i].flag32.flag, T[i].flag32.mask, ret, buf.flag, buf.mask);
 	}
 
 	return rc;
@@ -352,6 +429,8 @@ int main(int argc, char *argv[])
 	rc += rtti_int8_array_decode_t();
 	rc += rtti_struct_encode_t();
 	rc += rtti_struct_decode_t();
+	rc += rtti_flist_encode_t();
+	rc += rtti_flist_decode_t();
 
 	log_close();
 

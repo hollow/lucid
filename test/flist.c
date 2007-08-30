@@ -44,146 +44,146 @@ FLIST64_NODE(NODE, E)
 FLIST64_END
 
 static
-int flist32_from_str_t(void)
+int flist32_decode_t(void)
 {
 	int i, ret, rc = 0;
-	uint32_t flags, mask;
+	flag32_t flag32;
 
 	struct test {
 		const char *str;
 		int ret;
-		uint32_t flags;
-		uint32_t mask;
+		flag32_t flag32;
 	} T[] = {
-		{ NULL,        0, 0,             0 },
-		{ "",          0, 0,             0 },
-		{ "A",         0, NODE_A,        NODE_A },
-		{ "A,B",       0, NODE_A|NODE_B, NODE_A|NODE_B },
-		{ "A,B,~C",    0, NODE_A|NODE_B, NODE_A|NODE_B|NODE_C },
-		{ "A,~B,D,C", -1, NODE_A,        NODE_A|NODE_B },
+		{ NULL,        0, { 0,             0 } },
+		{ "",          0, { 0,             0 } },
+		{ "A",         0, { NODE_A,        NODE_A } },
+		{ "A,B",       0, { NODE_A|NODE_B, NODE_A|NODE_B } },
+		{ "A,B,~C",    0, { NODE_A|NODE_B, NODE_A|NODE_B|NODE_C } },
+		{ "A,~B,D,C", -1, { NODE_A,        NODE_A|NODE_B } },
 	};
 
 	int TS = sizeof(T) / sizeof(T[0]);
 
 	for (i = 0; i < TS; i++) {
-		flags = mask = 0;
+		flag32.flag = flag32.mask = 0;
 
-		ret = flist32_from_str(T[i].str, list32, &flags, &mask, '~', ",");
+		ret = flist32_decode(T[i].str, list32, &flag32, '~', ",");
 
 		if (ret   != T[i].ret ||
-		    flags != T[i].flags  ||
-		    mask  != T[i].mask)
+		    flag32.flag != T[i].flag32.flag ||
+		    flag32.mask != T[i].flag32.mask)
 			rc += log_error("[%s/%02d] E[%d,%#.8x,%#.8x] R[%d,%#.8x,%#.8x]",
 			                __FUNCTION__, i,
-			                T[i].ret, T[i].flags, T[i].mask,
-			                ret,      flags,      mask);
+			                T[i].ret, T[i].flag32.flag, T[i].flag32.mask,
+			                ret,      flag32.flag,      flag32.mask);
 	}
 
 	return rc;
 }
 
 static
-int flist64_from_str_t(void)
+int flist64_decode_t(void)
 {
 	int i, ret, rc = 0;
-	uint64_t flags, mask;
+	flag64_t flag64;
 
 	struct test {
 		const char *str;
 		int ret;
-		uint64_t flags;
-		uint64_t mask;
+		flag64_t flag64;
 	} T[] = {
-		{ NULL,        0, 0,             0 },
-		{ "",          0, 0,             0 },
-		{ "A",         0, NODE_A,        NODE_A },
-		{ "A,D",       0, NODE_A|NODE_D, NODE_A|NODE_D },
-		{ "A,D,~E",    0, NODE_A|NODE_D, NODE_A|NODE_D|NODE_E },
-		{ "A,~D,F,E", -1, NODE_A,        NODE_A|NODE_D },
+		{ NULL,        0, { 0,             0 } },
+		{ "",          0, { 0,             0 } },
+		{ "A",         0, { NODE_A,        NODE_A } },
+		{ "A,D",       0, { NODE_A|NODE_D, NODE_A|NODE_D } },
+		{ "A,D,~E",    0, { NODE_A|NODE_D, NODE_A|NODE_D|NODE_E } },
+		{ "A,~D,F,E", -1, { NODE_A,        NODE_A|NODE_D } },
 	};
 
 	int TS = sizeof(T) / sizeof(T[0]);
 
 	for (i = 0; i < TS; i++) {
-		flags = mask = 0;
+		flag64.flag = flag64.mask = 0;
 
-		ret = flist64_from_str(T[i].str, list64, &flags, &mask, '~', ",");
+		ret = flist64_decode(T[i].str, list64, &flag64, '~', ",");
 
 		if (ret   != T[i].ret ||
-		    flags != T[i].flags  ||
-		    mask  != T[i].mask)
+		    flag64.flag != T[i].flag64.flag ||
+		    flag64.mask != T[i].flag64.mask)
 			rc += log_error("[%s/%02d] E[%d,%#.16x,%#.16x] R[%d,%#.16x,%#.16x]",
 			                __FUNCTION__, i,
-			                T[i].ret, T[i].flags, T[i].mask,
-			                ret,      flags,      mask);
+			                T[i].ret, T[i].flag64.flag, T[i].flag64.mask,
+			                ret,      flag64.flag,      flag64.mask);
 	}
 
 	return rc;
 }
 
 static
-int flist32_to_str_t(void)
+int flist32_encode_t(void)
 {
 	int i, rc = 0;
 	char *str = NULL;
 
 	struct test {
-		uint32_t flags;
+		flag32_t flag32;
 		const char *str;
 	} T[] = {
-		{ 0, "" },
-		{ NODE_B,         "B" },
-		{ NODE_A|0x2,     "A" },
-		{ NODE_A|NODE_B,  "A,B" },
-		{ (uint32_t)~0UL, "A,B,C" },
+		{ { 0,              0 },              "" },
+		{ { NODE_B,         NODE_B },         "B" },
+		{ { NODE_A|0x2,     NODE_A|0x2 },     "A" },
+		{ { NODE_A|NODE_B,  NODE_A|NODE_B },  "A,B" },
+		{ { NODE_B,         NODE_A|NODE_B },  "~A,B" },
+		{ { (uint32_t)~0UL, (uint32_t)~0UL }, "A,B,C" },
 	};
 
 	int TS = sizeof(T) / sizeof(T[0]);
 
 	for (i = 0; i < TS; i++) {
-		if (str)
-			mem_free(str);
-
-		str = flist32_to_str(list32, T[i].flags, ",");
+		str = flist32_encode(list32, &(T[i].flag32), '~', ",");
 
 		if (strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,
 			                T[i].str, str);
+
+		if (str)
+			mem_free(str);
 	}
 
 	return rc;
 }
 
 static
-int flist64_to_str_t(void)
+int flist64_encode_t(void)
 {
 	int i, rc = 0;
 	char *str = NULL;
 
 	struct test {
-		uint64_t flags;
+		flag64_t flag64;
 		const char *str;
 	} T[] = {
-		{ 0, "" },
-		{ NODE_B,        "B" },
-		{ NODE_A|0x2,    "A" },
-		{ NODE_A|NODE_B, "A,B" },
-		{ ~0ULL,         "A,B,C,D,E" },
+		{ { 0,               0 },               "" },
+		{ { NODE_B,          NODE_B },          "B" },
+		{ { NODE_A|0x2,      NODE_A|0x2 },      "A" },
+		{ { NODE_A|NODE_B,   NODE_A|NODE_B },   "A,B" },
+		{ { NODE_B,          NODE_A|NODE_B },   "~A,B" },
+		{ { (uint64_t)~0ULL, (uint64_t)~0ULL }, "A,B,C,D,E" },
 	};
 
 	int TS = sizeof(T) / sizeof(T[0]);
 
 	for (i = 0; i < TS; i++) {
-		if (str)
-			mem_free(str);
-
-		str = flist64_to_str(list64, T[i].flags, ",");
+		str = flist64_encode(list64, &(T[i].flag64), '~', ",");
 
 		if (strcmp(str, T[i].str))
 			rc += log_error("[%s/%02d] E[%s] R[%s]",
 			                __FUNCTION__, i,
 			                T[i].str, str);
+
+		if (str)
+			mem_free(str);
 	}
 
 	return rc;
@@ -201,10 +201,10 @@ int main(int argc, char *argv[])
 
 	log_init(&log_options);
 
-	rc += flist32_from_str_t();
-	rc += flist64_from_str_t();
-	rc += flist32_to_str_t();
-	rc += flist64_to_str_t();
+	rc += flist32_decode_t();
+	rc += flist64_decode_t();
+	rc += flist32_encode_t();
+	rc += flist64_encode_t();
 
 	log_close();
 
