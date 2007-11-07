@@ -198,7 +198,7 @@ int isbase64(char c)
 	return b64[uc(c)] >= 0;
 }
 
-void *base64_decode(const char *buf)
+void *base64_decode(const char *buf, size_t *len)
 {
 	const char *in = buf;
 	size_t n = str_len(in);
@@ -258,8 +258,13 @@ void *base64_decode(const char *buf)
 		n -= 4;
 	}
 
-	if (n != 0)
+	if (n != 0) {
+		mem_free(out);
 		return errno = EINVAL, NULL;
+	}
+
+	if (len)
+		*len = outn - outleft;
 
 	return out;
 }
