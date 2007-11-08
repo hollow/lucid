@@ -21,19 +21,13 @@
 #define CAST(T, D) *((T *)(D))
 
 #define CHECK_TYPE(T) \
-	if (type->tclass != RTTI_TYPE_ ## T) \
-		return errno = EINVAL, -1
+	assert(type->tclass == RTTI_TYPE_ ## T)
 
-#define SKIP_SPACE(B) \
-	while (char_isspace(*B)) B++
+#define SKIP_SPACE(B) do { \
+	while (char_isspace(**B)) { (*B)++; } \
+} while (0)
 
 #define SKIP_CHAR(B, C) \
-	if (*B == C) B++; else
-
-#define PARSE_ERROR(E, B, P) \
-	return errno = E, P - B
-
-#define PARSE_OK(B, P) \
-	return errno = 0, P - B
+	if (**B == C) { (*B)++; } else
 
 #endif

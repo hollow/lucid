@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "base64.h"
 #include "mem.h"
 #include "printf.h"
@@ -24,28 +24,21 @@
 
 #include "internal.h"
 
-int rtti_data_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_data_copy(const rtti_t *type, const void *src, void *dst)
 {
 	const rtti_data_t *const sdata = src;
 	rtti_data_t *const ddata = dst;
-	unsigned char *copy;
 
 	if (sdata->length == 0) {
 		mem_set(ddata, 0, sizeof(*ddata));
-		return 0;
+		return;
 	}
 
-	if ((copy = mem_alloc(sdata->length)) == NULL)
-		return -1;
-
-	mem_cpy(copy, sdata->data, sdata->length);
-	ddata->data = copy;
+	ddata->data = mem_dup(sdata->data, sdata->length);
 	ddata->length = sdata->length;
-
-	return 0;
 }
 
-int rtti_data_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_data_equal(const rtti_t *type, const void *a, const void *b)
 {
 	const rtti_data_t *const d1 = a;
 	const rtti_data_t *const d2 = b;
@@ -54,60 +47,54 @@ int rtti_data_equal(const rtti_t *type, const void *a, const void *b)
 			mem_cmp(d1->data, d2->data, d1->length) == 0);
 }
 
-int rtti_data_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_data_encode(const rtti_t *type, const void *data)
 {
 	const rtti_data_t *const d = data;
 	char *ebuf;
-	int res;
 
 	if (d->length == 0)
-		return _lucid_asprintf(buf, "null");
+		return str_dup("null");
 
-	if ((ebuf = base64_encode(d->data, d->length)) == NULL)
-		return -1;
-
-	res = _lucid_asprintf(buf, "\"%s\"", ebuf);
-	mem_free(ebuf);
-	return res;
-}
-
-int rtti_data_decode(const rtti_t *type, const char *buf, void *data)
-{
-	rtti_data_t *const d = data;
-	const char *p = buf;
-	char *sbuf;
-	int res;
-
-	SKIP_SPACE(p);
-
-	if (str_cmpn(p, "null", 4) == 0) {
-		d->length = 0;
-		d->data = NULL;
-		PARSE_OK(buf, p + 4);
+	if ((ebuf = base64_encode(d->data, d->length)) == NULL) {
+		error_set(errno, "failed to encode binary data");
+		return NULL;
 	}
 
-	errno = 0;
-	if ((res = rtti_string_parse(p, &sbuf)) == -1)
-		return -1;
-	else
-		p += res;
+	char *buf = NULL;
+	_lucid_asprintf(&buf, "\"%s\"", ebuf);
+	mem_free(ebuf);
 
-	if (errno)
-		PARSE_ERROR(errno, buf, p);
-
-	if ((d->data = base64_decode(sbuf)) == NULL)
-		PARSE_ERROR(EINVAL, buf, p);
-
-	d->length = res;
-	PARSE_OK(buf, p);
+	return buf;
 }
 
-int rtti_data_free(const rtti_t *type, void *data)
+void rtti_data_decode(const rtti_t *type, const char **buf, void *data)
+{
+	rtti_data_t *const d = data;
+	char *sbuf;
+
+	SKIP_SPACE(buf);
+
+	d->data   = NULL;
+	d->length = 0;
+
+	if (str_cmpn(*buf, "null", 4) == 0) {
+		*buf += 4;
+		return;
+	}
+
+	sbuf = rtti_string_parse(buf);
+	error_do return;
+
+	if ((d->data = base64_decode(sbuf, &(d->length))) == NULL) {
+		error_set(errno, "failed to decode binary data");
+		return;
+	}
+}
+
+void rtti_data_free(const rtti_t *type, void *data)
 {
 	rtti_data_t *const d = data;
 
 	mem_free(d->data);
 	mem_set(d, 0, sizeof(*d));
-
-	return 0;
 }

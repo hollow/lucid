@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "mem.h"
 #include "rtti.h"
 #include "str.h"
@@ -25,54 +25,48 @@
 
 #define IDX(D, F) ((char *)(D) + (F)->offset)
 
-int rtti_struct_init(const rtti_t *type, void *data)
+void rtti_struct_init(const rtti_t *type, void *data)
 {
 	const rtti_field_t *field;
 
 	CHECK_TYPE(STRUCT);
 
 	mem_set(data, 0, type->size);
+
 	for (field = type->args[0].v; field->name != NULL; field++) {
-		if (field->type->init(field->type, IDX(data, field)) == -1)
-			break;
+		field->type->init(field->type, IDX(data, field));
+		error_dof("failed to initialize struct (%s)", field->name) {
+			while (field-- != type->args[0].v)
+				field->type->uninit(field->type, IDX(data, field));
+			mem_set(data, 0, type->size);
+			return;
+		}
 	}
-
-	if (field->name != NULL) {
-		while (field-- != type->args[0].v)
-			field->type->uninit(field->type, IDX(data, field));
-		mem_set(data, 0, type->size);
-		return -1;
-	}
-
-	return 0;
 }
 
-int rtti_struct_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_struct_copy(const rtti_t *type, const void *src, void *dst)
 {
 	const rtti_field_t *field;
 
 	CHECK_TYPE(STRUCT);
 
 	mem_set(dst, 0, type->size);
+
 	for (field = type->args[0].v; field->name != NULL; field++) {
 		const void *const sdata = IDX(src, field);
 		void *const ddata = IDX(dst, field);
 
-		if (field->type->copy(field->type, sdata, ddata) == -1)
-			break;
+		field->type->copy(field->type, sdata, ddata);
+		error_dof("failed to copy array (%s)", field->name) {
+			while (field-- != type->args[0].v)
+				field->type->uninit(field->type, IDX(dst, field));
+			mem_set(dst, 0, type->size);
+			return;
+		}
 	}
-
-	if (field->name != NULL) {
-		while (field-- != type->args[0].v)
-			field->type->uninit(field->type, IDX(dst, field));
-		mem_set(dst, 0, type->size);
-		return -1;
-	}
-
-	return 0;
 }
 
-int rtti_struct_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_struct_equal(const rtti_t *type, const void *a, const void *b)
 {
 	const rtti_field_t *field;
 
@@ -82,39 +76,39 @@ int rtti_struct_equal(const rtti_t *type, const void *a, const void *b)
 		const void *const data1 = IDX(a, field);
 		const void *const data2 = IDX(b, field);
 
-		if (!field->type->equal(field->type, data1, data2))
-			return 0;
+		bool eq = field->type->equal(field->type, data1, data2);
+		error_dof("failed to compare struct (%s)", field->name)
+			return false;
+
+		if (!eq)
+			return false;
 	}
 
-	return 1;
+	return true;
 }
 
-static
-const rtti_t rtti_struct_key_type = RTTI_STRING_TYPE(0, 0);
-
-int rtti_struct_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_struct_encode(const rtti_t *type, const void *data)
 {
-	const rtti_t *ftype, *ktype = &rtti_struct_key_type;
+	const rtti_t *ktype = &rtti_string_type;
 	const rtti_field_t *field;
 	stralloc_t _rbuf, *rbuf = &_rbuf;
-	char *fbuf;
+	char *fbuf, *buf = NULL;
 
 	CHECK_TYPE(STRUCT);
 
-	*buf = NULL;
 	stralloc_init(rbuf);
 	stralloc_cats(rbuf, "{");
 
 	for (field = type->args[0].v; field->name != NULL; field++) {
-		ftype = field->type;
-
-		if (ktype->encode(ktype, &field->name, &fbuf) == -1)
+		fbuf = ktype->encode(ktype, &field->name);
+		error_dof("failed to encode struct (%s)", field->name)
 			goto out;
 
 		stralloc_catm(rbuf, fbuf, ":", NULL);
 		mem_free(fbuf);
 
-		if (ftype->encode(ftype, IDX(data, field), &fbuf) == -1)
+		fbuf = field->type->encode(field->type, IDX(data, field));
+		error_dof("failed to encode struct (%s)", field->name)
 			goto out;
 
 		stralloc_cats(rbuf, fbuf);
@@ -125,73 +119,64 @@ int rtti_struct_encode(const rtti_t *type, const void *data, char **buf)
 	}
 
 	stralloc_cats(rbuf, "}");
-	*buf = stralloc_finalize(rbuf);
+	buf = stralloc_finalize(rbuf);
 
 out:
 	stralloc_free(rbuf);
-	return *buf ? str_len(*buf) : -1;
+	return buf;
 }
 
-int rtti_struct_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_struct_decode(const rtti_t *type, const char **buf, void *data)
 {
-	const rtti_t *ftype, *ktype = &rtti_struct_key_type;
-	const char *key, *p = buf;
+	const rtti_t *ftype, *ktype = &rtti_string_type;
+	const char *key;
 	void *fdata;
-	int res;
 
 	CHECK_TYPE(STRUCT);
 
-	SKIP_SPACE(p);
-	SKIP_CHAR(p, '{') {
-		PARSE_ERROR(EINVAL, buf, p);
+	SKIP_SPACE(buf);
+	SKIP_CHAR(buf, '{') {
+		error_set(EILSEQ, "expected LCUBR near '%.16s'", *buf);
+		return;
 	}
 
 	while (1) {
-		errno = 0;
-		switch ((res = ktype->decode(ktype, p, &key))) {
-		case  0: PARSE_ERROR(EINVAL, buf, p);
-		case -1: return -1;
-		default: p += res;
-		}
-
-		if (errno)
-			PARSE_ERROR(errno, buf, p);
+		ktype->decode(ktype, buf, &key);
+		error_dof("failed to decode struct near '%.16s'", *buf)
+			return;
 
 		fdata = data;
 
-		if ((ftype = rtti_find(type, key, &fdata)) == NULL)
-			PARSE_ERROR(ENOENT, buf, p);
-
-		SKIP_SPACE(p);
-		SKIP_CHAR(p, ':') {
-			PARSE_ERROR(EINVAL, buf, p);
+		ftype = rtti_find(type, key, &fdata);
+		ktype->uninit(ktype, &key);
+		error_dof("list member does not exist (%s)", key) {
+			return;
 		}
 
-		errno = 0;
-		switch ((res = ftype->decode(ftype, p, fdata))) {
-		case  0: PARSE_ERROR(EINVAL, buf, p);
-		case -1: return -1;
-		default: p += res;
+		SKIP_SPACE(buf);
+		SKIP_CHAR(buf, ':') {
+			error_set(EILSEQ, "expected COLON near '%.16s'", *buf);
+			return;
 		}
 
-		if (errno)
-			PARSE_ERROR(errno, buf, p);
+		ftype->decode(ftype, buf, fdata);
+		error_dof("failed to decode struct (%s) near '%.16s'", ftype->name, *buf)
+			return;
 
-		SKIP_SPACE(p);
-		SKIP_CHAR(p, ',') {
+		SKIP_SPACE(buf);
+		SKIP_CHAR(buf, ',') {
 			break;
 		}
 	}
 
-	SKIP_SPACE(p);
-	SKIP_CHAR(p, '}') {
-		PARSE_ERROR(EINVAL, buf, p);
+	SKIP_SPACE(buf);
+	SKIP_CHAR(buf, '}') {
+		error_set(EILSEQ, "expected RCUBR near '%.16s'", *buf);
+		return;
 	}
-
-	PARSE_OK(buf, p);
 }
 
-int rtti_struct_free(const rtti_t *type, void *data)
+void rtti_struct_free(const rtti_t *type, void *data)
 {
 	const rtti_field_t *field;
 
@@ -200,6 +185,4 @@ int rtti_struct_free(const rtti_t *type, void *data)
 	for (field = type->args[0].v; field->name != NULL; field++)
 		field->type->uninit(field->type, IDX(data, field));
 	mem_set(data, 0, type->size);
-
-	return 0;
 }

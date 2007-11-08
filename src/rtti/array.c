@@ -14,18 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "mem.h"
 #include "rtti.h"
-#include "str.h"
 #include "stralloc.h"
 
 #include "internal.h"
 
 #define IDX(T, D, I) ((char *)(D) + ((I) * (T)->size))
 
-int rtti_array_init(const rtti_t *type, void *data)
+void rtti_array_init(const rtti_t *type, void *data)
 {
 	const rtti_t *const etype = type->args[0].v;
 	const size_t asize = type->args[1].i;
@@ -34,17 +33,16 @@ int rtti_array_init(const rtti_t *type, void *data)
 	CHECK_TYPE(ARRAY);
 
 	for (i = 0; i < asize; i++) {
-		if (etype->init(etype, IDX(etype, data, i)) == -1) {
+		etype->init(etype, IDX(etype, data, i));
+		error_dof("failed to initialize array (%s)", etype->name) {
 			while (i-- > 0)
 				etype->uninit(etype, IDX(etype, data, i));
-			return -1;
+			return;
 		}
 	}
-
-	return 0;
 }
 
-int rtti_array_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_array_copy(const rtti_t *type, const void *src, void *dst)
 {
 	const rtti_t *const etype = type->args[0].v;
 	const size_t asize = type->args[1].i;
@@ -56,20 +54,16 @@ int rtti_array_copy(const rtti_t *type, const void *src, void *dst)
 		const void *const src_elem = IDX(etype, src, i);
 		void *const dst_elem = IDX(etype, dst, i);
 
-		if (etype->copy(etype, src_elem, dst_elem) == -1)
-			break;
+		etype->copy(etype, src_elem, dst_elem);
+		error_dof("failed to copy array (%s)", etype->name) {
+			while (i-- > 0)
+				etype->uninit(etype, IDX(etype, dst, i));
+			return;
+		}
 	}
-
-	if (i < asize) {
-		while (i-- > 0)
-			etype->uninit(etype, IDX(etype, dst, i));
-		return -1;
-	}
-
-	return 0;
 }
 
-int rtti_array_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_array_equal(const rtti_t *type, const void *a, const void *b)
 {
 	const rtti_t *const etype = type->args[0].v;
 	const size_t asize = type->args[1].i;
@@ -78,29 +72,33 @@ int rtti_array_equal(const rtti_t *type, const void *a, const void *b)
 	CHECK_TYPE(ARRAY);
 
 	for (i = 0; i < asize; i++) {
-		if (!etype->equal(etype, IDX(etype, a, i), IDX(etype, b, i)))
-			break;
+		bool eq = etype->equal(etype, IDX(etype, a, i), IDX(etype, b, i));
+		error_dof("failed to compare array (%s)", etype->name)
+			return false;
+
+		if (!eq)
+			return false;
 	}
 
-	return (i == asize);
+	return true;
 }
 
-int rtti_array_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_array_encode(const rtti_t *type, const void *data)
 {
 	const rtti_t *const etype = type->args[0].v;
 	const size_t asize = type->args[1].i;
 	stralloc_t _rbuf, *rbuf = &_rbuf;
-	char *ebuf;
+	char *ebuf, *buf = NULL;
 	size_t i;
 
 	CHECK_TYPE(ARRAY);
 
-	*buf = NULL;
 	stralloc_init(rbuf);
 	stralloc_cats(rbuf, "[");
 
 	for (i = 0; i < asize; i++) {
-		if (etype->encode(etype, IDX(etype, data, i), &ebuf) == -1)
+		ebuf = etype->encode(etype, IDX(etype, data, i));
+		error_dof("failed to encode array (%s)", etype->name)
 			goto out;
 
 		stralloc_cats(rbuf, ebuf);
@@ -111,70 +109,51 @@ int rtti_array_encode(const rtti_t *type, const void *data, char **buf)
 	}
 
 	stralloc_cats(rbuf, "]");
-	*buf = stralloc_finalize(rbuf);
+	buf = stralloc_finalize(rbuf);
 
 out:
 	stralloc_free(rbuf);
-	return *buf ? str_len(*buf) : -1;
+	return buf;
 }
 
-int rtti_array_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_array_decode(const rtti_t *type, const char **buf, void *data)
 {
 	const rtti_t *const etype = type->args[0].v;
 	const size_t asize = type->args[1].i;
-	const char *p = buf;
 	size_t i = 0;
-	int res;
 
 	CHECK_TYPE(ARRAY);
 
-	if (type->init(type, data) == -1)
-		return -1;
-
-	SKIP_SPACE(p);
-	SKIP_CHAR(p, '[') {
-		PARSE_ERROR(EINVAL, buf, p);
+	SKIP_SPACE(buf);
+	SKIP_CHAR(buf, '[') {
+		error_set(EILSEQ, "expected LSQBR near '%.16s'", *buf);
+		return;
 	}
-	SKIP_SPACE(p);
 
 	while (i < asize) {
-		errno = 0;
+		etype->decode(etype, buf, IDX(etype, data, i));
+		error_dof("failed to decode array (%s) near '%.16s'", etype->name, *buf)
+			return;
 
-		switch ((res = etype->decode(etype, p, IDX(etype, data, i)))) {
-		case  0: PARSE_ERROR(EINVAL, buf, p);
-		case -1: return -1;
-		default: p += res;
-		}
-
-		if (errno)
-			PARSE_ERROR(errno, buf, p);
-
-		i++;
-
-		SKIP_SPACE(p);
-		SKIP_CHAR(p, ',') {
+		SKIP_SPACE(buf);
+		SKIP_CHAR(buf, ',') {
 			break;
 		}
 	}
 
-	SKIP_SPACE(p);
-	SKIP_CHAR(p, ']') {
-		PARSE_ERROR(EINVAL, buf, p);
+	SKIP_SPACE(buf);
+	SKIP_CHAR(buf, ']') {
+		error_set(EILSEQ, "expected RSQBR near '%.16s'", *buf);
+		return;
 	}
-
-	PARSE_OK(buf, p);
 }
 
-int rtti_array_free(const rtti_t *type, void *data)
+void rtti_array_free(const rtti_t *type, void *data)
 {
 	const rtti_t *const etype = type->args[0].v;
 	const size_t asize = type->args[1].i;
 	size_t i;
 
-	CHECK_TYPE(ARRAY);
-
 	for (i = 0; i < asize; i++)
 		etype->uninit(etype, IDX(etype, data, i));
-
-	return 0;
 }

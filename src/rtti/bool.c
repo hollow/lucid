@@ -15,67 +15,63 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <errno.h>
 
-#include "printf.h"
+#include "error.h"
 #include "rtti.h"
 #include "str.h"
 
 #include "internal.h"
 
-#define REDUCE(D) (((D) != 0) ? 1 : 0)
+#define REDUCE(D) (((D) == 0) ? false : true)
 
 static
-int rtti_bool_reduce(const rtti_t *type, const void *data)
+bool rtti_bool_reduce(const rtti_t *type, const void *data)
 {
 	switch (type->size) {
 	case 1: return REDUCE(CAST(uint8_t,  data)); break;
 	case 2: return REDUCE(CAST(uint16_t, data)); break;
-	case 3: return REDUCE(CAST(uint32_t, data)); break;
-	case 4: return REDUCE(CAST(uint64_t, data)); break;
+	case 4: return REDUCE(CAST(uint32_t, data)); break;
+	case 8: return REDUCE(CAST(uint64_t, data)); break;
 	}
 
-	return 0;
+	return false;
 }
 
-int rtti_bool_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_bool_equal(const rtti_t *type, const void *a, const void *b)
 {
-	int atruth = rtti_bool_reduce(type, a);
-	int btruth = rtti_bool_reduce(type, b);
+	bool atruth = rtti_bool_reduce(type, a);
+	bool btruth = rtti_bool_reduce(type, b);
 
 	return atruth == btruth;
 }
 
-int rtti_bool_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_bool_encode(const rtti_t *type, const void *data)
 {
-	int truth = rtti_bool_reduce(type, data);
+	if(rtti_bool_reduce(type, data))
+		return str_dup("true");
 
-	if (truth)
-		_lucid_asprintf(buf, "true");
-	else
-		_lucid_asprintf(buf, "false");
-
-	return str_len(*buf);
+	return str_dup("false");
 }
 
-int rtti_bool_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_bool_decode(const rtti_t *type, const char **buf, void *data)
 {
 	int truth;
 
-	if (str_cmpn(buf, "true", 4) == 0)
-		truth = 1;
-	else if (str_cmpn(buf, "false", 5) == 0)
-		truth = 0;
-	else
-		return errno = EINVAL, 0;
+	if (str_cmpn(*buf, "true", 4) == 0)
+		truth = true;
+	else if (str_cmpn(*buf, "false", 5) == 0)
+		truth = false;
+	else {
+		error_set(EILSEQ, "expected BOOL near '%.16s'", *buf);
+		return;
+	}
 
 	switch (type->size) {
 	case 1: CAST(uint8_t,  data) = truth; break;
 	case 2: CAST(uint16_t, data) = truth; break;
-	case 3: CAST(uint32_t, data) = truth; break;
-	case 4: CAST(uint64_t, data) = truth; break;
-	default: return errno = EDOM, -1;
+	case 4: CAST(uint32_t, data) = truth; break;
+	case 8: CAST(uint64_t, data) = truth; break;
 	}
 
-	PARSE_OK(buf, buf + (truth ? 4 : 5));
+	*buf += truth ? 4 : 5;
 }

@@ -14,45 +14,41 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "mem.h"
 #include "rtti.h"
 
 #include "internal.h"
 
-int rtti_pointer_init(const rtti_t *type, void *data)
+void rtti_pointer_init(const rtti_t *type, void *data)
 {
 	const rtti_t *const ptype = type->args[0].v;
 	void *pdata;
 
-	if ((pdata = mem_alloc(ptype->size)) == NULL)
-		return -1;
+	pdata = mem_alloc(ptype->size);
 
-	if (ptype->init(ptype, pdata) == -1)
-		return -1;
+	ptype->init(ptype, pdata);
+	error_do return;
 
 	CAST(void *, data) = pdata;
-	return 0;
 }
 
-int rtti_pointer_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_pointer_copy(const rtti_t *type, const void *src, void *dst)
 {
 	const rtti_t *const ptype = type->args[0].v;
 	void *const src_pdata = CAST(void *, src);
 	void *dst_pdata;
 
-	if ((dst_pdata = mem_alloc(ptype->size)) == NULL)
-		return -1;
+	dst_pdata = mem_alloc(ptype->size);
 
-	if (ptype->copy(ptype, src_pdata, dst_pdata) == -1)
-		return -1;
+	ptype->copy(ptype, src_pdata, dst_pdata);
+	error_do return;
 
 	CAST(void *, dst) = dst_pdata;
-	return 0;
 }
 
-int rtti_pointer_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_pointer_equal(const rtti_t *type, const void *a, const void *b)
 {
 	const rtti_t *const ptype = type->args[0].v;
 	void *const pdata1 = CAST(void *, a);
@@ -61,33 +57,28 @@ int rtti_pointer_equal(const rtti_t *type, const void *a, const void *b)
 	return ptype->equal(ptype, pdata1, pdata2);
 }
 
-int rtti_pointer_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_pointer_encode(const rtti_t *type, const void *data)
 {
 	const rtti_t *const ptype = type->args[0].v;
 	void *const pdata = CAST(void *, data);
 
-	return ptype->encode(ptype, pdata, buf);
+	return ptype->encode(ptype, pdata);
 }
 
-int rtti_pointer_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_pointer_decode(const rtti_t *type, const char **buf, void *data)
 {
 	const rtti_t *const ptype = type->args[0].v;
-	const char *p = buf;
 	void *pdata;
-	int res;
 
-	if ((pdata = mem_alloc(ptype->size)) == NULL)
-		return -1;
+	pdata = mem_alloc(ptype->size);
 
-	if ((res = ptype->decode(ptype, buf, pdata)) == -1)
-		return -1;
+	ptype->decode(ptype, buf, pdata);
+	error_do return;
 
-	p += res;
 	CAST(void *, data) = pdata;
-	PARSE_OK(buf, p);
 }
 
-int rtti_pointer_free(const rtti_t *type, void *data)
+void rtti_pointer_free(const rtti_t *type, void *data)
 {
 	const rtti_t *const ptype = type->args[0].v;
 	void *const pdata = CAST(void *, data);
@@ -95,6 +86,4 @@ int rtti_pointer_free(const rtti_t *type, void *data)
 	ptype->uninit(ptype, pdata);
 	mem_free(pdata);
 	CAST(void *, data) = NULL;
-
-	return 0;
 }

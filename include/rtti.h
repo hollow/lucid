@@ -17,6 +17,7 @@
 #define _LUCID_RTTI_H
 
 #include <stddef.h>
+#include <stdbool.h>
 #include <sys/types.h>
 
 /* base definitions */
@@ -24,20 +25,19 @@
 
 typedef struct rtti_s rtti_t;
 
-typedef int rtti_init_t(const rtti_t *type, void *data);
-typedef int rtti_copy_t(const rtti_t *type, const void *src, void *dst);
-typedef int rtti_equal_t(const rtti_t *type, const void *a, const void *b);
-typedef int rtti_encode_t(const rtti_t *type, const void *data, char **buf);
-typedef int rtti_decode_t(const rtti_t *type, const char *buf, void *data);
-typedef int rtti_uninit_t(const rtti_t *type, void *data);
+typedef void rtti_init_t(const rtti_t *type, void *data);
+typedef void rtti_copy_t(const rtti_t *type, const void *src, void *dst);
+typedef bool rtti_equal_t(const rtti_t *type, const void *a, const void *b);
+typedef char *rtti_encode_t(const rtti_t *type, const void *data);
+typedef void rtti_decode_t(const rtti_t *type, const char **buf, void *data);
+typedef void rtti_uninit_t(const rtti_t *type, void *data);
 
 typedef enum {
-	RTTI_TYPE_PRIMITIVE,
-	RTTI_TYPE_POINTER,
 	RTTI_TYPE_ARRAY,
-	RTTI_TYPE_VECTOR,
+	RTTI_TYPE_LIST,
+	RTTI_TYPE_POINTER,
+	RTTI_TYPE_PRIMITIVE,
 	RTTI_TYPE_STRUCT,
-	RTTI_TYPE_UNION,
 } rtti_class_t;
 
 struct rtti_s {
@@ -59,25 +59,25 @@ struct rtti_s {
 	} args[3];
 };
 
-int rtti_init(const rtti_t *type, const char *name, void *data);
-int rtti_free(const rtti_t *type, const char *name, void *data);
+void rtti_init(const rtti_t *type, const char *name, void *data);
+void rtti_free(const rtti_t *type, const char *name, void *data);
 
-int rtti_get(const rtti_t *type, const char *name,
+void rtti_get(const rtti_t *type, const char *name,
 		const void *src, void *dst);
-int rtti_set(const rtti_t *type, const void *src,
-		const char *name, void *dst);
+void rtti_set(const rtti_t *type, const char *name,
+		const void *src, void *dst);
 
-int rtti_encode(const rtti_t *type, const char *name,
-		const void *data, char **buf);
-int rtti_decode(const rtti_t *type, const char *name,
-		const char *buf, void *data);
+char *rtti_encode(const rtti_t *type, const char *name,
+		const void *data);
+void rtti_decode(const rtti_t *type, const char *name,
+		const char **buf, void *data);
 
-int rtti_compare(const rtti_t *type, const char *name,
+bool rtti_equal(const rtti_t *type, const char *name,
 		const void *data1, const void *data2);
 
 const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap);
 
-int rtti_string_parse(const char *str, char **buf);
+char *rtti_string_parse(const char **str);
 
 /* generic memory region type functions */
 extern rtti_init_t   rtti_region_init;
@@ -133,6 +133,8 @@ extern rtti_equal_t  rtti_bool_equal;
 extern rtti_encode_t rtti_bool_encode;
 extern rtti_decode_t rtti_bool_decode;
 
+extern rtti_t rtti_bool_type;
+
 /* binary data types */
 typedef struct rtti_data_s {
 	size_t length;
@@ -149,7 +151,7 @@ typedef struct rtti_data_s {
 	rtti_data_encode, \
 	rtti_data_decode, \
 	rtti_data_free, \
-	{ { NULL }, { NULL }, { NULL } \
+	{ { NULL }, { NULL }, { NULL } } \
 }
 
 extern rtti_copy_t   rtti_data_copy;
@@ -157,6 +159,8 @@ extern rtti_equal_t  rtti_data_equal;
 extern rtti_encode_t rtti_data_encode;
 extern rtti_decode_t rtti_data_decode;
 extern rtti_uninit_t rtti_data_free;
+
+extern rtti_t rtti_data_type;
 
 /* flist type */
 #define RTTI_FLIST_TYPE(size, list, delim, clmod) { \
@@ -178,7 +182,7 @@ extern rtti_encode_t rtti_flist64_encode;
 extern rtti_decode_t rtti_flist64_decode;
 
 /* floating point type */
-#define RTTI_FLOAT_TYPE(type, pri_arg, sign) { \
+#define RTTI_FLOAT_TYPE(type) { \
 	sizeof(type), \
 	#type, \
 	RTTI_TYPE_PRIMITIVE, \
@@ -188,15 +192,19 @@ extern rtti_decode_t rtti_flist64_decode;
 	rtti_float_encode, \
 	rtti_float_decode, \
 	rtti_nothing_free, \
-	{ { (void *)("%" pri_arg) }, { NULL }, { (void *)sign } } \
+	{ { NULL }, { NULL }, { NULL } } \
 }
 
 extern rtti_equal_t  rtti_float_equal;
 extern rtti_encode_t rtti_float_encode;
 extern rtti_decode_t rtti_float_decode;
 
+extern rtti_t rtti_float_type;
+extern rtti_t rtti_double_type;
+extern rtti_t rtti_ldouble_type;
+
 /* integer types */
-#define RTTI_INT_TYPE(type, pri_arg, sign) { \
+#define RTTI_INT_TYPE(type, sign) { \
 	sizeof(type), \
 	#type, \
 	RTTI_TYPE_PRIMITIVE, \
@@ -206,11 +214,20 @@ extern rtti_decode_t rtti_float_decode;
 	rtti_int_encode, \
 	rtti_int_decode, \
 	rtti_nothing_free, \
-	{ { (void *)("%" pri_arg) }, { NULL }, { (void *)sign } } \
+	{ { (void *)(sign) }, { NULL }, { NULL } } \
 }
 
 extern rtti_encode_t rtti_int_encode;
 extern rtti_decode_t rtti_int_decode;
+
+extern rtti_t rtti_int8_type;
+extern rtti_t rtti_uint8_type;
+extern rtti_t rtti_int16_type;
+extern rtti_t rtti_uint16_type;
+extern rtti_t rtti_int32_type;
+extern rtti_t rtti_uint32_type;
+extern rtti_t rtti_int64_type;
+extern rtti_t rtti_uint64_type;
 
 /* pointer types */
 #define RTTI_POINTER_TYPE(type) { \
@@ -233,8 +250,23 @@ extern rtti_encode_t rtti_pointer_encode;
 extern rtti_decode_t rtti_pointer_decode;
 extern rtti_uninit_t rtti_pointer_free;
 
+extern rtti_t rtti_bool_ptype;
+extern rtti_t rtti_data_ptype;
+extern rtti_t rtti_float_ptype;
+extern rtti_t rtti_double_ptype;
+extern rtti_t rtti_ldouble_ptype;
+extern rtti_t rtti_int8_ptype;
+extern rtti_t rtti_uint8_ptype;
+extern rtti_t rtti_int16_ptype;
+extern rtti_t rtti_uint16_ptype;
+extern rtti_t rtti_int32_ptype;
+extern rtti_t rtti_uint32_ptype;
+extern rtti_t rtti_int64_ptype;
+extern rtti_t rtti_uint64_ptype;
+extern rtti_t rtti_string_ptype;
+
 /* string types */
-#define RTTI_STRING_TYPE(maynull, asnull) { \
+#define RTTI_STRING_TYPE(asnull) { \
 	sizeof(char *), \
 	"string", \
 	RTTI_TYPE_PRIMITIVE, \
@@ -244,7 +276,7 @@ extern rtti_uninit_t rtti_pointer_free;
 	rtti_string_encode, \
 	rtti_string_decode, \
 	rtti_string_free, \
-	{ { (void *)(maynull) }, { (void *)(asnull) }, { NULL } } \
+	{ { (void *)(asnull) }, { NULL }, { NULL } } \
 }
 
 extern rtti_init_t   rtti_string_init;
@@ -254,6 +286,8 @@ extern rtti_encode_t rtti_string_encode;
 extern rtti_decode_t rtti_string_decode;
 extern rtti_uninit_t rtti_string_free;
 
+extern rtti_t rtti_string_type;
+
 /* struct types */
 typedef struct rtti_field_s {
 	const char *name;
@@ -262,19 +296,24 @@ typedef struct rtti_field_s {
 	off_t offset;
 } rtti_field_t;
 
+#define RTTI_STRUCT_FIELD_START(name) \
+	const rtti_field_t __ ## name ## _fields[] = {
+
 #define RTTI_STRUCT_FIELD(sname, fname, ftype) \
-	{ #fname, ftype, sizeof(((struct sname *)0)->fname), \
-		offsetof(struct sname, fname) }
+		{ #fname, ftype, sizeof(((struct sname *)0)->fname), \
+			offsetof(struct sname, fname) },
 
 #define RTTI_STRUCT_FIELD2(sname, fname, dname, ftype) \
-	{ dname, ftype, sizeof(((struct sname *)0)->fname), \
-		offsetof(struct sname, fname) }
+		{ dname, ftype, sizeof(((struct sname *)0)->fname), \
+			offsetof(struct sname, fname) },
 
-#define RTTI_STRUCT_FIELD_END { NULL, NULL, 0, 0 }
+#define RTTI_STRUCT_FIELD_END \
+		{ NULL, NULL, 0, 0 } \
+	};
 
-#define RTTI_STRUCT_TYPE(sname, flist) { \
-	sizeof(struct sname), \
-	"struct " #sname, \
+#define RTTI_STRUCT_TYPE(name) { \
+	sizeof(struct name), \
+	"struct " #name, \
 	RTTI_TYPE_STRUCT, \
 	rtti_struct_init, \
 	rtti_struct_copy, \
@@ -282,7 +321,7 @@ typedef struct rtti_field_s {
 	rtti_struct_encode, \
 	rtti_struct_decode, \
 	rtti_struct_free, \
-	{ { (void *)(flist) }, { NULL }, { NULL } } \
+	{ { (void *)(__ ## name ## _fields) }, { NULL }, { NULL } } \
 }
 
 extern rtti_init_t   rtti_struct_init;
@@ -291,5 +330,31 @@ extern rtti_equal_t  rtti_struct_equal;
 extern rtti_encode_t rtti_struct_encode;
 extern rtti_decode_t rtti_struct_decode;
 extern rtti_uninit_t rtti_struct_free;
+
+/* list types */
+#define RTTI_LIST_TYPE(lname, loff, flist) { \
+	sizeof(struct lname), \
+	"list " #lname, \
+	RTTI_TYPE_LIST, \
+	rtti_list_init, \
+	rtti_list_copy, \
+	rtti_notsup_equal, \
+	rtti_list_encode, \
+	rtti_list_decode, \
+	rtti_list_free, \
+	{ { (void *)(flist) }, { (void *)(loff) }, { NULL } } \
+}
+
+extern rtti_init_t   rtti_list_init;
+extern rtti_copy_t   rtti_list_copy;
+extern rtti_encode_t rtti_list_encode;
+extern rtti_decode_t rtti_list_decode;
+extern rtti_uninit_t rtti_list_free;
+
+void rtti_list_add(const rtti_t *type, void *entry, void *head);
+void rtti_list_del(const rtti_t *type, void *entry);
+void rtti_list_move(const rtti_t *type, void *entry, void *head);
+int  rtti_list_empty(const rtti_t *type, void *head);
+void rtti_list_splice(const rtti_t *type, void *list, void *head);
 
 #endif

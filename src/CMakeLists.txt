@@ -52,10 +52,12 @@ set(RTTI_SRCS
 	rtti/float.c
 	rtti/int.c
 	rtti/internal.h
+	rtti/list.c
 	rtti/pointer.c
 	rtti/rtti.c
 	rtti/string.c
 	rtti/struct.c
+	rtti/types.c
 )
 
 set(WHIRLPOOL_SRCS
@@ -72,6 +74,7 @@ set(lucid_SRCS
 	bitmap.c
 	base64.c
 	${CHROOT_SRCS}
+	error.c
 	${EXEC_SRCS}
 	flist.c
 	log.c

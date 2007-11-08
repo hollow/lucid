@@ -14,21 +14,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "rtti.h"
 
-int rtti_float_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_float_equal(const rtti_t *type, const void *a, const void *b)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, NULL);
+	return false;
 }
 
-int rtti_float_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_float_encode(const rtti_t *type, const void *data)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, NULL);
+	return NULL;
 }
 
-int rtti_float_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_float_decode(const rtti_t *type, const char **buf, void *data)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, NULL);
 }

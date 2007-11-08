@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "mem.h"
 #include "printf.h"
 #include "rtti.h"
@@ -24,81 +24,68 @@
 
 #include "internal.h"
 
-int rtti_string_init(const rtti_t *type, void *data)
+void rtti_string_init(const rtti_t *type, void *data)
 {
-	return rtti_string_decode(type, "\"\"", data) ? 0 : -1;
+	const char *empty = "\"\"";
+	type->decode(type, &empty, data);
 }
 
-int rtti_string_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_string_copy(const rtti_t *type, const void *src, void *dst)
 {
-	char *buf;
+	const char *buf = type->encode(type, src);
+	error_do return;
 
-	if (type->encode(type, src, &buf) == -1)
-		return -1;
-
-	int res = type->decode(type, buf, dst);
-	mem_free(buf);
-	return res;
+	type->decode(type, &buf, dst);
+	mem_free((char *)buf);
+	error_do return;
 }
 
-int rtti_string_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_string_equal(const rtti_t *type, const void *a, const void *b)
 {
-	const char *const s1 = CAST(const char *, a);
-	const char *const s2 = CAST(const char *, b);
-	const int maynull = type->args[0].i;
+	const char *s1 = CAST(const char *, a);
+	const char *s2 = CAST(const char *, b);
 	const int asnull  = type->args[1].i;
-	int n1, n2;
 
-	if (!maynull && (!s1 || !s2))
-		return errno = EINVAL, 0;
-
-	if (asnull)
-		return str_equal(s1, s2);
-
-	n1 = (!s1 || !*s1);
-	n2 = (!s2 || !*s2);
-
-	if (n1 ^ n2)
-		return 0;
-	if (n1)
-		return 1;
+	if (!asnull) {
+		if (!s1) s1 = "";
+		if (!s2) s2 = "";
+	}
 
 	return str_equal(s1, s2);
 }
 
-int rtti_string_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_string_encode(const rtti_t *type, const void *data)
 {
 	const char *const s = CAST(const char *, data);
-	const int maynull = type->args[0].i;
 	const int asnull  = type->args[1].i;
-
-	if (!maynull && !s)
-		return errno = EINVAL, 0;
 
 	if (!s) {
 		if (asnull)
-			return _lucid_asprintf(buf, "null");
+			return str_dup("null");
 		else
-			return _lucid_asprintf(buf, "\"\"");
+			return str_dup("\"\"");
 	}
 
-	return _lucid_asprintf(buf, "\"%s\"", s);
+	char *buf = (char *)(asnull ? "null" : "");
+	_lucid_asprintf(&buf, "\"%s\"", s);
+	return buf;
 }
 
-int rtti_string_parse(const char *str, char **buf)
+char *rtti_string_parse(const char **buf)
 {
 	stralloc_t _rbuf, *rbuf = &_rbuf;
-	const char *p = str;
-	int escape;
+	int escape = 0;
 	char c;
 
-	SKIP_CHAR(p, '"') {
-		PARSE_ERROR(EINVAL, str, p);
+	SKIP_SPACE(buf);
+	SKIP_CHAR(buf, '"') {
+		error_set(EILSEQ, "expected QUOTE near '%.16s'", *buf);
+		return NULL;
 	}
 
 	stralloc_init(rbuf);
 
-	for (c = *p; c != '\0'; p++, c = *p) {
+	for (c = **buf; c != '\0'; (*buf)++, c = **buf) {
 		if (escape) {
 			switch (c) {
 			case 'b': c = '\b'; break;
@@ -111,7 +98,9 @@ int rtti_string_parse(const char *str, char **buf)
 			case '\\': break;
 			default:
 				stralloc_free(rbuf);
-				PARSE_ERROR(EINVAL, str, p);
+				error_set(EILSEQ, "illegal escape sequence near '%.16s'",
+						*buf);
+				return NULL;
 			}
 
 			stralloc_catb(rbuf, &c, 1);
@@ -128,57 +117,45 @@ int rtti_string_parse(const char *str, char **buf)
 			stralloc_catb(rbuf, &c, 1);
 	}
 
-	SKIP_CHAR(p, '"') {
+	SKIP_CHAR(buf, '"') {
 		stralloc_free(rbuf);
-		PARSE_ERROR(EINVAL, str, p);
+		error_set(EILSEQ,
+				"expected QUOTE near '%.16s'", *buf);
+		return NULL;
 	}
 
-	*buf = stralloc_finalize(rbuf);
+	char *str = stralloc_finalize(rbuf);
 	stralloc_free(rbuf);
-	PARSE_OK(str, p);
+	return str;
 }
 
-int rtti_string_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_string_decode(const rtti_t *type, const char **buf, void *data)
 {
-	const int maynull = type->args[0].i;
 	const int asnull  = type->args[1].i;
-	const char *p = buf;
-	char *sbuf;
-	int res;
 
-	SKIP_SPACE(p);
+	SKIP_SPACE(buf);
 
-	if (str_cmpn(p, "null", 4) == 0) {
-		if (!maynull)
-			PARSE_ERROR(EINVAL, buf, p);
-		else if (!asnull)
+	if (str_cmpn(*buf, "null", 4) == 0) {
+		if (!asnull)
 			CAST(char *, data) = str_dup("");
 		else
 			CAST(char *, data) = NULL;
-		PARSE_OK(buf, p + 4);
+		*buf += 4;
+		return;
 	}
 
-	errno = 0;
-	if ((res = rtti_string_parse(p, &sbuf)) == -1)
-		return -1;
-	else
-		p += res;
-
-	if (errno)
-		PARSE_ERROR(errno, buf, p);
+	char *sbuf = rtti_string_parse(buf);
+	error_do return;
 
 	CAST(char *, data) = sbuf;
-	PARSE_OK(buf, p);
 }
 
-int rtti_string_free(const rtti_t *type, void *data)
+void rtti_string_free(const rtti_t *type, void *data)
 {
-	char *const s = CAST(char *, data);
+	char *const str = CAST(char *, data);
 
-	if (s) {
-		mem_free(s);
+	if (str) {
+		mem_free(str);
 		CAST(char *, data) = NULL;
 	}
-
-	return 0;
 }

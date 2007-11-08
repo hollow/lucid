@@ -14,9 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 
+#include "error.h"
 #include "char.h"
 #include "mem.h"
 #include "rtti.h"
@@ -36,94 +36,108 @@ static const rtti_t rtti_type_array_length = {
 	{ { (void *)2 }, { (void *)0 } }    /* args for structs_int_ascify */
 };
 
-int rtti_init(const rtti_t *type, const char *name, void *data)
+void rtti_init(const rtti_t *type, const char *name, void *data)
 {
 	/* find item if any */
-	if ((type = rtti_find(type, name, &data)) == NULL)
-		return -1;
+	type = rtti_find(type, name, &data);
+	error_do return;
 
 	/* initialize data */
-	return type->init(type, data);
+	type->init(type, data);
+	error_do return;
 }
 
-int rtti_free(const rtti_t *type, const char *name, void *data)
+void rtti_free(const rtti_t *type, const char *name, void *data)
 {
-	const int errno_save = errno;
-
 	/* find item if any */
-	if ((type = rtti_find(type, name, &data)) == NULL)
-		return -1;
+	type = rtti_find(type, name, &data);
+	error_do return;
 
+	/* uninitialize data */
 	type->uninit(type, data);
-	return errno = errno_save, 0;
+	error_do return;
 }
 
-int rtti_get(const rtti_t *type, const char *name,
+void rtti_get(const rtti_t *type, const char *name,
 		const void *src, void *dst)
 {
 	/* find item if any */
-	if ((type = rtti_find(type, name, (void **)&src)) == NULL)
-		return -1;
+	type = rtti_find(type, name, (void **)&src);
+	error_do return;
 
-	return type->copy(type, src, dst);
+	/* get a copy of the data */
+	type->copy(type, src, dst);
+	error_do return;
 }
 
-int rtti_set(const rtti_t *type, const void *src,
-		const char *name, void *dst)
+void rtti_set(const rtti_t *type, const char *name,
+		const void *src, void *dst)
 {
 	/* find item if any */
-	if ((type = rtti_find(type, name, &dst)) == NULL)
-		return -1;
+	type = rtti_find(type, name, &dst);
+	error_do return;
 
 	/* make a copy of src */
-	void *copy;
-	if ((copy = mem_alloc(type->size)) == NULL)
-		return -1;
-	if (type->copy(type, src, copy) == -1) {
+	void *copy = mem_alloc(type->size);
+
+	type->copy(type, src, copy);
+	error_do {
 		mem_free(copy);
-		return -1;
+		return;
 	}
 
 	/* free dst item */
 	type->uninit(type, dst);
+	error_do {
+		mem_free(copy);
+		return;
+	}
 
 	/* set copy in dst */
 	mem_cpy(dst, copy, type->size);
-
 	mem_free(copy);
-	return 0;
 }
 
-int rtti_encode(const rtti_t *type, const char *name,
-		const void *data, char **buf)
+char *rtti_encode(const rtti_t *type, const char *name, const void *data)
 {
 	/* find item if any */
-	if ((type = rtti_find(type, name, (void **)&data)) == NULL)
-		return -1;
+	type = rtti_find(type, name, (void **)&data);
+	error_do return NULL;
 
-	return type->encode(type, data, buf);
+	/* encode item */
+	char *buf = type->encode(type, data);
+	error_do return NULL;
+
+	return buf;
 }
 
-int rtti_decode(const rtti_t *type, const char *name,
-		const char *buf, void *data)
+void rtti_decode(const rtti_t *type, const char *name,
+		const char **buf, void *data)
 {
 	/* find item if any */
-	if ((type = rtti_find(type, name, &data)) == NULL)
-		return -1;
+	type = rtti_find(type, name, &data);
+	error_do return;
 
-	return type->decode(type, buf, data);
+	/* decode item */
+	type->decode(type, buf, data);
+	error_do return;
 }
 
-int rtti_compare(const rtti_t *type, const char *name,
+bool rtti_equal(const rtti_t *type, const char *name,
 		const void *data1, const void *data2)
 {
-	/* find item if any */
-	if (rtti_find(type, name, (void **)&data1) == NULL)
-		return -1;
-	if ((type = rtti_find(type, name, (void **)&data2)) == NULL)
-		return -1;
+	/* find items if any */
+	rtti_find(type, name, (void **)&data1);
+	error_do return false;
 
-	return type->equal(type, data1, data2);
+	type = rtti_find(type, name, (void **)&data2);
+	error_do return false;
+
+	/* compare items */
+	int eq = type->equal(type, data1, data2);
+	error_do return false;
+
+	return eq;
 }
 
 const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
@@ -136,8 +150,11 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 		return type;
 
 	/* primitive types don't have sub-elements */
-	if (type->tclass == RTTI_TYPE_PRIMITIVE)
-		return errno = ENOENT, NULL;
+	if (type->tclass == RTTI_TYPE_PRIMITIVE) {
+		error_set(ENOENT, "no sub-elements in primitive type (%s)",
+				type->name);
+		return NULL;
+	}
 
 	/* dereference through pointer(s) */
 	while (type->tclass == RTTI_TYPE_POINTER) {
@@ -167,11 +184,15 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 		/* decode index */
 		eptr += str_toumax(name, &index, 0, str_len(name));
 		if (!char_isdigit(*name) || eptr <= name ||
-				(*eptr != '\0' && *eptr != RTTI_SEPARATOR))
-			return errno = ENOENT, NULL;
+				(*eptr != '\0' && *eptr != RTTI_SEPARATOR)) {
+			error_set(EILSEQ, "invalid array index syntax (%s)", name);
+			return NULL;
+		}
 
-		if (index >= length)
-			return errno = EDOM, NULL;
+		if (index >= length) {
+			error_set(ERANGE, "array index out of range (%llu, %u)", index, length);
+			return NULL;
+		}
 
 		type = etype;
 		data = (char *)data + (index * etype->size);
@@ -194,16 +215,22 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 			}
 		}
 
-		if (field->name == NULL)
-			return errno = ENOENT, NULL;
+		if (field->name == NULL) {
+			error_set(ENOENT, "struct member not found (%s)", name);
+			return NULL;
+		}
 
 		type = field->type;
 		data = (char *)data + field->offset;
 		break;
 	}
 
+	case RTTI_TYPE_LIST: {
+	}
+
 	default:
-		return errno = EINVAL, NULL;
+		error_set(EINVAL, "invalid type class (%d)", type->tclass);
+		return NULL;
 	}
 
 	/* recurse on sub-element */
@@ -215,49 +242,53 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 	return type;
 }
 
-int rtti_region_init(const rtti_t *type, void *data)
+void rtti_region_init(const rtti_t *type, void *data)
 {
 	mem_set(data, 0, type->size);
-	return 0;
 }
 
-int rtti_region_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_region_copy(const rtti_t *type, const void *src, void *dst)
 {
 	mem_cpy(dst, src, type->size);
-	return 0;
 }
 
-int rtti_region_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_region_equal(const rtti_t *type, const void *a, const void *b)
 {
 	return mem_cmp(a, b, type->size) == 0;
 }
 
-int rtti_notsupp_init(const rtti_t *type, void *data)
+void rtti_notsupp_init(const rtti_t *type, void *data)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, "rtti_init not supported for type (%s)",
+			type->name);
 }
 
-int rtti_notsupp_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_notsupp_copy(const rtti_t *type, const void *src, void *dst)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, "rtti_copy not supported for type (%s)",
+			type->name);
 }
 
-int rtti_notsupp_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_notsupp_equal(const rtti_t *type, const void *a, const void *b)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, "rtti_equal not supported for type (%s)",
+			type->name);
+	return false;
 }
 
-int rtti_notsupp_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_notsupp_encode(const rtti_t *type, const void *data)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, "rtti_encode not supported for type (%s)",
+			type->name);
+	return NULL;
 }
 
-int rtti_notsupp_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_notsupp_decode(const rtti_t *type, const char **buf, void *data)
 {
-	return errno = ENOTSUP, -1;
+	error_set(ENOTSUP, "rtti_decode not supported for type (%s)",
+			type->name);
 }
 
-int rtti_nothing_free(const rtti_t *type, void *data)
+void rtti_nothing_free(const rtti_t *type, void *data)
 {
-	return 0;
 }

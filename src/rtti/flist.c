@@ -14,8 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
-#include <errno.h>
 
+#include "error.h"
 #include "flist.h"
 #include "mem.h"
 #include "printf.h"
@@ -24,108 +24,80 @@
 
 #include "internal.h"
 
-int rtti_flist32_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_flist32_encode(const rtti_t *type, const void *data)
 {
 	const flist32_t *list = type->args[0].v;
 	const flag32_t *flag32 = data;
 	const char *delim = type->args[1].s;
 	char clmod = (char)type->args[2].i;
-	char *p;
-	int rc;
+	char *buf, *str = flist32_encode(list, flag32, clmod, delim);
 
-	p = flist32_encode(list, flag32, clmod, delim);
+	_lucid_asprintf(&buf, "\"%s\"", str);
 
-	if (p)
-		rc = _lucid_asprintf(buf, "\"%s\"", p);
-	else
-		rc = -1;
-
-	mem_free(p);
-
-	return rc;
+	mem_free(str);
+	return buf;
 }
 
-int rtti_flist64_encode(const rtti_t *type, const void *data, char **buf)
+char *rtti_flist64_encode(const rtti_t *type, const void *data)
 {
 	const flist64_t *list = type->args[0].v;
 	const flag64_t *flag64 = data;
 	const char *delim = type->args[1].s;
 	char clmod = (char)type->args[2].i;
-	char *p;
-	int rc;
+	char *buf, *str = flist64_encode(list, flag64, clmod, delim);
 
-	p = flist64_encode(list, flag64, clmod, delim);
+	_lucid_asprintf(&buf, "\"%s\"", str);
 
-	if (p)
-		rc = _lucid_asprintf(buf, "\"%s\"", p);
-	else
-		rc = -1;
-
-	mem_free(p);
-
-	return rc;
+	mem_free(str);
+	return buf;
 }
 
-int rtti_flist32_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_flist32_decode(const rtti_t *type, const char **buf, void *data)
 {
 	const flist32_t *list = type->args[0].v;
 	flag32_t *flag32 = data;
 	const char *delim = type->args[1].s;
 	char clmod = (char)type->args[2].i;
-	const char *p = buf;
-	char *sbuf;
-	int res;
 
-	SKIP_SPACE(p);
+	SKIP_SPACE(buf);
 
-	if (str_cmpn(p, "null", 4) == 0) {
-		flag32->flag = flag32->mask = 0;
-		PARSE_OK(buf, p + 4);
+	flag32->flag = flag32->mask = 0;
+
+	if (str_cmpn(*buf, "null", 4) == 0) {
+		*buf += 4;
+		return;
 	}
 
-	errno = 0;
-	if ((res = rtti_string_parse(p, &sbuf)) == -1)
-		return -1;
-	else
-		p += res;
+	char *sbuf = rtti_string_parse(buf);
+	error_do return;
 
-	if (errno)
-		PARSE_ERROR(errno, buf, p);
-
-	if (flist32_decode(sbuf, list, flag32, clmod, delim) == -1)
-		PARSE_ERROR(errno, buf, p);
-
-	PARSE_OK(buf, p);
+	if (flist32_decode(sbuf, list, flag32, clmod, delim) == -1) {
+		error_set(errno, "failed to decode flist32");
+		return;
+	}
 }
 
-int rtti_flist64_decode(const rtti_t *type, const char *buf, void *data)
+void rtti_flist64_decode(const rtti_t *type, const char **buf, void *data)
 {
 	const flist64_t *list = type->args[0].v;
 	flag64_t *flag64 = data;
 	const char *delim = type->args[1].s;
 	char clmod = (char)type->args[2].i;
-	const char *p = buf;
-	char *sbuf;
-	int res;
 
-	SKIP_SPACE(p);
+	SKIP_SPACE(buf);
 
-	if (str_cmpn(p, "null", 4) == 0) {
-		flag64->flag = flag64->mask = 0;
-		PARSE_OK(buf, p + 4);
+	flag64->flag = flag64->mask = 0;
+
+	if (str_cmpn(*buf, "null", 4) == 0) {
+		*buf += 4;
+		return;
 	}
 
-	errno = 0;
-	if ((res = rtti_string_parse(p, &sbuf)) == -1)
-		return -1;
-	else
-		p += res;
+	char *sbuf = rtti_string_parse(buf);
+	error_do return;
 
-	if (errno)
-		PARSE_ERROR(errno, buf, p);
-
-	if (flist64_decode(sbuf, list, flag64, clmod, delim) == -1)
-		PARSE_ERROR(errno, buf, p);
-
-	PARSE_OK(buf, p);
+	if (flist64_decode(sbuf, list, flag64, clmod, delim) == -1) {
+		error_set(errno, "failed to decode flist64");
+		return;
+	}
 }
