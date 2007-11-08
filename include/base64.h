@@ -27,7 +27,7 @@
 #define BASE64_LENGTH(N) ((((N) + 2) / 3) * 4)
 
 char *base64_encode(const void *data, size_t n);
-void *base64_decode(const char *buf);
+void *base64_decode(const char *buf, size_t *len);
 
 #endif
 
