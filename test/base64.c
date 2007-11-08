@@ -59,6 +59,7 @@ int base64_decode_t(void)
 {
 	int i, rc = 0;
 	char *str = NULL;
+	size_t len = 0;
 
 	struct test {
 		const char *str;
@@ -71,12 +72,13 @@ int base64_decode_t(void)
 	int TS = sizeof(T) / sizeof(T[0]);
 
 	for (i = 0; i < TS; i++) {
-		str = base64_decode(T[i].base64);
+		str = base64_decode(T[i].base64, &len);
 
-		if (!str || strcmp(str, T[i].str))
-			rc += log_error("[%s/%02d] E[%s] R[%s]",
+		if (!str || strcmp(str, T[i].str) || strlen(T[i].base64) != len)
+			rc += log_error("[%s/%02d] E[%s,%d] R[%s,%d]",
 			                __FUNCTION__, i,
-			                T[i].str, str);
+			                T[i].str, strlen(T[i].base64),
+			                str, len);
 
 		if (str)
 			mem_free(str);

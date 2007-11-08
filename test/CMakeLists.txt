@@ -20,9 +20,9 @@ add_executable(flist flist.c)
 target_link_libraries(flist ucid)
 add_test(flist flist)
 
-add_executable(rtti rtti.c)
-target_link_libraries(rtti ucid)
-add_test(rtti rtti)
+#add_executable(rtti rtti.c)
+#target_link_libraries(rtti ucid)
+#add_test(rtti rtti)
 
 add_executable(str str.c)
 target_link_libraries(str ucid)
