@@ -77,6 +77,9 @@ bool rtti_equal(const rtti_t *type, const char *name,
 
 const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap);
 
+void rtti_get_parser_offset(const char *orig, const char *parsed,
+		int *_line, int *_column);
+
 char *rtti_string_parse(const char **str);
 
 /* generic memory region type functions */

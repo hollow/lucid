@@ -242,6 +242,35 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 	return type;
 }
 
+void rtti_get_parser_offset(const char *orig, const char *parsed,
+		int *_line, int *_column)
+{
+	int line = 1, column = 1;
+	const char *origp = orig;
+
+	while (origp < parsed) {
+		switch (*origp) {
+		case '\n':
+			line++;
+			column = 1;
+			break;
+
+		case '\t':
+			column += 4;
+			break;
+
+		default:
+			column++;
+			break;
+		}
+
+		origp++;
+	}
+
+	*_line = line;
+	*_column = column;
+}
+
 void rtti_region_init(const rtti_t *type, void *data)
 {
 	mem_set(data, 0, type->size);
