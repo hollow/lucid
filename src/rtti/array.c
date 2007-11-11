@@ -132,7 +132,7 @@ void rtti_array_decode(const rtti_t *type, const char **buf, void *data)
 
 	while (i < asize) {
 		etype->decode(etype, buf, IDX(etype, data, i));
-		error_dof("failed to decode array (%s) near '%.16s'", etype->name, *buf)
+		error_dof("failed to decode array (%s)", etype->name)
 			return;
 
 		SKIP_SPACE(buf);

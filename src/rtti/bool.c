@@ -57,6 +57,8 @@ void rtti_bool_decode(const rtti_t *type, const char **buf, void *data)
 {
 	int truth;
 
+	SKIP_SPACE(buf);
+
 	if (str_cmpn(*buf, "true", 4) == 0)
 		truth = true;
 	else if (str_cmpn(*buf, "false", 5) == 0)

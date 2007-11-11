@@ -142,26 +142,31 @@ void rtti_struct_decode(const rtti_t *type, const char **buf, void *data)
 
 	while (1) {
 		ktype->decode(ktype, buf, &key);
-		error_dof("failed to decode struct near '%.16s'", *buf)
+		error_dof("failed to decode struct key")
 			return;
 
 		fdata = data;
 
 		ftype = rtti_find(type, key, &fdata);
-		ktype->uninit(ktype, &key);
-		error_dof("list member does not exist (%s)", key) {
+		error_do {
+			ktype->uninit(ktype, &key);
 			return;
 		}
 
 		SKIP_SPACE(buf);
 		SKIP_CHAR(buf, ':') {
 			error_set(EILSEQ, "expected COLON near '%.16s'", *buf);
+			ktype->uninit(ktype, &key);
 			return;
 		}
 
 		ftype->decode(ftype, buf, fdata);
-		error_dof("failed to decode struct (%s) near '%.16s'", ftype->name, *buf)
+		error_dof("failed to decode struct member %s (%s)", key, ftype->name) {
+			ktype->uninit(ktype, &key);
 			return;
+		}
+
+		ktype->uninit(ktype, &key);
 
 		SKIP_SPACE(buf);
 		SKIP_CHAR(buf, ',') {
