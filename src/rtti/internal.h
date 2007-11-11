@@ -23,9 +23,29 @@
 #define CHECK_TYPE(T) \
 	assert(type->tclass == RTTI_TYPE_ ## T)
 
-#define SKIP_SPACE(B) do { \
-	while (char_isspace(**B)) { (*B)++; } \
-} while (0)
+static inline
+void SKIP_SPACE(const char **buf)
+{
+	const char *p = *buf;
+
+	while (true) {
+		while (char_isspace(*p))
+			p++;
+
+		if (*p != '#')
+			break;
+
+		while (*p && *p != '\n')
+			p++;
+
+		if (*p == '\n')
+			p++;
+		else
+			break;
+	}
+
+	*buf = p;
+}
 
 #define SKIP_CHAR(B, C) \
 	if (**B == C) { (*B)++; } else
