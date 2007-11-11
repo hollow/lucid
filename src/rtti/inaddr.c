@@ -53,3 +53,17 @@ void rtti_inaddr_decode(const rtti_t *type, const char **buf, void *data)
 
 	mem_free(sbuf);
 }
+
+char *rtti_port_encode(const rtti_t *type, const void *data)
+{
+	uint16_t port = CAST(uint16_t, data);
+	port = ntohs(port);
+	return rtti_int_encode(type, &port);
+}
+
+void rtti_port_decode(const rtti_t *type, const char **buf, void *data)
+{
+	uint16_t *port = &(CAST(uint16_t, data));
+	rtti_int_decode(type, buf, port);
+	*port = htons(*port);
+}

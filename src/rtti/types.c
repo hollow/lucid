@@ -59,3 +59,16 @@ rtti_t rtti_inaddr_type = {
 	rtti_nothing_free,
 	{ { NULL }, { NULL }, { NULL } }
 };
+
+rtti_t rtti_port_type = {
+	sizeof(uint16_t),
+	"inaddr",
+	RTTI_TYPE_PRIMITIVE,
+	rtti_region_init,
+	rtti_region_copy,
+	rtti_region_equal,
+	rtti_port_encode,
+	rtti_port_decode,
+	rtti_nothing_free,
+	{ { (void *)(0) }, { NULL }, { NULL } }
+};
