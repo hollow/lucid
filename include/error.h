@@ -44,7 +44,7 @@ typedef struct error_s {
 	const char *func;
 	int line;
 	int errnum;
-	const char *msg;
+	char *msg;
 } error_t;
 
 void error_init(error_t *err);
@@ -56,9 +56,13 @@ void error_push(error_t *err, const char *file, int line, const char *func,
 
 error_t *error_pop(error_t *err);
 
+void error_free_node(error_t *err);
+
 void error_free(error_t *err);
 
 int error_count(error_t *err);
+
+char *error_describe(error_t *err);
 
 /* global error handling */
 extern error_t *__lucid_error;
@@ -74,6 +78,15 @@ extern error_t *__lucid_error;
 	if (!error_empty(__lucid_error))
 
 #define error_do error_dof(NULL)
+
+#define error_print_trace() do { \
+	error_t *cur; \
+	while ((cur = error_pop(__lucid_error))) { \
+		char *desc = error_describe(cur); \
+		dprintf(STDERR_FILENO, "%s\n", desc); \
+		mem_free(desc); error_free_node(cur); \
+	} \
+} while (0)
 
 #endif
 

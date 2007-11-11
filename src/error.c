@@ -43,7 +43,7 @@ void error_push(error_t *err, const char *file, int line, const char *func,
 	new->errnum = errnum;
 
 	if (fmt == NULL)
-		new->msg = str_dup(strerror(errnum));
+		new->msg = str_dup("no error message");
 
 	else {
 		char *buf;
@@ -85,6 +85,12 @@ error_t *error_pop(error_t *err)
 	return top;
 }
 
+void error_free_node(error_t *err)
+{
+	if (err->msg) mem_free(err->msg);
+	mem_free(err);
+}
+
 void error_free(error_t *err)
 {
 	if (!err->list.next)
@@ -97,7 +103,7 @@ void error_free(error_t *err)
 	list_for_each_safe(pos, tmp, &(err->list)) {
 		p = list_entry(pos, error_t, list);
 		list_del(pos);
-		mem_free(p);
+		error_free_node(p);
 	}
 
 	errno = errno_orig;
@@ -115,4 +121,27 @@ int error_count(error_t *err)
 		count++;
 
 	return count;
+}
+
+char *error_describe(error_t *err)
+{
+	char *buf,
+		 *errnumstr = NULL,
+		 *file = str_path_basename(err->file),
+		 *msg  = str_flatten(err->msg);
+
+	if (err->errnum > 0)
+		asprintf(&errnumstr, "\n\terrno = %d: %s",
+				err->errnum, strerror(err->errnum));
+
+	asprintf(&buf, "in %s (%s:%d):\n\t%s%s",
+			err->func,
+			file,
+			err->line,
+			msg,
+			errnumstr ? errnumstr : "");
+
+	if (errnumstr) mem_free(errnumstr);
+	mem_free(file);
+	return buf;
 }

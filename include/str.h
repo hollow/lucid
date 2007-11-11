@@ -309,6 +309,14 @@ int str_path_isabs(const char *str);
  */
 int str_path_isdot(const char *str);
 
+/*!
+ * @brief convert newline to space
+ *
+ * @param[out] str string to convert
+ *
+ * @return pointer to str
+ */
+char *str_flatten(char *str);
 
 /*!
  * @brief convert string to lower-case

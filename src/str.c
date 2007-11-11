@@ -149,6 +149,19 @@ char *str_str(const char *str, const char *needle)
 	return 0;
 }
 
+char *str_flatten(char *str)
+{
+	char *p = str;
+
+	while (*p) {
+		if (*p == '\n' || *p == '\r')
+			*p = ' ';
+		p++;
+	}
+
+	return str;
+}
+
 char *str_tolower(char *str)
 {
 	char *p = str;
