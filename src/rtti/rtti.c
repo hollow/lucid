@@ -199,6 +199,7 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 		break;
 	}
 
+	case RTTI_TYPE_LIST:
 	case RTTI_TYPE_STRUCT: {
 		const rtti_field_t *field;
 
@@ -223,9 +224,6 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 		type = field->type;
 		data = (char *)data + field->offset;
 		break;
-	}
-
-	case RTTI_TYPE_LIST: {
 	}
 
 	default:

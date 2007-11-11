@@ -20,6 +20,12 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+#ifdef _LUCID_BUILD_
+#include "list.h"
+#else
+#include <lucid/list.h>
+#endif
+
 /* base definitions */
 #define RTTI_SEPARATOR '.'
 
@@ -335,9 +341,9 @@ extern rtti_decode_t rtti_struct_decode;
 extern rtti_uninit_t rtti_struct_free;
 
 /* list types */
-#define RTTI_LIST_TYPE(lname, loff, flist) { \
-	sizeof(struct lname), \
-	"list " #lname, \
+#define RTTI_LIST_TYPE(name, tail) { \
+	sizeof(struct name), \
+	"list " #name, \
 	RTTI_TYPE_LIST, \
 	rtti_list_init, \
 	rtti_list_copy, \
@@ -345,7 +351,7 @@ extern rtti_uninit_t rtti_struct_free;
 	rtti_list_encode, \
 	rtti_list_decode, \
 	rtti_list_free, \
-	{ { (void *)(flist) }, { (void *)(loff) }, { NULL } } \
+	{ { (void *)(__ ## name ## _fields) }, { (void *)(tail) }, { NULL } } \
 }
 
 extern rtti_init_t   rtti_list_init;
@@ -354,15 +360,16 @@ extern rtti_encode_t rtti_list_encode;
 extern rtti_decode_t rtti_list_decode;
 extern rtti_uninit_t rtti_list_free;
 
+list_t *rtti_list_prev(const rtti_t *type, const void *entry);
+list_t *rtti_list_next(const rtti_t *type, const void *entry);
 void rtti_list_add(const rtti_t *type, void *entry, void *head);
-void rtti_list_del(const rtti_t *type, void *entry);
-void rtti_list_move(const rtti_t *type, void *entry, void *head);
-int  rtti_list_empty(const rtti_t *type, void *head);
-void rtti_list_splice(const rtti_t *type, void *list, void *head);
 
 /* various other types */
 extern rtti_encode_t rtti_inaddr_encode;
 extern rtti_decode_t rtti_inaddr_decode;
 extern rtti_t rtti_inaddr_type;
 
+extern rtti_encode_t rtti_port_encode;
+extern rtti_decode_t rtti_port_decode;
+extern rtti_t rtti_port_type;
 #endif

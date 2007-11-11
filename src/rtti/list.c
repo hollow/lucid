@@ -29,8 +29,8 @@
 
 void rtti_list_init(const rtti_t *type, void *data)
 {
-	const rtti_field_t *field, *listf = type->args[1].v;
-	list_t *list = IDX(data, listf);
+	const rtti_field_t *field;
+	list_t *list = data;
 
 	CHECK_TYPE(LIST);
 
@@ -51,20 +51,21 @@ void rtti_list_init(const rtti_t *type, void *data)
 
 void rtti_list_copy(const rtti_t *type, const void *src, void *dst)
 {
-	const rtti_field_t *field, *listf = type->args[1].v;
-	const int tail = type->args[2].i;
-	list_t *pos, *shead = IDX(src, listf);
-	void *entry;
+	const rtti_field_t *field;
+	const list_t *shead = src, *pos = shead;
 
 	CHECK_TYPE(LIST);
 
-	/* ugly foreach hack to handle args->tail */
-	pos = tail ? shead->next : shead->prev;
+	while ((pos = rtti_list_next(type, pos)) != shead) {
+		src = pos;
 
-	while (pos != shead) {
-		src = ODX(pos, listf);
-
-		entry = mem_alloc(type->size);
+		void *entry = mem_alloc(type->size);
+		type->init(type, entry);
+		error_dof("failed to initialize list node") {
+			mem_free(entry);
+			rtti_list_free(type, dst);
+			return;
+		}
 
 		for (field = type->args[0].v; field->name != NULL; field++) {
 			const void *const sdata = IDX(src, field);
@@ -83,16 +84,14 @@ void rtti_list_copy(const rtti_t *type, const void *src, void *dst)
 		}
 
 		rtti_list_add(type, entry, dst);
-		pos = tail ? pos->next : pos->prev;
 	}
 }
 
 char *rtti_list_encode(const rtti_t *type, const void *data)
 {
 	const rtti_t *ftype, *ktype = &rtti_string_type;
-	const int tail = type->args[2].i;
-	const rtti_field_t *field, *listf = type->args[1].v;
-	list_t *pos, *head = IDX(data, listf);
+	const rtti_field_t *field;
+	const list_t *head = data, *pos = head;
 	stralloc_t _rbuf, *rbuf = &_rbuf;
 	char *fbuf, *buf = NULL;
 
@@ -101,11 +100,8 @@ char *rtti_list_encode(const rtti_t *type, const void *data)
 	stralloc_init(rbuf);
 	stralloc_cats(rbuf, "[");
 
-	/* ugly foreach hack to handle args->tail */
-	pos = tail ? head->next : head->prev;
-
-	while (pos != head) {
-		data = ODX(pos, listf);
+	while ((pos = rtti_list_next(type, pos)) != head) {
+		data = pos;
 
 		stralloc_cats(rbuf, "{");
 
@@ -132,9 +128,7 @@ char *rtti_list_encode(const rtti_t *type, const void *data)
 
 		stralloc_cats(rbuf, "}");
 
-		pos = tail ? pos->next : pos->prev;
-
-		if (pos != head)
+		if (rtti_list_next(type, pos) != head)
 			stralloc_cats(rbuf, ",");
 	}
 
@@ -171,31 +165,41 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 
 		while (1) {
 			ktype->decode(ktype, buf, &key);
-			error_dof("failed to decode list node near '%.16s'", *buf)
-				return;
+			error_dof("failed to decode list node key")
+				break;
 
 			fdata = data;
 
 			ftype = rtti_find(type, key, &fdata);
-			error_dof("list member does not exist (%s)", key)
-				return;
-
-			ktype->uninit(ktype, &key);
+			error_do {
+				ktype->uninit(ktype, &key);
+				break;
+			}
 
 			SKIP_SPACE(buf);
 			SKIP_CHAR(buf, ':') {
 				error_set(EILSEQ, "expected COLON near '%.16s'", *buf);
-				return;
+				ktype->uninit(ktype, &key);
+				break;
 			}
 
 			ftype->decode(ftype, buf, fdata);
-			error_dof("failed to decode list node (%s) near '%.16s'", ftype->name, *buf)
-				return;
+			error_dof("failed to decode list node member %s (%s)", key, ftype->name) {
+				ktype->uninit(ktype, &key);
+				break;
+			}
+
+			ktype->uninit(ktype, &key);
 
 			SKIP_SPACE(buf);
 			SKIP_CHAR(buf, ',') {
 				break;
 			}
+		}
+
+		error_dof("failed to decode list node") {
+			mem_free(data);
+			return;
 		}
 
 		SKIP_SPACE(buf);
@@ -221,70 +225,57 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 
 void rtti_list_free(const rtti_t *type, void *data)
 {
-	const int tail = type->args[2].i;
-	const rtti_field_t *field, *listf = type->args[1].v;
-	list_t *pos, *tmp, *head = IDX(data, listf);
+	const rtti_field_t *field;
+	list_t *pos, *tmp, *head = data;
 
 	CHECK_TYPE(LIST);
 
-	/* ugly foreach hack to handle args->tail */
-	pos = tail ? head->next : head->prev;
-	tmp = tail ? pos->next : pos->next;
+	pos = rtti_list_next(type, head);
+	tmp = rtti_list_next(type, pos);
 
 	while (pos != head) {
-		data = ODX(pos, listf);
+		data = pos;
 
 		for (field = type->args[0].v; field->name != NULL; field++)
 			field->type->uninit(field->type, IDX(data, field));
 
-		rtti_list_del(type, data);
+		list_del(data);
 		mem_set(data, 0, type->size);
 		mem_free(data);
 
 		pos = tmp;
-		tmp = tail ? pos->next : pos->prev;
+		tmp = rtti_list_next(type, pos);
 	}
 }
 
-void rtti_list_add(const rtti_t *type, void *_entry, void *_head)
+list_t *rtti_list_prev(const rtti_t *type, const void *_entry)
 {
-	const rtti_field_t *listf = type->args[1].v;
-	const int tail = type->args[2].i;
-	list_t *entry = IDX(_entry, listf);
-	list_t *head = IDX(_head, listf);
+	const int tail = type->args[1].i;
+	const list_t *entry = _entry;
+
+	if (tail)
+		return entry->prev;
+	else
+		return entry->next;
+}
+
+list_t *rtti_list_next(const rtti_t *type, const void *_entry)
+{
+	const int tail = type->args[1].i;
+	const list_t *entry = _entry;
+
+	if (tail)
+		return entry->next;
+	else
+		return entry->prev;
+}
+
+void rtti_list_add(const rtti_t *type, void *entry, void *head)
+{
+	const int tail = type->args[1].i;
 
 	if (tail)
 		list_add_tail(entry, head);
 	else
 		list_add(entry, head);
-}
-
-void rtti_list_del(const rtti_t *type, void *_entry)
-{
-	const rtti_field_t *listf = type->args[1].v;
-	list_t *entry = IDX(_entry, listf);
-	list_del(entry);
-}
-
-void rtti_list_move(const rtti_t *type, void *_entry, void *_head)
-{
-	const rtti_field_t *listf = type->args[1].v;
-	list_t *entry = IDX(_entry, listf);
-	list_t *head  = IDX(_head,  listf);
-	list_move(entry, head);
-}
-
-int rtti_list_empty(const rtti_t *type, void *_head)
-{
-	const rtti_field_t *listf = type->args[1].v;
-	list_t *head = IDX(_head, listf);
-	return list_empty(head);
-}
-
-void rtti_list_splice(const rtti_t *type, void *_list, void *_head)
-{
-	const rtti_field_t *listf = type->args[1].v;
-	list_t *list = IDX(_list, listf);
-	list_t *head = IDX(_head, listf);
-	list_splice(list, head);
 }
