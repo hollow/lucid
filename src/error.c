@@ -43,7 +43,7 @@ void error_push(error_t *err, const char *file, int line, const char *func,
 	new->errnum = errnum;
 
 	if (fmt == NULL)
-		new->msg = str_dup("no error message");
+		new->msg = NULL;
 
 	else {
 		char *buf;
@@ -123,25 +123,63 @@ int error_count(error_t *err)
 	return count;
 }
 
-char *error_describe(error_t *err)
+char *error_describe(error_t *err, const char *prefix)
 {
-	char *buf,
-		 *errnumstr = NULL,
-		 *file = str_path_basename(err->file),
-		 *msg  = str_flatten(err->msg);
+	char *buf    = NULL,
+		 *errmsg = NULL,
+		 *errstr = NULL,
+		 *file   = str_path_basename(err->file);
+
+	if (err->msg) {
+		char *flat = str_flatten(err->msg);
+		asprintf(&errmsg, "\n%10s%s", "", flat);
+	}
 
 	if (err->errnum > 0)
-		asprintf(&errnumstr, "\n\terrno = %d: %s",
+		asprintf(&errstr, "\n%10serrno = %d: %s", "",
 				err->errnum, strerror(err->errnum));
 
-	asprintf(&buf, "in %s (%s:%d):\n\t%s%s",
-			err->func,
-			file,
-			err->line,
-			msg,
-			errnumstr ? errnumstr : "");
+	asprintf(&buf, "%s %s (%s:%d):%s%s",
+			prefix, err->func, file, err->line,
+			errmsg ? errmsg : "",
+			errstr ? errstr : "");
 
-	if (errnumstr) mem_free(errnumstr);
+	if (errmsg) mem_free(errmsg);
+	if (errstr) mem_free(errstr);
 	mem_free(file);
+
 	return buf;
+}
+
+void error_print_trace(error_t *err, int fd)
+{
+	error_t *next = NULL, *cur = error_pop(err);
+	assert(cur != NULL);
+
+	dprintf(fd, "FATAL: caught runtime error\n");
+
+	char *desc = error_describe(cur, "in  ");
+	dprintf(fd, "%s\n", desc);
+	mem_free(desc);
+	error_free_node(cur);
+
+	cur = error_pop(err);
+	assert(cur != NULL);
+
+	do {
+		if (!(next = error_pop(err)))
+			break;
+
+		desc = error_describe(cur, "from");
+		dprintf(fd, "%s\n", desc);
+		mem_free(desc);
+		error_free_node(cur);
+
+		cur = next;
+	} while (true);
+
+	desc = error_describe(cur, "by  ");
+	dprintf(fd, "%s\n", desc);
+	mem_free(desc);
+	error_free_node(cur);
 }

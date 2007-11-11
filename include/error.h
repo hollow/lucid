@@ -62,7 +62,9 @@ void error_free(error_t *err);
 
 int error_count(error_t *err);
 
-char *error_describe(error_t *err);
+char *error_describe(error_t *err, const char *prefix);
+
+void error_print_trace(error_t *err, int fd);
 
 /* global error handling */
 extern error_t *__lucid_error;
@@ -79,14 +81,7 @@ extern error_t *__lucid_error;
 
 #define error_do error_dof(NULL)
 
-#define error_print_trace() do { \
-	error_t *cur; \
-	while ((cur = error_pop(__lucid_error))) { \
-		char *desc = error_describe(cur); \
-		dprintf(STDERR_FILENO, "%s\n", desc); \
-		mem_free(desc); error_free_node(cur); \
-	} \
-} while (0)
+#define error_dump() error_print_trace(__lucid_error, STDERR_FILENO)
 
 #endif
 
