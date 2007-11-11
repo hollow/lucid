@@ -50,6 +50,7 @@ set(RTTI_SRCS
 	rtti/data.c
 	rtti/flist.c
 	rtti/float.c
+	rtti/inaddr.c
 	rtti/int.c
 	rtti/internal.h
 	rtti/list.c

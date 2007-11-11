@@ -51,13 +51,13 @@
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct flag32 {
 	uint32_t flag;
 	uint32_t mask;
 } flag32_t;
 
 /*! @brief 32 bit list object */
-typedef struct {
+typedef struct flist32 {
 	const char *key;    /*!< Node key (must be unique) */
 	const uint32_t val; /*!< Node value (32-bit) */
 } flist32_t;

@@ -31,7 +31,7 @@ static const rtti_t rtti_type_array_length = {
 	rtti_region_copy,
 	rtti_region_equal,
 	rtti_int_encode,
-	rtti_notsupp_decode,
+	rtti_notsup_decode,
 	rtti_nothing_free,
 	{ { (void *)2 }, { (void *)0 } }    /* args for structs_int_ascify */
 };
@@ -257,33 +257,33 @@ bool rtti_region_equal(const rtti_t *type, const void *a, const void *b)
 	return mem_cmp(a, b, type->size) == 0;
 }
 
-void rtti_notsupp_init(const rtti_t *type, void *data)
+void rtti_notsup_init(const rtti_t *type, void *data)
 {
 	error_set(ENOTSUP, "rtti_init not supported for type (%s)",
 			type->name);
 }
 
-void rtti_notsupp_copy(const rtti_t *type, const void *src, void *dst)
+void rtti_notsup_copy(const rtti_t *type, const void *src, void *dst)
 {
 	error_set(ENOTSUP, "rtti_copy not supported for type (%s)",
 			type->name);
 }
 
-bool rtti_notsupp_equal(const rtti_t *type, const void *a, const void *b)
+bool rtti_notsup_equal(const rtti_t *type, const void *a, const void *b)
 {
 	error_set(ENOTSUP, "rtti_equal not supported for type (%s)",
 			type->name);
 	return false;
 }
 
-char *rtti_notsupp_encode(const rtti_t *type, const void *data)
+char *rtti_notsup_encode(const rtti_t *type, const void *data)
 {
 	error_set(ENOTSUP, "rtti_encode not supported for type (%s)",
 			type->name);
 	return NULL;
 }
 
-void rtti_notsupp_decode(const rtti_t *type, const char **buf, void *data)
+void rtti_notsup_decode(const rtti_t *type, const char **buf, void *data)
 {
 	error_set(ENOTSUP, "rtti_decode not supported for type (%s)",
 			type->name);

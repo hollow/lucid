@@ -85,11 +85,11 @@ extern rtti_copy_t   rtti_region_copy;
 extern rtti_equal_t  rtti_region_equal;
 
 /* type does not support this method */
-extern rtti_init_t   rtti_notsupp_init;
-extern rtti_copy_t   rtti_notsupp_copy;
-extern rtti_equal_t  rtti_notsupp_equal;
-extern rtti_encode_t rtti_notsupp_encode;
-extern rtti_decode_t rtti_notsupp_decode;
+extern rtti_init_t   rtti_notsup_init;
+extern rtti_copy_t   rtti_notsup_copy;
+extern rtti_equal_t  rtti_notsup_equal;
+extern rtti_encode_t rtti_notsup_encode;
+extern rtti_decode_t rtti_notsup_decode;
 
 /* nothing to free for these types */
 extern rtti_uninit_t rtti_nothing_free;
@@ -304,7 +304,7 @@ typedef struct rtti_field_s {
 			offsetof(struct sname, fname) },
 
 #define RTTI_STRUCT_FIELD2(sname, fname, dname, ftype) \
-		{ dname, ftype, sizeof(((struct sname *)0)->fname), \
+		{ #dname, ftype, sizeof(((struct sname *)0)->fname), \
 			offsetof(struct sname, fname) },
 
 #define RTTI_STRUCT_FIELD_END \
@@ -356,5 +356,10 @@ void rtti_list_del(const rtti_t *type, void *entry);
 void rtti_list_move(const rtti_t *type, void *entry, void *head);
 int  rtti_list_empty(const rtti_t *type, void *head);
 void rtti_list_splice(const rtti_t *type, void *list, void *head);
+
+/* various other types */
+extern rtti_encode_t rtti_inaddr_encode;
+extern rtti_decode_t rtti_inaddr_decode;
+extern rtti_t rtti_inaddr_type;
 
 #endif

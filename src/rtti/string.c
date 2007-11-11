@@ -26,8 +26,8 @@
 
 void rtti_string_init(const rtti_t *type, void *data)
 {
-	const char *empty = "\"\"";
-	type->decode(type, &empty, data);
+	const char *s = CAST(const char *, data);
+	s = NULL;
 }
 
 void rtti_string_copy(const rtti_t *type, const void *src, void *dst)
@@ -152,7 +152,7 @@ void rtti_string_decode(const rtti_t *type, const char **buf, void *data)
 
 void rtti_string_free(const rtti_t *type, void *data)
 {
-	char *const str = CAST(char *, data);
+	char *str = CAST(char *, data);
 
 	if (str) {
 		mem_free(str);

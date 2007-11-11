@@ -23,7 +23,6 @@ add_definitions(
 	-Wundef
 	-Wcast-align
 	-Wpointer-arith
-	-Wwrite-strings
 	-Winline
 	-Wredundant-decls
 	-Wno-unused-parameter

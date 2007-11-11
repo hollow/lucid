@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
+#include <netinet/in.h>
 
 #include "rtti.h"
 
@@ -45,3 +46,16 @@ rtti_t rtti_int64_ptype   = RTTI_POINTER_TYPE(&rtti_int64_type);
 rtti_t rtti_uint64_ptype  = RTTI_POINTER_TYPE(&rtti_uint64_type);
 rtti_t rtti_string_ptype  = RTTI_POINTER_TYPE(&rtti_string_type);
 rtti_t rtti_string_type   = RTTI_STRING_TYPE(1);
+
+rtti_t rtti_inaddr_type = {
+	sizeof(struct in_addr),
+	"inaddr",
+	RTTI_TYPE_PRIMITIVE,
+	rtti_region_init,
+	rtti_region_copy,
+	rtti_notsup_equal,
+	rtti_inaddr_encode,
+	rtti_inaddr_decode,
+	rtti_nothing_free,
+	{ { NULL }, { NULL }, { NULL } }
+};

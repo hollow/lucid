@@ -4,6 +4,7 @@ SET(lucid_HDRS
 	bitmap.h
 	char.h
 	chroot.h
+	error.h
 	exec.h
 	flist.h
 	list.h
