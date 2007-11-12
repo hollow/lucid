@@ -47,15 +47,15 @@ rtti_t rtti_uint64_ptype  = RTTI_POINTER_TYPE(&rtti_uint64_type);
 rtti_t rtti_string_ptype  = RTTI_POINTER_TYPE(&rtti_string_type);
 rtti_t rtti_string_type   = RTTI_STRING_TYPE(1);
 
-rtti_t rtti_inaddr_type = {
+rtti_t rtti_in_addr_type = {
 	sizeof(struct in_addr),
-	"inaddr",
+	"in_addr",
 	RTTI_TYPE_PRIMITIVE,
 	rtti_region_init,
 	rtti_region_copy,
 	rtti_notsup_equal,
-	rtti_inaddr_encode,
-	rtti_inaddr_decode,
+	rtti_in_addr_encode,
+	rtti_in_addr_decode,
 	rtti_nothing_free,
 	{ { NULL }, { NULL }, { NULL } }
 };
@@ -69,6 +69,19 @@ rtti_t rtti_port_type = {
 	rtti_region_equal,
 	rtti_port_encode,
 	rtti_port_decode,
+	rtti_nothing_free,
+	{ { (void *)(0) }, { NULL }, { NULL } }
+};
+
+rtti_t rtti_sockaddr_in_type = {
+	sizeof(uint16_t),
+	"sockaddr_in",
+	RTTI_TYPE_PRIMITIVE,
+	rtti_region_init,
+	rtti_region_copy,
+	rtti_region_equal,
+	rtti_sockaddr_in_encode,
+	rtti_sockaddr_in_decode,
 	rtti_nothing_free,
 	{ { (void *)(0) }, { NULL }, { NULL } }
 };

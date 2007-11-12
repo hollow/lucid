@@ -81,7 +81,9 @@ extern error_t *__lucid_error;
 
 #define error_do error_dof(NULL)
 
-#define error_dump() error_print_trace(__lucid_error, STDERR_FILENO)
+#define error_dump(fd) error_print_trace(__lucid_error, fd)
+
+#define error_clear() error_free(__lucid_error)
 
 #endif
 

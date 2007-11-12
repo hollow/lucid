@@ -44,7 +44,7 @@ bool rtti_string_equal(const rtti_t *type, const void *a, const void *b)
 {
 	const char *s1 = CAST(const char *, a);
 	const char *s2 = CAST(const char *, b);
-	const int asnull  = type->args[1].i;
+	const int asnull  = type->args[0].i;
 
 	if (!asnull) {
 		if (!s1) s1 = "";
@@ -57,7 +57,7 @@ bool rtti_string_equal(const rtti_t *type, const void *a, const void *b)
 char *rtti_string_encode(const rtti_t *type, const void *data)
 {
 	const char *const s = CAST(const char *, data);
-	const int asnull  = type->args[1].i;
+	const int asnull  = type->args[0].i;
 
 	if (!s) {
 		if (asnull)
@@ -131,7 +131,7 @@ char *rtti_string_parse(const char **buf)
 
 void rtti_string_decode(const rtti_t *type, const char **buf, void *data)
 {
-	const int asnull  = type->args[1].i;
+	const int asnull  = type->args[0].i;
 
 	SKIP_SPACE(buf);
 
