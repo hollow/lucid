@@ -21,6 +21,7 @@
 #include "mem.h"
 #include "rtti.h"
 #include "str.h"
+#include "stralloc.h"
 
 /* array length is a read-only field */
 static const rtti_t rtti_type_array_length = {
@@ -240,35 +241,6 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap)
 	return type;
 }
 
-void rtti_get_parser_offset(const char *orig, const char *parsed,
-		int *_line, int *_column)
-{
-	int line = 1, column = 1;
-	const char *origp = orig;
-
-	while (origp < parsed) {
-		switch (*origp) {
-		case '\n':
-			line++;
-			column = 1;
-			break;
-
-		case '\t':
-			column += 4;
-			break;
-
-		default:
-			column++;
-			break;
-		}
-
-		origp++;
-	}
-
-	*_line = line;
-	*_column = column;
-}
-
 void rtti_region_init(const rtti_t *type, void *data)
 {
 	mem_set(data, 0, type->size);
@@ -318,4 +290,111 @@ void rtti_notsup_decode(const rtti_t *type, const char **buf, void *data)
 
 void rtti_nothing_free(const rtti_t *type, void *data)
 {
+}
+
+void rtti_get_parser_offset(const char *orig, const char *parsed,
+		int *_line, int *_column)
+{
+	int line = 1, column = 1;
+	const char *origp = orig;
+
+	while (origp < parsed) {
+		switch (*origp) {
+		case '\n':
+			line++;
+			column = 1;
+			break;
+
+		case '\t':
+			column += 4;
+			break;
+
+		default:
+			column++;
+			break;
+		}
+
+		origp++;
+	}
+
+	*_line = line;
+	*_column = column;
+}
+
+#define ADD_INDENTION(sa) do { \
+	int s = indent; \
+	while (s--) stralloc_cats(sa, "\t"); \
+} while (0)
+
+char *rtti_beautify(const char *str)
+{
+	int i, indent = 0, n = str_len(str);
+	bool escape = false, instring = false;
+	stralloc_t _sa, *sa = &_sa;
+
+	stralloc_init(sa);
+
+	for (i = 0; i < n; i++) {
+		if (instring) {
+			if (escape) {
+				stralloc_catb(sa, &str[i], 1);
+				escape = false;
+			}
+
+			else if (str[i] == '\\') {
+				stralloc_cats(sa, "\\");
+				escape = true;
+			}
+
+			else if (str[i] == '"') {
+				stralloc_cats(sa, "\"");
+				instring = false;
+			}
+
+			else {
+				stralloc_catb(sa, &str[i], 1);
+			}
+
+			continue;
+		}
+
+		switch (str[i]) {
+		case '{':
+		case '[':
+			stralloc_catb(sa, &str[i], 1);
+			stralloc_cats(sa, "\n");
+			indent++;
+			ADD_INDENTION(sa);
+			break;
+
+		case '}':
+		case ']':
+			stralloc_cats(sa, "\n");
+			indent--;
+			ADD_INDENTION(sa);
+			stralloc_catb(sa, &str[i], 1);
+			break;
+
+		case ':':
+			stralloc_cats(sa, " : ");
+			break;
+
+		case ',':
+			stralloc_cats(sa, ",\n");
+			ADD_INDENTION(sa);
+			break;
+
+		case '"':
+			instring = true;
+			stralloc_cats(sa, "\"");
+			break;
+
+		default:
+			stralloc_catb(sa, &str[i], 1);
+		}
+	}
+
+	char *buf = stralloc_finalize(sa);
+	stralloc_free(sa);
+	return buf;
 }

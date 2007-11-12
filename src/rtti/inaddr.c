@@ -25,7 +25,7 @@
 
 #include "internal.h"
 
-char *rtti_inaddr_encode(const rtti_t *type, const void *data)
+char *rtti_in_addr_encode(const rtti_t *type, const void *data)
 {
 	struct in_addr inaddr = CAST(struct in_addr, data);
 	char *buf = NULL;
@@ -33,7 +33,7 @@ char *rtti_inaddr_encode(const rtti_t *type, const void *data)
 	return buf;
 }
 
-void rtti_inaddr_decode(const rtti_t *type, const char **buf, void *data)
+void rtti_in_addr_decode(const rtti_t *type, const char **buf, void *data)
 {
 	struct in_addr *inaddr = &(CAST(struct in_addr, data));
 
@@ -66,4 +66,42 @@ void rtti_port_decode(const rtti_t *type, const char **buf, void *data)
 	uint16_t *port = &(CAST(uint16_t, data));
 	rtti_int_decode(type, buf, port);
 	*port = htons(*port);
+}
+
+char *rtti_sockaddr_in_encode(const rtti_t *type, const void *data)
+{
+	struct sockaddr_in addr = CAST(struct sockaddr_in, data);
+	char *buf = NULL;
+	asprintf(&buf, "\"%s:%d\"", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
+	return buf;
+}
+
+void rtti_sockaddr_in_decode(const rtti_t *type, const char **buf, void *data)
+{
+	struct sockaddr_in *inaddr = &(CAST(struct sockaddr_in, data));
+
+	SKIP_SPACE(buf);
+
+	if (str_cmpn(*buf, "null", 4) == 0) {
+		inaddr->sin_addr.s_addr = INADDR_ANY;
+		inaddr->sin_port = 0;
+		*buf += 4;
+		return;
+	}
+
+	char *ip = rtti_string_parse(buf);
+	error_do return;
+
+	char *port = str_rchr(ip, ':', str_len(ip));
+	if (port)
+		*port++ = '\0';
+
+	if (inet_aton(ip, &(inaddr->sin_addr)) < 0) {
+		error_set(errno, "failed to convert ip address");
+	}
+
+	rtti_decode(&rtti_uint16_type, NULL, (const char **)&port, &(inaddr->sin_port));
+	inaddr->sin_port = htons(inaddr->sin_port);
+
+	mem_free(ip);
 }

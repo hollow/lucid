@@ -86,6 +86,8 @@ const rtti_t *rtti_find(const rtti_t *type, const char *name, void **datap);
 void rtti_get_parser_offset(const char *orig, const char *parsed,
 		int *_line, int *_column);
 
+char *rtti_beautify(const char *str);
+
 char *rtti_string_parse(const char **str);
 
 /* generic memory region type functions */
@@ -365,11 +367,16 @@ list_t *rtti_list_next(const rtti_t *type, const void *entry);
 void rtti_list_add(const rtti_t *type, void *entry, void *head);
 
 /* various other types */
-extern rtti_encode_t rtti_inaddr_encode;
-extern rtti_decode_t rtti_inaddr_decode;
-extern rtti_t rtti_inaddr_type;
+extern rtti_encode_t rtti_in_addr_encode;
+extern rtti_decode_t rtti_in_addr_decode;
+extern rtti_t rtti_in_addr_type;
 
 extern rtti_encode_t rtti_port_encode;
 extern rtti_decode_t rtti_port_decode;
 extern rtti_t rtti_port_type;
+
+extern rtti_encode_t rtti_sockaddr_in_encode;
+extern rtti_decode_t rtti_sockaddr_in_decode;
+extern rtti_t rtti_sockaddr_in_type;
+
 #endif
