@@ -1,9 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-add_executable(addr addr.c)
-target_link_libraries(addr ucid)
-add_test(addr addr)
-
 add_executable(base64 base64.c)
 target_link_libraries(base64 ucid)
 add_test(base64 base64)

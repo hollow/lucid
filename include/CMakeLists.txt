@@ -1,5 +1,4 @@
 SET(lucid_HDRS
-	addr.h
 	base64.h
 	bitmap.h
 	char.h

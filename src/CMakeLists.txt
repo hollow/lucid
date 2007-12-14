@@ -22,15 +22,6 @@ check_include_file(unistd.h     HAVE_UNISTD_H)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-set(ADDR_SRCS
-	addr/addr_from_str.c
-	addr/addr_hton.c
-	addr/addr_htos.c
-	addr/addr_ntoh.c
-	addr/addr_stoh.c
-	addr/addr_to_str.c
-)
-
 set(CHROOT_SRCS
 	chroot/chroot_fd.c
 	chroot/chroot_mkdirp.c
@@ -71,7 +62,6 @@ set(WHIRLPOOL_SRCS
 )
 
 set(lucid_SRCS
-	${ADDR_SRCS}
 	bitmap.c
 	base64.c
 	${CHROOT_SRCS}
