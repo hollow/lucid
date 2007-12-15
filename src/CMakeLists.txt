@@ -36,7 +36,6 @@ set(EXEC_SRCS
 )
 
 set(RTTI_SRCS
-	rtti/array.c
 	rtti/bool.c
 	rtti/data.c
 	rtti/flist.c

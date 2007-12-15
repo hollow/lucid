@@ -26,8 +26,7 @@
 
 void rtti_string_init(const rtti_t *type, void *data)
 {
-	const char *s = CAST(const char *, data);
-	s = NULL;
+	CAST(const char *, data) = NULL;
 }
 
 void rtti_string_copy(const rtti_t *type, const void *src, void *dst)
@@ -36,7 +35,6 @@ void rtti_string_copy(const rtti_t *type, const void *src, void *dst)
 	error_do return;
 
 	type->decode(type, &buf, dst);
-	mem_free((char *)buf);
 	error_do return;
 }
 
@@ -97,7 +95,6 @@ char *rtti_string_parse(const char **buf)
 			case '/':
 			case '\\': break;
 			default:
-				stralloc_free(rbuf);
 				error_set(EILSEQ, "illegal escape sequence near '%.16s'",
 						*buf);
 				return NULL;
@@ -118,15 +115,12 @@ char *rtti_string_parse(const char **buf)
 	}
 
 	SKIP_CHAR(buf, '"') {
-		stralloc_free(rbuf);
 		error_set(EILSEQ,
 				"expected QUOTE near '%.16s'", *buf);
 		return NULL;
 	}
 
-	char *str = stralloc_finalize(rbuf);
-	stralloc_free(rbuf);
-	return str;
+	return stralloc_finalize(rbuf);
 }
 
 void rtti_string_decode(const rtti_t *type, const char **buf, void *data)
@@ -148,14 +142,4 @@ void rtti_string_decode(const rtti_t *type, const char **buf, void *data)
 	error_do return;
 
 	CAST(char *, data) = sbuf;
-}
-
-void rtti_string_free(const rtti_t *type, void *data)
-{
-	char *str = CAST(char *, data);
-
-	if (str) {
-		mem_free(str);
-		CAST(char *, data) = NULL;
-	}
 }

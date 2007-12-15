@@ -18,72 +18,82 @@
 #include "error.h"
 #include "mem.h"
 #include "rtti.h"
+#include "str.h"
 
 #include "internal.h"
 
 void rtti_pointer_init(const rtti_t *type, void *data)
 {
-	const rtti_t *const ptype = type->args[0].v;
-	void *pdata;
-
-	pdata = mem_alloc(ptype->size);
-
-	ptype->init(ptype, pdata);
-	error_do return;
-
-	CAST(void *, data) = pdata;
+	CHECK_TYPE(POINTER);
+	CAST(void *, data) = NULL;
 }
 
 void rtti_pointer_copy(const rtti_t *type, const void *src, void *dst)
 {
-	const rtti_t *const ptype = type->args[0].v;
-	void *const src_pdata = CAST(void *, src);
+	const rtti_t *ptype = type->args[0].v;
+	const void *src_pdata = CAST(const void *, src);
 	void *dst_pdata;
 
-	dst_pdata = mem_alloc(ptype->size);
+	CHECK_TYPE(POINTER);
 
-	ptype->copy(ptype, src_pdata, dst_pdata);
-	error_do return;
+	if (src_pdata == NULL)
+		dst_pdata = NULL;
+
+	else {
+		dst_pdata = mem_alloc(ptype->size);
+		ptype->copy(ptype, src_pdata, dst_pdata);
+		error_do return;
+	}
 
 	CAST(void *, dst) = dst_pdata;
 }
 
 bool rtti_pointer_equal(const rtti_t *type, const void *a, const void *b)
 {
-	const rtti_t *const ptype = type->args[0].v;
-	void *const pdata1 = CAST(void *, a);
-	void *const pdata2 = CAST(void *, b);
+	const rtti_t *ptype = type->args[0].v;
+	const void *pdata1 = CAST(const void *, a);
+	const void *pdata2 = CAST(const void *, b);
 
-	return ptype->equal(ptype, pdata1, pdata2);
+	CHECK_TYPE(POINTER);
+
+	if (pdata1 && pdata2)
+		return ptype->equal(ptype, pdata1, pdata2);
+	else if (!pdata1 && !pdata2)
+		return true;
+	else
+		return false;
 }
 
 char *rtti_pointer_encode(const rtti_t *type, const void *data)
 {
-	const rtti_t *const ptype = type->args[0].v;
-	void *const pdata = CAST(void *, data);
+	const rtti_t *ptype = type->args[0].v;
+	const void *pdata = CAST(const void *, data);
 
-	return ptype->encode(ptype, pdata);
+	CHECK_TYPE(POINTER);
+
+	if (pdata)
+		return ptype->encode(ptype, pdata);
+
+	return str_dup("null");
 }
 
 void rtti_pointer_decode(const rtti_t *type, const char **buf, void *data)
 {
-	const rtti_t *const ptype = type->args[0].v;
+	const rtti_t *ptype = type->args[0].v;
 	void *pdata;
 
-	pdata = mem_alloc(ptype->size);
+	CHECK_TYPE(POINTER);
 
-	ptype->decode(ptype, buf, pdata);
-	error_do return;
+	if (str_cmpn(*buf, "null", 4) == 0) {
+		pdata = NULL;
+		*buf += 4;
+	}
+
+	else {
+		pdata = mem_alloc(ptype->size);
+		ptype->decode(ptype, buf, pdata);
+		error_do return;
+	}
 
 	CAST(void *, data) = pdata;
-}
-
-void rtti_pointer_free(const rtti_t *type, void *data)
-{
-	const rtti_t *const ptype = type->args[0].v;
-	void *const pdata = CAST(void *, data);
-
-	ptype->uninit(ptype, pdata);
-	mem_free(pdata);
-	CAST(void *, data) = NULL;
 }

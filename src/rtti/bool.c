@@ -47,7 +47,7 @@ bool rtti_bool_equal(const rtti_t *type, const void *a, const void *b)
 
 char *rtti_bool_encode(const rtti_t *type, const void *data)
 {
-	if(rtti_bool_reduce(type, data))
+	if (rtti_bool_reduce(type, data))
 		return str_dup("true");
 
 	return str_dup("false");

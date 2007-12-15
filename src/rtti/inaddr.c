@@ -50,8 +50,6 @@ void rtti_in_addr_decode(const rtti_t *type, const char **buf, void *data)
 	if (inet_aton(sbuf, inaddr) < 0) {
 		error_set(errno, "failed to convert ip address");
 	}
-
-	mem_free(sbuf);
 }
 
 char *rtti_port_encode(const rtti_t *type, const void *data)
@@ -100,8 +98,6 @@ void rtti_sockaddr_in_decode(const rtti_t *type, const char **buf, void *data)
 		error_set(errno, "failed to convert ip address");
 	}
 
-	rtti_decode(&rtti_uint16_type, NULL, (const char **)&port, &(inaddr->sin_port));
+	rtti_decode(&rtti_uint16_type, (const char **)&port, &(inaddr->sin_port));
 	inaddr->sin_port = htons(inaddr->sin_port);
-
-	mem_free(ip);
 }

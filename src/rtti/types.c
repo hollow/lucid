@@ -56,7 +56,6 @@ rtti_t rtti_in_addr_type = {
 	rtti_notsup_equal,
 	rtti_in_addr_encode,
 	rtti_in_addr_decode,
-	rtti_nothing_free,
 	{ { NULL }, { NULL }, { NULL } }
 };
 
@@ -69,7 +68,6 @@ rtti_t rtti_port_type = {
 	rtti_region_equal,
 	rtti_port_encode,
 	rtti_port_decode,
-	rtti_nothing_free,
 	{ { (void *)(0) }, { NULL }, { NULL } }
 };
 
@@ -82,6 +80,5 @@ rtti_t rtti_sockaddr_in_type = {
 	rtti_region_equal,
 	rtti_sockaddr_in_encode,
 	rtti_sockaddr_in_decode,
-	rtti_nothing_free,
 	{ { (void *)(0) }, { NULL }, { NULL } }
 };

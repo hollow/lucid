@@ -24,64 +24,58 @@
 
 #include "internal.h"
 
-#define IDX(D, F) ((void *)((char *)(D) + (F)->offset))
-#define ODX(L, F) ((void *)((char *)(L) - (F)->offset))
+#define LISTP(T, D) ((void *)((char *)(D) + (T)->args[2].i))
+#define LISTC(T, D) ((void *)((char *)(D) - (T)->args[2].i))
+
+#define MEMBP(F, D) ((void *)((char *)(D) + (F)->offset))
 
 void rtti_list_init(const rtti_t *type, void *data)
 {
-	const rtti_field_t *field;
-	list_t *list = data;
-
 	CHECK_TYPE(LIST);
 
 	mem_set(data, 0, type->size);
 
+	const rtti_field_t *field;
 	for (field = type->args[0].v; field->name != NULL; field++) {
-		field->type->init(field->type, IDX(data, field));
-		error_dof("failed to initialize list (%s)", field->name) {
-			while (field-- != type->args[0].v)
-				field->type->uninit(field->type, IDX(data, field));
-			mem_set(data, 0, type->size);
+		void *memb = MEMBP(field, data);
+		field->type->init(field->type, memb);
+		error_dof("failed to initialize list (%s)", field->name)
 			return;
-		}
 	}
 
+	list_t *list = LISTP(type, data);
 	INIT_LIST_HEAD(list);
 }
 
 void rtti_list_copy(const rtti_t *type, const void *src, void *dst)
 {
-	const rtti_field_t *field;
-	const list_t *shead = src, *pos = shead;
-
 	CHECK_TYPE(LIST);
 
-	while ((pos = rtti_list_next(type, pos)) != shead) {
-		src = pos;
+	rtti_list_init(type, dst);
+
+	const list_t *shead = LISTP(type, src);
+	const list_t *pos = shead;
+
+	list_for_each(pos, shead) {
+		src = LISTC(type, pos);
 
 		void *entry = mem_alloc(type->size);
 		type->init(type, entry);
-		error_dof("failed to initialize list node") {
-			mem_free(entry);
-			rtti_list_free(type, dst);
+		error_dof("failed to initialize list node")
 			return;
-		}
 
+		const rtti_field_t *field;
 		for (field = type->args[0].v; field->name != NULL; field++) {
-			const void *const sdata = IDX(src, field);
-			void *const ddata = IDX(entry, field);
+			const void *smemb = MEMBP(field, src);
+			void *dmemb = MEMBP(field, entry);
 
-			field->type->copy(field->type, sdata, ddata);
-			error_dof("failed to copy list node (%s)", field->name) {
-				mem_free(entry);
+			field->type->copy(field->type, smemb, dmemb);
+			error_dof("failed to copy list node (%s)", field->name)
 				break;
-			}
 		}
 
-		error_dof("failed to copy list (%s)", type->name) {
-			rtti_list_free(type, dst);
+		error_dof("failed to copy list (%s)", type->name)
 			return;
-		}
 
 		rtti_list_add(type, entry, dst);
 	}
@@ -89,63 +83,51 @@ void rtti_list_copy(const rtti_t *type, const void *src, void *dst)
 
 char *rtti_list_encode(const rtti_t *type, const void *data)
 {
-	const rtti_t *ftype, *ktype = &rtti_string_type;
-	const rtti_field_t *field;
-	const list_t *head = data, *pos = head;
-	stralloc_t _rbuf, *rbuf = &_rbuf;
-	char *fbuf, *buf = NULL;
-
 	CHECK_TYPE(LIST);
 
-	stralloc_init(rbuf);
-	stralloc_cats(rbuf, "[");
+	stralloc_t _buf, *buf = &_buf;
+	stralloc_init(buf);
+	stralloc_cats(buf, "[");
 
-	while ((pos = rtti_list_next(type, pos)) != head) {
-		data = pos;
+	const list_t *head = LISTP(type, data);
+	const list_t *pos;
 
-		stralloc_cats(rbuf, "{");
+	list_for_each(pos, head) {
+		data = LISTC(type, pos);
 
+		stralloc_cats(buf, "{");
+
+		const rtti_field_t *field;
 		for (field = type->args[0].v; field->name != NULL; field++) {
-			ftype = field->type;
+			const rtti_t *ktype = &rtti_string_type;
+			void *memb = MEMBP(field, data);
 
-			fbuf = ktype->encode(ktype, &field->name);
+			char *kbuf = ktype->encode(ktype, &field->name);
 			error_dof("failed to encode list node (%s)", field->name)
-				goto out;
+				return NULL;
 
-			stralloc_catm(rbuf, fbuf, ":", NULL);
-			mem_free(fbuf);
-
-			fbuf = field->type->encode(ftype, IDX(data, field));
+			char *vbuf = field->type->encode(field->type, memb);
 			error_dof("failed to encode list node (%s)", field->name)
-				goto out;
+				return NULL;
 
-			stralloc_cats(rbuf, fbuf);
-			mem_free(fbuf);
+			stralloc_catm(buf, kbuf, ":", vbuf, NULL);
 
 			if ((field + 1)->name != NULL)
-				stralloc_cats(rbuf, ",");
+				stralloc_cats(buf, ",");
 		}
 
-		stralloc_cats(rbuf, "}");
+		stralloc_cats(buf, "}");
 
-		if (rtti_list_next(type, pos) != head)
-			stralloc_cats(rbuf, ",");
+		if (pos->next != head)
+			stralloc_cats(buf, ",");
 	}
 
-	stralloc_cats(rbuf, "]");
-	buf = stralloc_finalize(rbuf);
-
-out:
-	stralloc_free(rbuf);
-	return buf;
+	stralloc_cats(buf, "]");
+	return stralloc_finalize(buf);
 }
 
 void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 {
-	const rtti_t *ftype, *ktype = &rtti_string_type;
-	void *head = data, *fdata;
-	const char *key;
-
 	CHECK_TYPE(LIST);
 
 	SKIP_SPACE(buf);
@@ -161,35 +143,39 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 			return;
 		}
 
-		data = mem_alloc(type->size);
+		void *entry = mem_alloc(type->size);
+		type->init(type, entry);
+		error_dof("failed to initialize list node")
+			return;
 
 		while (1) {
-			ktype->decode(ktype, buf, &key);
+			const rtti_t *ktype = &rtti_string_type;
+			const char *kbuf;
+			ktype->decode(ktype, buf, &kbuf);
 			error_dof("failed to decode list node key")
 				break;
 
-			fdata = data;
+			const rtti_field_t *field;
+			for (field = type->args[0].v; field->name != NULL; field++) {
+				if (str_equal(field->name, kbuf))
+					break;
+			}
 
-			ftype = rtti_find(type, key, &fdata);
-			error_do {
-				ktype->uninit(ktype, &key);
+			if (field->name == NULL) {
+				error_set(ENOENT, "unknown list node member (%s)", kbuf);
 				break;
 			}
 
 			SKIP_SPACE(buf);
 			SKIP_CHAR(buf, ':') {
 				error_set(EILSEQ, "expected COLON near '%.16s'", *buf);
-				ktype->uninit(ktype, &key);
 				break;
 			}
 
-			ftype->decode(ftype, buf, fdata);
-			error_dof("failed to decode list node member %s (%s)", key, ftype->name) {
-				ktype->uninit(ktype, &key);
+			void *memb = MEMBP(field, data);
+			field->type->decode(field->type, buf, memb);
+			error_dof("failed to decode list node member (%s)", kbuf)
 				break;
-			}
-
-			ktype->uninit(ktype, &key);
 
 			SKIP_SPACE(buf);
 			SKIP_CHAR(buf, ',') {
@@ -197,10 +183,8 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 			}
 		}
 
-		error_dof("failed to decode list node") {
-			mem_free(data);
+		error_dof("failed to decode list node (%s)", type->name)
 			return;
-		}
 
 		SKIP_SPACE(buf);
 		SKIP_CHAR(buf, '}') {
@@ -208,7 +192,7 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 			return;
 		}
 
-		rtti_list_add(type, data, head);
+		rtti_list_add(type, entry, data);
 
 		SKIP_SPACE(buf);
 		SKIP_CHAR(buf, ',') {
@@ -223,53 +207,6 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 	}
 }
 
-void rtti_list_free(const rtti_t *type, void *data)
-{
-	const rtti_field_t *field;
-	list_t *pos, *tmp, *head = data;
-
-	CHECK_TYPE(LIST);
-
-	pos = rtti_list_next(type, head);
-	tmp = rtti_list_next(type, pos);
-
-	while (pos != head) {
-		data = pos;
-
-		for (field = type->args[0].v; field->name != NULL; field++)
-			field->type->uninit(field->type, IDX(data, field));
-
-		list_del(data);
-		mem_set(data, 0, type->size);
-		mem_free(data);
-
-		pos = tmp;
-		tmp = rtti_list_next(type, pos);
-	}
-}
-
-list_t *rtti_list_prev(const rtti_t *type, const void *_entry)
-{
-	const int tail = type->args[1].i;
-	const list_t *entry = _entry;
-
-	if (tail)
-		return entry->prev;
-	else
-		return entry->next;
-}
-
-list_t *rtti_list_next(const rtti_t *type, const void *_entry)
-{
-	const int tail = type->args[1].i;
-	const list_t *entry = _entry;
-
-	if (tail)
-		return entry->next;
-	else
-		return entry->prev;
-}
-
 void rtti_list_add(const rtti_t *type, void *entry, void *head)
 {
 	const int tail = type->args[1].i;
@@ -278,4 +215,16 @@ void rtti_list_add(const rtti_t *type, void *entry, void *head)
 		list_add_tail(entry, head);
 	else
 		list_add(entry, head);
+}
+
+size_t rtti_list_length(const rtti_t *type, const void *data)
+{
+	size_t length = 0;
+	list_t *head = LISTP(type, data);
+	list_t *pos;
+
+	list_for_each(pos, head)
+		length++;
+
+	return length;
 }

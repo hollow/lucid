@@ -33,8 +33,6 @@ char *rtti_flist32_encode(const rtti_t *type, const void *data)
 	char *buf, *str = flist32_encode(list, flag32, clmod, delim);
 
 	_lucid_asprintf(&buf, "\"%s\"", str);
-
-	mem_free(str);
 	return buf;
 }
 
@@ -47,8 +45,6 @@ char *rtti_flist64_encode(const rtti_t *type, const void *data)
 	char *buf, *str = flist64_encode(list, flag64, clmod, delim);
 
 	_lucid_asprintf(&buf, "\"%s\"", str);
-
-	mem_free(str);
 	return buf;
 }
 
