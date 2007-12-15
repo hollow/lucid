@@ -1,27 +1,5 @@
 include(CheckIncludeFile)
 
-check_include_file(dirent.h     HAVE_DIRENT_H)
-check_include_file(errno.h      HAVE_ERRNO_H)
-check_include_file(fcntl.h      HAVE_FCNTL_H)
-check_include_file(netinet/in.h HAVE_NETINET_IN_H)
-check_include_file(setjmp.h     HAVE_SETJMP_H)
-check_include_file(signal.h     HAVE_SIGNAL_H)
-check_include_file(stdarg.h     HAVE_STDARG_H)
-check_include_file(stddef.h     HAVE_STDDEF_H)
-check_include_file(stdint.h     HAVE_STDINT_H)
-check_include_file(stdlib.h     HAVE_STDLIB_H)
-check_include_file(string.h     HAVE_STRING_H)
-check_include_file(syslog.h     HAVE_SYSLOG_H)
-check_include_file(sys/mman.h   HAVE_SYS_MMAN_H)
-check_include_file(sys/socket.h HAVE_SYS_SOCKET_H)
-check_include_file(sys/stat.h   HAVE_SYS_STAT_H)
-check_include_file(sys/types.h  HAVE_SYS_TYPES_H)
-check_include_file(sys/wait.h   HAVE_SYS_WAIT_H)
-check_include_file(time.h       HAVE_TIME_H)
-check_include_file(unistd.h     HAVE_UNISTD_H)
-
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
 set(CHROOT_SRCS
 	chroot/chroot_fd.c
 	chroot/chroot_mkdirp.c
@@ -39,7 +17,6 @@ set(RTTI_SRCS
 	rtti/bool.c
 	rtti/data.c
 	rtti/flist.c
-	rtti/float.c
 	rtti/inaddr.c
 	rtti/int.c
 	rtti/internal.h
@@ -79,8 +56,41 @@ set(lucid_SRCS
 	${WHIRLPOOL_SRCS}
 )
 
+check_include_file(dirent.h     HAVE_DIRENT_H)
+check_include_file(errno.h      HAVE_ERRNO_H)
+check_include_file(fcntl.h      HAVE_FCNTL_H)
+check_include_file(netinet/in.h HAVE_NETINET_IN_H)
+check_include_file(setjmp.h     HAVE_SETJMP_H)
+check_include_file(signal.h     HAVE_SIGNAL_H)
+check_include_file(stdarg.h     HAVE_STDARG_H)
+check_include_file(stddef.h     HAVE_STDDEF_H)
+check_include_file(stdint.h     HAVE_STDINT_H)
+check_include_file(stdlib.h     HAVE_STDLIB_H)
+check_include_file(string.h     HAVE_STRING_H)
+check_include_file(syslog.h     HAVE_SYSLOG_H)
+check_include_file(sys/mman.h   HAVE_SYS_MMAN_H)
+check_include_file(sys/socket.h HAVE_SYS_SOCKET_H)
+check_include_file(sys/stat.h   HAVE_SYS_STAT_H)
+check_include_file(sys/types.h  HAVE_SYS_TYPES_H)
+check_include_file(sys/wait.h   HAVE_SYS_WAIT_H)
+check_include_file(time.h       HAVE_TIME_H)
+check_include_file(unistd.h     HAVE_UNISTD_H)
+
+find_path(FFI_INCLUDE_DIR ffi.h /usr/include/libffi /usr/local/include/libffi)
+find_library(FFI_LIBRARY NAMES ffi PATHS libffi)
+
+if (FFI_INCLUDE_DIR AND FFI_LIBRARY)
+	message(STATUS "Found libffi: ${FFI_LIBRARY}")
+else (FFI_INCLUDE_DIR AND FFI_LIBRARY)
+	message(FATAL_ERROR "Could not find libffi: ${FFI_LIBRARY}")
+endif(FFI_INCLUDE_DIR AND FFI_LIBRARY)
+
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${FFI_INCLUDE_DIR})
+
 add_library(ucid SHARED ${lucid_SRCS})
 set_target_properties(ucid PROPERTIES VERSION "0.0.0" SOVERSION "0")
+target_link_libraries(ucid ${FFI_LIBRARY})
 
 install(
 	TARGETS ucid

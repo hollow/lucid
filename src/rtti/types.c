@@ -18,24 +18,18 @@
 
 #include "rtti.h"
 
-rtti_t rtti_bool_type     = RTTI_BOOL_TYPE(int);
+rtti_t rtti_bool_type     = RTTI_BOOL_TYPE(uint8);
 rtti_t rtti_data_type     = RTTI_DATA_TYPE;
-rtti_t rtti_float_type    = RTTI_FLOAT_TYPE(float);
-rtti_t rtti_double_type   = RTTI_FLOAT_TYPE(double);
-rtti_t rtti_ldouble_type  = RTTI_FLOAT_TYPE(long double);
-rtti_t rtti_int8_type     = RTTI_INT_TYPE(int8_t,   1);
-rtti_t rtti_uint8_type    = RTTI_INT_TYPE(uint8_t,  0);
-rtti_t rtti_int16_type    = RTTI_INT_TYPE(int16_t,  1);
-rtti_t rtti_uint16_type   = RTTI_INT_TYPE(uint16_t, 0);
-rtti_t rtti_int32_type    = RTTI_INT_TYPE(int32_t,  1);
-rtti_t rtti_uint32_type   = RTTI_INT_TYPE(uint32_t, 0);
-rtti_t rtti_int64_type    = RTTI_INT_TYPE(int64_t,  1);
-rtti_t rtti_uint64_type   = RTTI_INT_TYPE(uint64_t, 0);
+rtti_t rtti_int8_type     = RTTI_INT_TYPE(int8,   1);
+rtti_t rtti_uint8_type    = RTTI_INT_TYPE(uint8,  0);
+rtti_t rtti_int16_type    = RTTI_INT_TYPE(int16,  1);
+rtti_t rtti_uint16_type   = RTTI_INT_TYPE(uint16, 0);
+rtti_t rtti_int32_type    = RTTI_INT_TYPE(int32,  1);
+rtti_t rtti_uint32_type   = RTTI_INT_TYPE(uint32, 0);
+rtti_t rtti_int64_type    = RTTI_INT_TYPE(int64,  1);
+rtti_t rtti_uint64_type   = RTTI_INT_TYPE(uint64, 0);
 rtti_t rtti_bool_ptype    = RTTI_POINTER_TYPE(&rtti_bool_type);
 rtti_t rtti_data_ptype    = RTTI_POINTER_TYPE(&rtti_data_type);
-rtti_t rtti_float_ptype   = RTTI_POINTER_TYPE(&rtti_float_type);
-rtti_t rtti_double_ptype  = RTTI_POINTER_TYPE(&rtti_double_type);
-rtti_t rtti_ldouble_ptype = RTTI_POINTER_TYPE(&rtti_ldouble_type);
 rtti_t rtti_int8_ptype    = RTTI_POINTER_TYPE(&rtti_int8_type);
 rtti_t rtti_uint8_ptype   = RTTI_POINTER_TYPE(&rtti_uint8_type);
 rtti_t rtti_int16_ptype   = RTTI_POINTER_TYPE(&rtti_int16_type);
@@ -51,6 +45,7 @@ rtti_t rtti_in_addr_type = {
 	sizeof(struct in_addr),
 	"in_addr",
 	RTTI_TYPE_PRIMITIVE,
+	&ffi_type_pointer,
 	rtti_region_init,
 	rtti_region_copy,
 	rtti_notsup_equal,
@@ -61,8 +56,9 @@ rtti_t rtti_in_addr_type = {
 
 rtti_t rtti_port_type = {
 	sizeof(uint16_t),
-	"inaddr",
+	"port",
 	RTTI_TYPE_PRIMITIVE,
+	&ffi_type_uint16,
 	rtti_region_init,
 	rtti_region_copy,
 	rtti_region_equal,
@@ -72,9 +68,10 @@ rtti_t rtti_port_type = {
 };
 
 rtti_t rtti_sockaddr_in_type = {
-	sizeof(uint16_t),
+	sizeof(struct sockaddr_in),
 	"sockaddr_in",
 	RTTI_TYPE_PRIMITIVE,
+	&ffi_type_pointer,
 	rtti_region_init,
 	rtti_region_copy,
 	rtti_region_equal,

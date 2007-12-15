@@ -20,6 +20,8 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+#include <ffi.h>
+
 #ifdef _LUCID_BUILD_
 #include "list.h"
 #else
@@ -48,6 +50,7 @@ struct rtti_s {
 	size_t size;
 	const char *name;
 	rtti_class_t tclass;
+	ffi_type *ftype;
 
 	rtti_init_t *init;
 	rtti_copy_t *copy;
@@ -66,6 +69,7 @@ typedef struct rtti_field_s {
 	const char *name;
 	const rtti_t *type;
 	off_t offset;
+	void *data;
 } rtti_field_t;
 
 #define RTTI_FIELD_START(name) \
@@ -105,9 +109,10 @@ extern rtti_decode_t rtti_notsup_decode;
 
 /* boolean type */
 #define RTTI_BOOL_TYPE(type) { \
-	sizeof(type), \
+	sizeof(type ## _t), \
 	"bool", \
 	RTTI_TYPE_PRIMITIVE, \
+	&ffi_type_ ## type, \
 	rtti_region_init, \
 	rtti_region_copy, \
 	rtti_bool_equal, \
@@ -132,6 +137,7 @@ typedef struct rtti_data_s {
 	sizeof(rtti_data_t), \
 	"data", \
 	RTTI_TYPE_PRIMITIVE, \
+	&ffi_type_pointer, \
 	rtti_region_init, \
 	rtti_data_copy, \
 	rtti_data_equal, \
@@ -152,6 +158,7 @@ extern rtti_t rtti_data_type;
 	sizeof(flag ## size ## _t), \
 	"flist" #size, \
 	RTTI_TYPE_PRIMITIVE, \
+	&ffi_type_pointer, \
 	rtti_region_init, \
 	rtti_region_copy, \
 	rtti_region_equal, \
@@ -165,32 +172,12 @@ extern rtti_decode_t rtti_flist32_decode;
 extern rtti_encode_t rtti_flist64_encode;
 extern rtti_decode_t rtti_flist64_decode;
 
-/* floating point type */
-#define RTTI_FLOAT_TYPE(type) { \
-	sizeof(type), \
-	#type, \
-	RTTI_TYPE_PRIMITIVE, \
-	rtti_region_init, \
-	rtti_region_copy, \
-	rtti_float_equal, \
-	rtti_float_encode, \
-	rtti_float_decode, \
-	{ { NULL }, { NULL }, { NULL } } \
-}
-
-extern rtti_equal_t  rtti_float_equal;
-extern rtti_encode_t rtti_float_encode;
-extern rtti_decode_t rtti_float_decode;
-
-extern rtti_t rtti_float_type;
-extern rtti_t rtti_double_type;
-extern rtti_t rtti_ldouble_type;
-
 /* integer type */
 #define RTTI_INT_TYPE(type, sign) { \
-	sizeof(type), \
+	sizeof(type ## _t), \
 	#type, \
 	RTTI_TYPE_PRIMITIVE, \
+	&ffi_type_ ## type, \
 	rtti_region_init, \
 	rtti_region_copy, \
 	rtti_region_equal, \
@@ -198,6 +185,11 @@ extern rtti_t rtti_ldouble_type;
 	rtti_int_decode, \
 	{ { (void *)(sign) }, { NULL }, { NULL } } \
 }
+
+#define ffi_type_int8  ffi_type_sint8
+#define ffi_type_int16 ffi_type_sint16
+#define ffi_type_int32 ffi_type_sint32
+#define ffi_type_int64 ffi_type_sint64
 
 extern rtti_encode_t rtti_int_encode;
 extern rtti_decode_t rtti_int_decode;
@@ -216,6 +208,7 @@ extern rtti_t rtti_uint64_type;
 	sizeof(struct name), \
 	"list " #name, \
 	RTTI_TYPE_LIST, \
+	&ffi_type_pointer, \
 	rtti_list_init, \
 	rtti_list_copy, \
 	rtti_notsup_equal, \
@@ -237,6 +230,7 @@ void rtti_list_add(const rtti_t *type, void *entry, void *head);
 	sizeof(void *), \
 	"pointer", \
 	RTTI_TYPE_POINTER, \
+	&ffi_type_pointer, \
 	rtti_pointer_init, \
 	rtti_pointer_copy, \
 	rtti_pointer_equal, \
@@ -253,9 +247,6 @@ extern rtti_decode_t rtti_pointer_decode;
 
 extern rtti_t rtti_bool_ptype;
 extern rtti_t rtti_data_ptype;
-extern rtti_t rtti_float_ptype;
-extern rtti_t rtti_double_ptype;
-extern rtti_t rtti_ldouble_ptype;
 extern rtti_t rtti_int8_ptype;
 extern rtti_t rtti_uint8_ptype;
 extern rtti_t rtti_int16_ptype;
@@ -271,6 +262,7 @@ extern rtti_t rtti_string_ptype;
 	sizeof(char *), \
 	"string", \
 	RTTI_TYPE_PRIMITIVE, \
+	&ffi_type_pointer, \
 	rtti_string_init, \
 	rtti_string_copy, \
 	rtti_string_equal, \
@@ -292,6 +284,7 @@ extern rtti_t rtti_string_type;
 	sizeof(struct name), \
 	"struct " #name, \
 	RTTI_TYPE_STRUCT, \
+	&ffi_type_pointer, \
 	rtti_struct_init, \
 	rtti_struct_copy, \
 	rtti_struct_equal, \
