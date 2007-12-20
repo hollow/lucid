@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "char.h"
 #include "mem.h"
 #include "printf.h"
 #include "str.h"
@@ -80,6 +81,64 @@ int uio_read(int fd, char **str, int len)
 
 	*str = buf;
 	return buflen;
+}
+
+int uio_read_netstring(int fd, char **str)
+{
+	int ret = 0, len = 0, oldlen = 0;
+	char c;
+
+	while ((ret = read(fd, &c, 1)) == 1) {
+		if (char_isdigit(c)) {
+			len = (len * 10) + (c - '0');
+
+			if (len < oldlen)
+				return errno = ERANGE, -1;
+
+			oldlen = len;
+		}
+
+		else if (c == ':')
+			break;
+
+		else
+			return errno = EINVAL, -1;
+	}
+
+	if (ret < 0)
+		return -1;
+
+	if (len == 0)
+		return 0;
+
+	char *buf = NULL;
+	ret = uio_read(fd, &buf, len);
+
+	if (read(fd, &c, 1) == 1) {
+		if (c == ',') {
+			*str = buf;
+			return ret;
+		}
+
+		else {
+			if (buf) mem_free(buf);
+			return errno = EINVAL, -1;
+		}
+	}
+
+	else {
+		if (buf) mem_free(buf);
+		return -1;
+	}
+}
+
+int uio_write_netstring(int fd, char *str)
+{
+	size_t len = str_len(str);
+	char *netstr = NULL;
+
+	asprintf(&netstr, "%u:%s,", len, str);
+	return write(fd, netstr, str_len(netstr));
 }
 
 int uio_read_eof(int fd, char **str)

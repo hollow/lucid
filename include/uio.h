@@ -75,6 +75,32 @@ int uio_read_eol(int fd, char **line);
 int uio_read_eof(int fd, char **str);
 
 /*!
+ * @brief read exact number of bytes based on netstring format
+ *
+ * @param[in]  fd  file descriptor to read from
+ * @param[out] str pointer to a string
+ *
+ * @return bytes read on success, -1 on error with errno set
+ *
+ * @note The caller should free obtained memory for str using free(3)
+ *
+ * @see malloc(3)
+ * @see free(3)
+ * @see read(2)
+ */
+int uio_read_netstring(int fd, char **str);
+
+/*!
+ * @brief write string in netstring format
+ *
+ * @param[in]  fd  file descriptor to write to
+ * @param[out] str pointer to a string
+ *
+ * @return bytes written on success, -1 on error with errno set
+ */
+int uio_write_netstring(int fd, char *str);
+
+/*!
  * @brief close a file
  *
  * @param[in] fd file descriptor

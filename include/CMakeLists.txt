@@ -11,6 +11,7 @@ SET(lucid_HDRS
 	mem.h
 	printf.h
 	rtti.h
+	rpc.h
 	scanf.h
 	str.h
 	stralloc.h

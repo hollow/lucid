@@ -18,11 +18,9 @@ add_definitions($ENV{CFLAGS} -D_GNU_SOURCE -D_LUCID_BUILD_)
 add_definitions(
 	-std=gnu99
 	-pedantic
-	-Werror
 	-Wall
 	-Wundef
 	-Wcast-align
-	-Wpointer-arith
 	-Winline
 	-Wredundant-decls
 	-Wno-unused-parameter

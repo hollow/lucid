@@ -48,6 +48,7 @@ set(lucid_SRCS
 	mem.c
 	printf.c
 	${RTTI_SRCS}
+	rpc.c
 	scanf.c
 	str.c
 	stralloc.c
@@ -76,21 +77,30 @@ check_include_file(sys/wait.h   HAVE_SYS_WAIT_H)
 check_include_file(time.h       HAVE_TIME_H)
 check_include_file(unistd.h     HAVE_UNISTD_H)
 
+# libffi
 find_path(FFI_INCLUDE_DIR ffi.h /usr/include/libffi /usr/local/include/libffi)
 find_library(FFI_LIBRARY NAMES ffi PATHS libffi)
 
 if (FFI_INCLUDE_DIR AND FFI_LIBRARY)
 	message(STATUS "Found libffi: ${FFI_LIBRARY}")
 else (FFI_INCLUDE_DIR AND FFI_LIBRARY)
-	message(FATAL_ERROR "Could not find libffi: ${FFI_LIBRARY}")
+	message(FATAL_ERROR "Could not find libffi")
 endif(FFI_INCLUDE_DIR AND FFI_LIBRARY)
+
+# libdl
+find_library(DL_LIBRARY dl)
+if (DL_LIBRARY)
+	message(STATUS "Found libdl: ${DL_LIBRARY}")
+else (DL_LIBRARY)
+	message(FATAL_ERROR "Could not find libdl")
+endif(DL_LIBRARY)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${FFI_INCLUDE_DIR})
 
 add_library(ucid SHARED ${lucid_SRCS})
 set_target_properties(ucid PROPERTIES VERSION "0.0.0" SOVERSION "0")
-target_link_libraries(ucid ${FFI_LIBRARY})
+target_link_libraries(ucid ${FFI_LIBRARY} ${DL_LIBRARY})
 
 install(
 	TARGETS ucid
