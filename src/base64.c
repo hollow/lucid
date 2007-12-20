@@ -18,7 +18,7 @@
 #include <errno.h>
 
 #include "base64.h"
-#include "mem.h"
+#include "cext.h"
 #include "str.h"
 
 char *base64_encode(const void *data, size_t n)
@@ -32,7 +32,7 @@ char *base64_encode(const void *data, size_t n)
 	if (n > outn)
 		return errno = EDOM, NULL;
 
-	if ((p = out = mem_alloc(outn + 1)) == NULL)
+	if ((p = out = malloc(outn + 1)) == NULL)
 		return NULL;
 
 	while (n) {
@@ -205,7 +205,7 @@ void *base64_decode(const char *buf, size_t *len)
 	unsigned char *out, *p;
 	size_t outn = 3 * (n / 4) + 2, outleft = outn;
 
-	if ((p = out = mem_alloc(outn)) == NULL)
+	if ((p = out = malloc(outn)) == NULL)
 		return NULL;
 
 	while (n >= 2) {
@@ -259,7 +259,7 @@ void *base64_decode(const char *buf, size_t *len)
 	}
 
 	if (n != 0) {
-		mem_free(out);
+		free(out);
 		return errno = EINVAL, NULL;
 	}
 

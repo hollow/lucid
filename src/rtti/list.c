@@ -14,9 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "error.h"
-#include "mem.h"
+#include "cext.h"
 #include "list.h"
 #include "rtti.h"
 #include "str.h"
@@ -33,7 +34,7 @@ void rtti_list_init(const rtti_t *type, void *data)
 {
 	CHECK_TYPE(LIST);
 
-	mem_set(data, 0, type->size);
+	memset(data, 0, type->size);
 
 	const rtti_field_t *field;
 	for (field = type->args[0].v; field->name != NULL; field++) {
@@ -59,7 +60,7 @@ void rtti_list_copy(const rtti_t *type, const void *src, void *dst)
 	list_for_each(pos, shead) {
 		src = LISTC(type, pos);
 
-		void *entry = mem_alloc(type->size);
+		void *entry = malloc(type->size);
 		type->init(type, entry);
 		error_dof("failed to initialize list node")
 			return;
@@ -143,7 +144,7 @@ void rtti_list_decode(const rtti_t *type, const char **buf, void *data)
 			return;
 		}
 
-		void *entry = mem_alloc(type->size);
+		void *entry = malloc(type->size);
 		type->init(type, entry);
 		error_dof("failed to initialize list node")
 			return;

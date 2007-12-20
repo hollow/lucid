@@ -18,14 +18,16 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "mem.h"
+#include <string.h>
+
+#include "cext.h"
 #include "whirlpool.h"
 
 void whirlpool_init(whirlpool_t * const context)
 {
 	int i;
 
-	mem_set(context->len, 0, LENGTHBYTES);
+	memset(context->len, 0, LENGTHBYTES);
 
 	context->bits = context->pos = 0;
 	context->buf[0]  = 0;

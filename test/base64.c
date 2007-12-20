@@ -21,7 +21,6 @@
 
 #include "base64.h"
 #include "log.h"
-#include "mem.h"
 
 static
 int base64_encode_t(void)
@@ -48,7 +47,7 @@ int base64_encode_t(void)
 			                T[i].base64, base64);
 
 		if (base64)
-			mem_free(base64);
+			free(base64);
 	}
 
 	return rc;
@@ -81,7 +80,7 @@ int base64_decode_t(void)
 			                str, len);
 
 		if (str)
-			mem_free(str);
+			free(str);
 	}
 
 	return rc;

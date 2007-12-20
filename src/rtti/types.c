@@ -18,30 +18,30 @@
 
 #include "rtti.h"
 
-rtti_t rtti_bool_type     = RTTI_BOOL_TYPE(uint8);
-rtti_t rtti_data_type     = RTTI_DATA_TYPE;
-rtti_t rtti_int8_type     = RTTI_INT_TYPE(int8,   1);
-rtti_t rtti_uint8_type    = RTTI_INT_TYPE(uint8,  0);
-rtti_t rtti_int16_type    = RTTI_INT_TYPE(int16,  1);
-rtti_t rtti_uint16_type   = RTTI_INT_TYPE(uint16, 0);
-rtti_t rtti_int32_type    = RTTI_INT_TYPE(int32,  1);
-rtti_t rtti_uint32_type   = RTTI_INT_TYPE(uint32, 0);
-rtti_t rtti_int64_type    = RTTI_INT_TYPE(int64,  1);
-rtti_t rtti_uint64_type   = RTTI_INT_TYPE(uint64, 0);
-rtti_t rtti_bool_ptype    = RTTI_POINTER_TYPE(&rtti_bool_type);
-rtti_t rtti_data_ptype    = RTTI_POINTER_TYPE(&rtti_data_type);
-rtti_t rtti_int8_ptype    = RTTI_POINTER_TYPE(&rtti_int8_type);
-rtti_t rtti_uint8_ptype   = RTTI_POINTER_TYPE(&rtti_uint8_type);
-rtti_t rtti_int16_ptype   = RTTI_POINTER_TYPE(&rtti_int16_type);
-rtti_t rtti_uint16_ptype  = RTTI_POINTER_TYPE(&rtti_uint16_type);
-rtti_t rtti_int32_ptype   = RTTI_POINTER_TYPE(&rtti_int32_type);
-rtti_t rtti_uint32_ptype  = RTTI_POINTER_TYPE(&rtti_uint32_type);
-rtti_t rtti_int64_ptype   = RTTI_POINTER_TYPE(&rtti_int64_type);
-rtti_t rtti_uint64_ptype  = RTTI_POINTER_TYPE(&rtti_uint64_type);
-rtti_t rtti_string_ptype  = RTTI_POINTER_TYPE(&rtti_string_type);
-rtti_t rtti_string_type   = RTTI_STRING_TYPE(1);
+const rtti_t rtti_bool_type     = RTTI_BOOL_TYPE(uint8);
+const rtti_t rtti_data_type     = RTTI_DATA_TYPE;
+const rtti_t rtti_int8_type     = RTTI_INT_TYPE(int8,   1);
+const rtti_t rtti_uint8_type    = RTTI_INT_TYPE(uint8,  0);
+const rtti_t rtti_int16_type    = RTTI_INT_TYPE(int16,  1);
+const rtti_t rtti_uint16_type   = RTTI_INT_TYPE(uint16, 0);
+const rtti_t rtti_int32_type    = RTTI_INT_TYPE(int32,  1);
+const rtti_t rtti_uint32_type   = RTTI_INT_TYPE(uint32, 0);
+const rtti_t rtti_int64_type    = RTTI_INT_TYPE(int64,  1);
+const rtti_t rtti_uint64_type   = RTTI_INT_TYPE(uint64, 0);
+const rtti_t rtti_bool_ptype    = RTTI_POINTER_TYPE(&rtti_bool_type);
+const rtti_t rtti_data_ptype    = RTTI_POINTER_TYPE(&rtti_data_type);
+const rtti_t rtti_int8_ptype    = RTTI_POINTER_TYPE(&rtti_int8_type);
+const rtti_t rtti_uint8_ptype   = RTTI_POINTER_TYPE(&rtti_uint8_type);
+const rtti_t rtti_int16_ptype   = RTTI_POINTER_TYPE(&rtti_int16_type);
+const rtti_t rtti_uint16_ptype  = RTTI_POINTER_TYPE(&rtti_uint16_type);
+const rtti_t rtti_int32_ptype   = RTTI_POINTER_TYPE(&rtti_int32_type);
+const rtti_t rtti_uint32_ptype  = RTTI_POINTER_TYPE(&rtti_uint32_type);
+const rtti_t rtti_int64_ptype   = RTTI_POINTER_TYPE(&rtti_int64_type);
+const rtti_t rtti_uint64_ptype  = RTTI_POINTER_TYPE(&rtti_uint64_type);
+const rtti_t rtti_string_ptype  = RTTI_POINTER_TYPE(&rtti_string_type);
+const rtti_t rtti_string_type   = RTTI_STRING_TYPE(1);
 
-rtti_t rtti_in_addr_type = {
+const rtti_t rtti_in_addr_type = {
 	sizeof(struct in_addr),
 	"in_addr",
 	RTTI_TYPE_PRIMITIVE,
@@ -54,7 +54,7 @@ rtti_t rtti_in_addr_type = {
 	{ { NULL }, { NULL }, { NULL } }
 };
 
-rtti_t rtti_port_type = {
+const rtti_t rtti_port_type = {
 	sizeof(uint16_t),
 	"port",
 	RTTI_TYPE_PRIMITIVE,
@@ -67,7 +67,7 @@ rtti_t rtti_port_type = {
 	{ { (void *)(0) }, { NULL }, { NULL } }
 };
 
-rtti_t rtti_sockaddr_in_type = {
+const rtti_t rtti_sockaddr_in_type = {
 	sizeof(struct sockaddr_in),
 	"sockaddr_in",
 	RTTI_TYPE_PRIMITIVE,

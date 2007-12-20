@@ -69,7 +69,7 @@ typedef struct rtti_field_s {
 	const char *name;
 	const rtti_t *type;
 	off_t offset;
-	void *data;
+	const void *data;
 } rtti_field_t;
 
 #define RTTI_FIELD_START(name) \
@@ -87,6 +87,8 @@ void rtti_copy(const rtti_t *type, const void *src, void *dst);
 bool rtti_equal(const rtti_t *type, const void *a, const void *b);
 char *rtti_encode(const rtti_t *type, const void *data);
 void rtti_decode(const rtti_t *type, const char **buf, void *data);
+
+size_t rtti_length(const rtti_t *type, const void *data);
 
 void rtti_get_parser_offset(const char *orig, const char *parsed,
 		int *_line, int *_column);
@@ -125,7 +127,7 @@ extern rtti_equal_t  rtti_bool_equal;
 extern rtti_encode_t rtti_bool_encode;
 extern rtti_decode_t rtti_bool_decode;
 
-extern rtti_t rtti_bool_type;
+extern const rtti_t rtti_bool_type;
 
 /* binary data type */
 typedef struct rtti_data_s {
@@ -151,7 +153,7 @@ extern rtti_equal_t  rtti_data_equal;
 extern rtti_encode_t rtti_data_encode;
 extern rtti_decode_t rtti_data_decode;
 
-extern rtti_t rtti_data_type;
+extern const rtti_t rtti_data_type;
 
 /* flist type */
 #define RTTI_FLIST_TYPE(size, list, delim, clmod) { \
@@ -194,14 +196,14 @@ extern rtti_decode_t rtti_flist64_decode;
 extern rtti_encode_t rtti_int_encode;
 extern rtti_decode_t rtti_int_decode;
 
-extern rtti_t rtti_int8_type;
-extern rtti_t rtti_uint8_type;
-extern rtti_t rtti_int16_type;
-extern rtti_t rtti_uint16_type;
-extern rtti_t rtti_int32_type;
-extern rtti_t rtti_uint32_type;
-extern rtti_t rtti_int64_type;
-extern rtti_t rtti_uint64_type;
+extern const rtti_t rtti_int8_type;
+extern const rtti_t rtti_uint8_type;
+extern const rtti_t rtti_int16_type;
+extern const rtti_t rtti_uint16_type;
+extern const rtti_t rtti_int32_type;
+extern const rtti_t rtti_uint32_type;
+extern const rtti_t rtti_int64_type;
+extern const rtti_t rtti_uint64_type;
 
 /* list type */
 #define RTTI_LIST_TYPE(name, tail) { \
@@ -245,17 +247,17 @@ extern rtti_equal_t  rtti_pointer_equal;
 extern rtti_encode_t rtti_pointer_encode;
 extern rtti_decode_t rtti_pointer_decode;
 
-extern rtti_t rtti_bool_ptype;
-extern rtti_t rtti_data_ptype;
-extern rtti_t rtti_int8_ptype;
-extern rtti_t rtti_uint8_ptype;
-extern rtti_t rtti_int16_ptype;
-extern rtti_t rtti_uint16_ptype;
-extern rtti_t rtti_int32_ptype;
-extern rtti_t rtti_uint32_ptype;
-extern rtti_t rtti_int64_ptype;
-extern rtti_t rtti_uint64_ptype;
-extern rtti_t rtti_string_ptype;
+extern const rtti_t rtti_bool_ptype;
+extern const rtti_t rtti_data_ptype;
+extern const rtti_t rtti_int8_ptype;
+extern const rtti_t rtti_uint8_ptype;
+extern const rtti_t rtti_int16_ptype;
+extern const rtti_t rtti_uint16_ptype;
+extern const rtti_t rtti_int32_ptype;
+extern const rtti_t rtti_uint32_ptype;
+extern const rtti_t rtti_int64_ptype;
+extern const rtti_t rtti_uint64_ptype;
+extern const rtti_t rtti_string_ptype;
 
 /* string type */
 #define RTTI_STRING_TYPE(asnull) { \
@@ -277,7 +279,7 @@ extern rtti_equal_t  rtti_string_equal;
 extern rtti_encode_t rtti_string_encode;
 extern rtti_decode_t rtti_string_decode;
 
-extern rtti_t rtti_string_type;
+extern const rtti_t rtti_string_type;
 
 /* struct type */
 #define RTTI_STRUCT_TYPE(name) { \
@@ -307,14 +309,14 @@ size_t rtti_struct_length(const rtti_t *type);
 /* various other types */
 extern rtti_encode_t rtti_in_addr_encode;
 extern rtti_decode_t rtti_in_addr_decode;
-extern rtti_t rtti_in_addr_type;
+extern const rtti_t rtti_in_addr_type;
 
 extern rtti_encode_t rtti_port_encode;
 extern rtti_decode_t rtti_port_decode;
-extern rtti_t rtti_port_type;
+extern const rtti_t rtti_port_type;
 
 extern rtti_encode_t rtti_sockaddr_in_encode;
 extern rtti_decode_t rtti_sockaddr_in_decode;
-extern rtti_t rtti_sockaddr_in_type;
+extern const rtti_t rtti_sockaddr_in_type;
 
 #endif

@@ -35,7 +35,7 @@ void error_push(error_t *err, const char *file, int line, const char *func,
 	if (!err->list.next)
 		error_init(err);
 
-	error_t *new = mem_alloc(sizeof(error_t));
+	error_t *new = malloc(sizeof(error_t));
 
 	new->file   = file;
 	new->func   = func;
@@ -87,8 +87,8 @@ error_t *error_pop(error_t *err)
 
 void error_free_node(error_t *err)
 {
-	if (err->msg) mem_free(err->msg);
-	mem_free(err);
+	if (err->msg) free(err->msg);
+	free(err);
 }
 
 void error_free(error_t *err)
@@ -144,9 +144,9 @@ char *error_describe(error_t *err, const char *prefix)
 			errmsg ? errmsg : "",
 			errstr ? errstr : "");
 
-	if (errmsg) mem_free(errmsg);
-	if (errstr) mem_free(errstr);
-	mem_free(file);
+	if (errmsg) free(errmsg);
+	if (errstr) free(errstr);
+	free(file);
 
 	return buf;
 }
@@ -160,7 +160,7 @@ void error_print_trace(error_t *err, int fd)
 
 	char *desc = error_describe(cur, "in  ");
 	dprintf(fd, "%s\n", desc);
-	mem_free(desc);
+	free(desc);
 	error_free_node(cur);
 
 	cur = error_pop(err);
@@ -172,7 +172,7 @@ void error_print_trace(error_t *err, int fd)
 
 		desc = error_describe(cur, "from");
 		dprintf(fd, "%s\n", desc);
-		mem_free(desc);
+		free(desc);
 		error_free_node(cur);
 
 		cur = next;
@@ -180,6 +180,6 @@ void error_print_trace(error_t *err, int fd)
 
 	desc = error_describe(cur, "by  ");
 	dprintf(fd, "%s\n", desc);
-	mem_free(desc);
+	free(desc);
 	error_free_node(cur);
 }

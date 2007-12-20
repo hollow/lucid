@@ -23,7 +23,6 @@
 
 #include "flist.h"
 #include "log.h"
-#include "mem.h"
 #include "rtti.h"
 #include "str.h"
 
@@ -55,7 +54,7 @@ int rtti_bool32_encode_t(void)
 					__FUNCTION__, i, T[i].ret, T[i].s, ret, buf);
 
 		if (buf)
-			mem_free(buf);
+			free(buf);
 	}
 
 	return rc;
@@ -136,7 +135,7 @@ int rtti_flist_encode_t(void)
 					__FUNCTION__, i, T[i].ret, T[i].s, ret, buf);
 
 		if (buf)
-			mem_free(buf);
+			free(buf);
 	}
 
 	return rc;
@@ -202,7 +201,7 @@ int rtti_int8_encode_t(void)
 					__FUNCTION__, i, T[i].ret, T[i].s, ret, buf);
 
 		if (buf)
-			mem_free(buf);
+			free(buf);
 	}
 
 	return rc;
@@ -288,7 +287,7 @@ int rtti_struct_encode_t(void)
 					__FUNCTION__, i, T[i].ret, T[i].s, ret, buf);
 
 		if (buf)
-			mem_free(buf);
+			free(buf);
 	}
 
 	return rc;
@@ -366,7 +365,7 @@ int rtti_int8_array_encode_t(void)
 					__FUNCTION__, i, T[i].ret, T[i].s, ret, buf);
 
 		if (buf)
-			mem_free(buf);
+			free(buf);
 	}
 
 	return rc;

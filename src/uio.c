@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 #include "char.h"
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "str.h"
 #include "strtok.h"
@@ -72,10 +72,10 @@ int uio_open(const char *filename, const char *flags, mode_t mode)
 int uio_read(int fd, char **str, int len)
 {
 	int buflen;
-	char *buf = mem_alloc(len + 1);
+	char *buf = malloc(len + 1);
 
 	if ((buflen = read(fd, buf, len)) == -1) {
-		mem_free(buf);
+		free(buf);
 		return -1;
 	}
 
@@ -121,13 +121,13 @@ int uio_read_netstring(int fd, char **str)
 		}
 
 		else {
-			if (buf) mem_free(buf);
+			if (buf) free(buf);
 			return errno = EINVAL, -1;
 		}
 	}
 
 	else {
-		if (buf) mem_free(buf);
+		if (buf) free(buf);
 		return -1;
 	}
 }
@@ -145,13 +145,13 @@ int uio_read_eof(int fd, char **str)
 {
 	static const size_t CHUNKSIZE = 4096;
 	int chunks = 1, len = 0;
-	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
+	char *buf = malloc(chunks * CHUNKSIZE + 1);
 
 	for (;;) {
 		int bytes_read = read(fd, buf+len, CHUNKSIZE);
 
 		if (bytes_read == -1) {
-			mem_free(buf);
+			free(buf);
 			return -1;
 		}
 
@@ -163,7 +163,7 @@ int uio_read_eof(int fd, char **str)
 
 		if (bytes_read == CHUNKSIZE) {
 			chunks++;
-			buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
+			buf = realloc(buf, chunks * CHUNKSIZE + 1);
 		}
 	}
 
@@ -175,13 +175,13 @@ int uio_read_eol(int fd, char **line)
 {
 	static const size_t CHUNKSIZE = 4096;
 	int chunks = 1, len = 0;
-	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
+	char *buf = malloc(chunks * CHUNKSIZE + 1);
 	char c;
 
 	while (1) {
 		switch(read(fd, &c, 1)) {
 		case -1:
-			mem_free(buf);
+			free(buf);
 			return -1;
 
 		case 0:
@@ -193,7 +193,7 @@ int uio_read_eol(int fd, char **line)
 
 			if (len >= chunks * CHUNKSIZE) {
 				chunks++;
-				buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
+				buf = realloc(buf, chunks * CHUNKSIZE + 1);
 			}
 
 			buf[len++] = c;
@@ -254,7 +254,7 @@ int uio_ismount(const char *path)
 			sb_path.st_dev == sb_parent.st_dev)
 		rc = 0;
 
-	mem_free(parent);
+	free(parent);
 	return rc;
 }
 
@@ -314,7 +314,7 @@ int uio_mkdirname(const char *path, mode_t mode)
 	char *dname = str_path_dirname(path);
 	int rc      = uio_mkdir(dname, mode);
 
-	mem_free(dname);
+	free(dname);
 
 	return rc;
 }
@@ -323,19 +323,19 @@ char *uio_readlink(const char *path)
 {
 	static const size_t CHUNKSIZE = 128;
 	int chunks = 1, len = 0;
-	char *buf = mem_alloc(chunks * CHUNKSIZE + 1);
+	char *buf = malloc(chunks * CHUNKSIZE + 1);
 
 	while (1) {
 		len = readlink(path, buf, chunks * CHUNKSIZE);
 
 		if (len == -1) {
-			mem_free(buf);
+			free(buf);
 			return NULL;
 		}
 
 		if (len >= chunks * CHUNKSIZE) {
 			chunks++;
-			buf = mem_realloc(buf, chunks * CHUNKSIZE + 1);
+			buf = realloc(buf, chunks * CHUNKSIZE + 1);
 		}
 
 		else
@@ -379,7 +379,7 @@ int uio_unlink(const char *path)
 			if (uio_unlink(new_path) == -1)
 				status = -1;
 
-			mem_free(new_path);
+			free(new_path);
 		}
 
 		if (closedir(dp) == -1)

@@ -18,7 +18,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include "mem.h"
+#include <string.h>
+
+#include "cext.h"
 #include "whirlpool.h"
 
 void whirlpool_finalize(whirlpool_t * const context,
@@ -38,7 +40,7 @@ void whirlpool_finalize(whirlpool_t * const context,
 	/* pad with zero bits to complete (N*WBLOCKBITS - LENGTHBITS) bits */
 	if (pos > WBLOCKBYTES - LENGTHBYTES) {
 		if (pos < WBLOCKBYTES)
-			mem_set(&buf[pos], 0, WBLOCKBYTES - pos);
+			memset(&buf[pos], 0, WBLOCKBYTES - pos);
 
 		/* process data block */
 		whirlpool_transform(context);
@@ -48,12 +50,12 @@ void whirlpool_finalize(whirlpool_t * const context,
 	}
 
 	if (pos < WBLOCKBYTES - LENGTHBYTES)
-		mem_set(&buf[pos], 0, (WBLOCKBYTES - LENGTHBYTES) - pos);
+		memset(&buf[pos], 0, (WBLOCKBYTES - LENGTHBYTES) - pos);
 
 	pos = WBLOCKBYTES - LENGTHBYTES;
 
 	/* append bit length of hashed data */
-	mem_cpy(&buf[WBLOCKBYTES - LENGTHBYTES], len, LENGTHBYTES);
+	memcpy(&buf[WBLOCKBYTES - LENGTHBYTES], len, LENGTHBYTES);
 
 	/* process data block */
 	whirlpool_transform(context);

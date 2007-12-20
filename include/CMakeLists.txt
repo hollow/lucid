@@ -1,6 +1,7 @@
 SET(lucid_HDRS
 	base64.h
 	bitmap.h
+	cext.h
 	char.h
 	chroot.h
 	error.h
@@ -8,7 +9,6 @@ SET(lucid_HDRS
 	flist.h
 	list.h
 	log.h
-	mem.h
 	printf.h
 	rtti.h
 	rpc.h

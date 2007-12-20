@@ -21,7 +21,6 @@
 
 #include "flist.h"
 #include "log.h"
-#include "mem.h"
 
 #define NODE_A 0x0001
 #define NODE_B 0x0008
@@ -148,7 +147,7 @@ int flist32_encode_t(void)
 			                T[i].str, str);
 
 		if (str)
-			mem_free(str);
+			free(str);
 	}
 
 	return rc;
@@ -183,7 +182,7 @@ int flist64_encode_t(void)
 			                T[i].str, str);
 
 		if (str)
-			mem_free(str);
+			free(str);
 	}
 
 	return rc;

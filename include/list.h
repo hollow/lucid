@@ -37,12 +37,7 @@
 #define _LUCID_LIST_H
 
 #include <stddef.h>
-
-#ifdef _LUCID_BUILD_
-#include "mem.h"
-#else
-#include <lucid/mem.h>
-#endif
+#include <stdlib.h>
 
 /*! @brief get container of list head */
 #define container_of(ptr, type, member) \
@@ -64,7 +59,7 @@ typedef struct list_head {
 } list_t;
 
 #define LIST_NODE_ALLOC(NAME) \
-	NAME = mem_alloc(sizeof(*NAME))
+	NAME = malloc(sizeof(*NAME))
 
 static inline void INIT_LIST_HEAD(list_t *list)
 {

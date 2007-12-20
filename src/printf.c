@@ -15,8 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "str.h"
 
@@ -240,7 +242,7 @@ int _lucid_vsnprintf(char *str, int size, const char *fmt, va_list _ap)
 	f.w = 0;
 
 	if (size > 0)
-		mem_set(str, 0, size);
+		memset(str, 0, size);
 
 	while ((c = *fmt++)) {
 		switch (f.s) {
@@ -592,7 +594,7 @@ int _lucid_vasprintf(char **ptr, const char *fmt, va_list ap)
 	/* if size is 0, no buffer is allocated
 	** just set *ptr to NULL and return size */
 	if (len > 0) {
-		if (!(buf = mem_alloc(len + 1)))
+		if (!(buf = malloc(len + 1)))
 			return -1;
 
 		_lucid_vsnprintf(buf, len + 1, fmt, ap);
@@ -610,7 +612,7 @@ int _lucid_vdprintf(int fd, const char *fmt, va_list ap)
 
 	buflen = _lucid_vasprintf(&buf, fmt, ap);
 	len = write(fd, buf, buflen);
-	mem_free(buf);
+	free(buf);
 
 	return len;
 }

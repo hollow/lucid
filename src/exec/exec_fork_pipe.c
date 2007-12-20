@@ -20,7 +20,7 @@
 #include <sys/wait.h>
 
 #include "exec.h"
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "strtok.h"
 #include "uio.h"
@@ -42,14 +42,14 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	strtok_t _st, *st = &_st;
 
 	if (!strtok_init_str(st, cmd, " ", 0)) {
-		mem_free(cmd);
+		free(cmd);
 		return -1;
 	}
 
-	mem_free(cmd);
+	free(cmd);
 
 	int argc    = strtok_count(st);
-	char **argv = mem_alloc((argc + 1) * sizeof(char *));
+	char **argv = malloc((argc + 1) * sizeof(char *));
 
 	if (!argv) {
 		strtok_free(st);
@@ -57,7 +57,7 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	}
 
 	if (strtok_toargv(st, argv) < 1) {
-		mem_free(argv);
+		free(argv);
 		strtok_free(st);
 		return -1;
 	}
@@ -65,7 +65,7 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 	int outfds[2];
 
 	if (pipe(outfds) == -1) {
-		mem_free(argv);
+		free(argv);
 		strtok_free(st);
 		return -1;
 	}
@@ -75,7 +75,7 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 
 	switch ((pid = fork())) {
 	case -1:
-		mem_free(argv);
+		free(argv);
 		strtok_free(st);
 		close(outfds[0]);
 		close(outfds[1]);
@@ -91,14 +91,14 @@ int exec_fork_pipe(char **out, const char *fmt, ...)
 
 		execvp(argv[0], argv);
 
-		mem_free(argv);
+		free(argv);
 		strtok_free(st);
 
 		/* never get here */
 		exit(1);
 
 	default:
-		mem_free(argv);
+		free(argv);
 		strtok_free(st);
 
 		close(outfds[1]);

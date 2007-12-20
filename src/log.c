@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 
 #include "log.h"
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "str.h"
 
@@ -99,9 +99,9 @@ void log_init(log_options_t *options)
 		setlogmask(mask_to_syslog(options->log_mask));
 	}
 
-	_log_options = (log_options_t *) mem_alloc(sizeof(log_options_t));
+	_log_options = (log_options_t *) malloc(sizeof(log_options_t));
 
-	mem_cpy(_log_options, options, sizeof(log_options_t));
+	memcpy(_log_options, options, sizeof(log_options_t));
 }
 
 void log_close(void)
@@ -115,7 +115,7 @@ void log_close(void)
 	if (_log_options->log_dest & LOGD_FILE)
 		close(_log_options->log_fd);
 
-	mem_free(_log_options);
+	free(_log_options);
 
 	_log_options = 0;
 }
@@ -143,7 +143,7 @@ void log_fd(int fd, int prio, const char *msg)
 	}
 
 	if (_log_options->log_opts & LOGO_TIME) {
-		mem_set(timebuf, 0, 17);
+		memset(timebuf, 0, 17);
 		strftime(timebuf, 17, "%b %d %T", localtime(&curtime));
 		_lucid_dprintf(fd, " %s", timebuf);
 	}
@@ -171,7 +171,7 @@ void log_internal(int prio, int strerr, const char *fmt, va_list ap)
 	if (strerr) {
 		buf = msg;
 		_lucid_asprintf(&msg, "%s: %s", buf, strerror(errno_orig));
-		mem_free(buf);
+		free(buf);
 	}
 
 	if (_log_options->log_dest & LOGD_STDERR)
@@ -185,7 +185,7 @@ void log_internal(int prio, int strerr, const char *fmt, va_list ap)
 			syslog(_log_options->log_facility|prio, "%s", msg);
 	}
 
-	mem_free(msg);
+	free(msg);
 }
 
 int log_traceme(const char *file, const char *func, int line)
@@ -194,7 +194,7 @@ int log_traceme(const char *file, const char *func, int line)
 
 	int rc = log_trace("@%s() in %s:%d", func, base, line);
 
-	mem_free(base);
+	free(base);
 
 	return rc;
 }

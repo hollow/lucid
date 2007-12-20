@@ -18,7 +18,7 @@
 
 #include "error.h"
 #include "char.h"
-#include "mem.h"
+#include "cext.h"
 #include "rtti.h"
 #include "str.h"
 #include "stralloc.h"
@@ -66,17 +66,17 @@ size_t rtti_length(const rtti_t *type, const void *data)
 
 void rtti_region_init(const rtti_t *type, void *data)
 {
-	mem_set(data, 0, type->size);
+	memset(data, 0, type->size);
 }
 
 void rtti_region_copy(const rtti_t *type, const void *src, void *dst)
 {
-	mem_cpy(dst, src, type->size);
+	memcpy(dst, src, type->size);
 }
 
 bool rtti_region_equal(const rtti_t *type, const void *a, const void *b)
 {
-	return mem_cmp(a, b, type->size) == 0;
+	return memcmp(a, b, type->size) == 0;
 }
 
 void rtti_notsup_init(const rtti_t *type, void *data)

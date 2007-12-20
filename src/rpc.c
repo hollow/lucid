@@ -114,7 +114,7 @@ char *rpc_receive(const char *name, const char *buf)
 	error_do return NULL;
 
 	/* decode function arguments */
-	void *data = mem_alloc(call.atype->size);
+	void *data = malloc(call.atype->size);
 	rtti_decode(call.atype, &buf, data);
 	error_do return NULL;
 

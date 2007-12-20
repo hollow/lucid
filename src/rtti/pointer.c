@@ -16,7 +16,7 @@
 #include <stdlib.h>
 
 #include "error.h"
-#include "mem.h"
+#include "cext.h"
 #include "rtti.h"
 #include "str.h"
 
@@ -40,7 +40,7 @@ void rtti_pointer_copy(const rtti_t *type, const void *src, void *dst)
 		dst_pdata = NULL;
 
 	else {
-		dst_pdata = mem_alloc(ptype->size);
+		dst_pdata = malloc(ptype->size);
 		ptype->copy(ptype, src_pdata, dst_pdata);
 		error_do return;
 	}
@@ -90,7 +90,7 @@ void rtti_pointer_decode(const rtti_t *type, const char **buf, void *data)
 	}
 
 	else {
-		pdata = mem_alloc(ptype->size);
+		pdata = malloc(ptype->size);
 		ptype->decode(ptype, buf, pdata);
 		error_do return;
 	}

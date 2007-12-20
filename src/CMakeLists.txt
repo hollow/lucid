@@ -40,12 +40,12 @@ set(WHIRLPOOL_SRCS
 set(lucid_SRCS
 	bitmap.c
 	base64.c
+	cext.c
 	${CHROOT_SRCS}
 	error.c
 	${EXEC_SRCS}
 	flist.c
 	log.c
-	mem.c
 	printf.c
 	${RTTI_SRCS}
 	rpc.c

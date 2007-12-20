@@ -17,7 +17,7 @@
 
 #include "error.h"
 #include "flist.h"
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "rtti.h"
 #include "str.h"

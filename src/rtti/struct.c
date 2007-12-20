@@ -14,9 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "error.h"
-#include "mem.h"
+#include "cext.h"
 #include "rtti.h"
 #include "str.h"
 #include "stralloc.h"
@@ -29,7 +30,7 @@ void rtti_struct_init(const rtti_t *type, void *data)
 {
 	CHECK_TYPE(STRUCT);
 
-	mem_set(data, 0, type->size);
+	memset(data, 0, type->size);
 
 	const rtti_field_t *field;
 	for (field = type->args[0].v; field->name != NULL; field++) {
@@ -44,7 +45,7 @@ void rtti_struct_copy(const rtti_t *type, const void *src, void *dst)
 {
 	CHECK_TYPE(STRUCT);
 
-	mem_set(dst, 0, type->size);
+	memset(dst, 0, type->size);
 
 	const rtti_field_t *field;
 	for (field = type->args[0].v; field->name != NULL; field++) {

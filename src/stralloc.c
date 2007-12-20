@@ -15,10 +15,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
 #include <errno.h>
 
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "str.h"
 #include "stralloc.h"
@@ -40,7 +42,7 @@ int stralloc_ready(stralloc_t *sa, size_t len)
 	char *tmp;
 
 	if (!sa->s || sa->a < len) {
-		if (!(tmp = mem_realloc(sa->s, wanted)))
+		if (!(tmp = realloc(sa->s, wanted)))
 			return -1;
 
 		sa->a = wanted;
@@ -64,19 +66,19 @@ int stralloc_readyplus(stralloc_t *sa, size_t len)
 
 char *stralloc_finalize(stralloc_t *sa)
 {
-	char *buf = mem_alloc(sa->len + 1);
+	char *buf = malloc(sa->len + 1);
 
 	if (!buf)
 		return 0;
 
-	mem_cpy(buf, sa->s, sa->len);
+	memcpy(buf, sa->s, sa->len);
 	return buf;
 }
 
 void stralloc_free(stralloc_t *sa)
 {
 	if (sa->s)
-		mem_free(sa->s);
+		free(sa->s);
 
 	sa->s = 0;
 }
@@ -86,7 +88,7 @@ int stralloc_copyb(stralloc_t *dst, const char *src, size_t len)
 	if (stralloc_ready(dst, len) == -1)
 		return -1;
 
-	mem_cpy(dst->s, src, len);
+	memcpy(dst->s, src, len);
 	dst->len = len;
 	return 0;
 }
@@ -106,7 +108,7 @@ int stralloc_catb(stralloc_t *dst, const char *src, size_t len)
 	if (stralloc_readyplus(dst, len) == -1)
 		return -1;
 
-	mem_cpy(dst->s + dst->len, src, len);
+	memcpy(dst->s + dst->len, src, len);
 	dst->len += len;
 	return 0;
 }
@@ -128,7 +130,7 @@ int stralloc_catf(stralloc_t *dst, const char *fmt, ...)
 
 	rc = stralloc_cats(dst, buf);
 
-	mem_free(buf);
+	free(buf);
 
 	return rc;
 }

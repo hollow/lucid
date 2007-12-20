@@ -14,8 +14,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <string.h>
+
 #include "char.h"
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "str.h"
 #include "strtok.h"
@@ -89,18 +91,18 @@ int str_cmpn(const char *str1, const char *str2, int n)
 
 char *str_cpy(char *dst, const char *src)
 {
-	return mem_cpy(dst, src, str_len(src) + 1);
+	return memcpy(dst, src, str_len(src) + 1);
 }
 
 char *str_cpyn(char *dst, const char *src, int n)
 {
 	int len = str_len(src) + 1;
-	return mem_cpy(dst, src, n > len ? len : n);
+	return memcpy(dst, src, n > len ? len : n);
 }
 
 char *str_dup(const char *str)
 {
-	return mem_dup(str, str_len(str) + 1);
+	return memdup(str, str_len(str) + 1);
 }
 
 int str_equal(const char *str1, const char *str2)
@@ -140,7 +142,7 @@ char *str_str(const char *str, const char *needle)
 		return 0;
 
 	for (i = slen - nlen + 1; i; i--) {
-		if (mem_cmp(str, needle, nlen) == 0)
+		if (memcmp(str, needle, nlen) == 0)
 			return (char *) str;
 
 		str++;
@@ -222,7 +224,7 @@ char *str_path_basename(const char *path)
 	else
 		bn = str_dup(buf);
 
-	mem_free(buf);
+	free(buf);
 
 	return bn;
 }
@@ -270,7 +272,7 @@ char *str_path_dirname(const char *path)
 	else
 		dn = str_dup(".");
 
-	mem_free(buf);
+	free(buf);
 
 	return dn;
 }
@@ -279,7 +281,7 @@ char *str_path_concat(const char *dirname, const char *basename)
 {
 	char *path = 0;
 
-	if (str_len(basename) > 1 && mem_cmp(basename, "./", 2) == 0)
+	if (str_len(basename) > 1 && memcmp(basename, "./", 2) == 0)
 		basename += 2;
 
 	if (str_isempty(dirname) || str_path_isdot(basename))

@@ -14,10 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "error.h"
 #include "base64.h"
-#include "mem.h"
+#include "cext.h"
 #include "printf.h"
 #include "rtti.h"
 #include "str.h"
@@ -30,11 +31,11 @@ void rtti_data_copy(const rtti_t *type, const void *src, void *dst)
 	rtti_data_t *ddata = dst;
 
 	if (sdata->length == 0) {
-		mem_set(ddata, 0, sizeof(*ddata));
+		memset(ddata, 0, sizeof(*ddata));
 		return;
 	}
 
-	ddata->data = mem_dup(sdata->data, sdata->length);
+	ddata->data = memdup(sdata->data, sdata->length);
 	ddata->length = sdata->length;
 }
 
@@ -44,7 +45,7 @@ bool rtti_data_equal(const rtti_t *type, const void *a, const void *b)
 	const rtti_data_t *bdata = b;
 
 	return (adata->length == bdata->length &&
-			mem_cmp(adata->data, bdata->data, adata->length) == 0);
+			memcmp(adata->data, bdata->data, adata->length) == 0);
 }
 
 char *rtti_data_encode(const rtti_t *type, const void *data)

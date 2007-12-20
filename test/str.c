@@ -20,7 +20,6 @@
 #include <string.h>
 
 #include "log.h"
-#include "mem.h"
 #include "str.h"
 
 static
@@ -121,10 +120,10 @@ int str_path_basedirname_t(void)
 					dirname, basename);
 
 		if (basename)
-			mem_free(basename);
+			free(basename);
 
 		if (dirname)
-			mem_free(dirname);
+			free(dirname);
 	}
 
 	return rc;
@@ -170,7 +169,7 @@ int str_path_concat_t(void)
 			                T[i].path, path);
 
 		if (path)
-			mem_free(path);
+			free(path);
 	}
 
 	return rc;
@@ -203,7 +202,7 @@ int str_path_isabs_t(void)
 	for (i = 0; i < TS; i++) {
 		buf = strdup(T[i].str);
 		res = str_path_isabs(buf);
-		mem_free(buf);
+		free(buf);
 
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",
@@ -243,7 +242,7 @@ int str_path_isdot_t(void)
 	for (i = 0; i < TS; i++) {
 		buf = strdup(T[i].str);
 		res = str_path_isdot(buf);
-		mem_free(buf);
+		free(buf);
 
 		if (res != T[i].res)
 			rc += log_error("[%s/%02d] E[%d] R[%d]",

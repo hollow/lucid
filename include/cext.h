@@ -14,55 +14,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-#include <unistd.h>
-#include <stdarg.h>
+/*!
+ * @defgroup cext Extensions for the C standard library
+ *
+ * @{
+ */
 
-#include "exec.h"
-#include "cext.h"
-#include "printf.h"
-#include "strtok.h"
+#ifndef _LUCID_CEXT_H
+#define _LUCID_CEXT_H
 
-int exec_replace(const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
+/*!
+ * @brief duplicate a memory block
+ *
+ * @param[in] s pointer to source memory area
+ * @param[in] n duplicate first n bytes
+ *
+ * @return A pointer to the duplicated memory block, or NULL if insufficient
+ *         memory was available.
+ */
+void *memdup(const void *s, int n);
 
-	char *cmd;
+#endif
 
-	if (_lucid_vasprintf(&cmd, fmt, ap) == -1) {
-		va_end(ap);
-		return -1;
-	}
-
-	va_end(ap);
-
-	strtok_t _st, *st = &_st;
-
-	if (!strtok_init_str(st, cmd, " ", 0)) {
-		free(cmd);
-		return -1;
-	}
-
-	free(cmd);
-
-	int argc    = strtok_count(st);
-	char **argv = malloc((argc + 1) * sizeof(char *));
-
-	if (!argv) {
-		strtok_free(st);
-		return -1;
-	}
-
-	if (strtok_toargv(st, argv) < 1) {
-		free(argv);
-		strtok_free(st);
-		return -1;
-	}
-
-	execvp(argv[0], argv);
-
-	/* never get here */
-	free(argv);
-	strtok_free(st);
-	return -1;
-}
+/*! @} mem */

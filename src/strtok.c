@@ -14,9 +14,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
+#include <string.h>
 #include <errno.h>
 
-#include "mem.h"
+#include "cext.h"
 #include "str.h"
 #include "stralloc.h"
 #include "strtok.h"
@@ -32,7 +33,7 @@ strtok_t *strtok_init_argv(strtok_t *st, char *argv[], int argc, int empty)
 		if (!empty && str_isempty(argv[i]))
 			continue;
 
-		if (!(new = mem_alloc(sizeof(strtok_t)))) {
+		if (!(new = malloc(sizeof(strtok_t)))) {
 			strtok_free(st);
 			return 0;
 		}
@@ -67,12 +68,12 @@ strtok_t *strtok_init_str(strtok_t *st, const char *str, const char *delim, int 
 		cur = str_str(cur, delim);
 
 		if (cur) {
-			mem_set(cur, 0, str_len(delim));
+			memset(cur, 0, str_len(delim));
 			cur += str_len(delim);
 		}
 
 		if (empty || !str_isempty(token)) {
-			if (!(new = mem_alloc(sizeof(strtok_t))))
+			if (!(new = malloc(sizeof(strtok_t))))
 				goto free;
 
 			if (!(new->token = str_dup(token)))
@@ -91,7 +92,7 @@ free:
 	st = 0;
 
 out:
-	mem_free(scpy);
+	free(scpy);
 	return st;
 }
 
@@ -106,9 +107,9 @@ void strtok_free(strtok_t *st)
 		list_del(pos);
 
 		if (p->token)
-			mem_free(p->token);
+			free(p->token);
 
-		mem_free(p);
+		free(p);
 	}
 
 	errno = errno_orig;
@@ -129,11 +130,11 @@ int strtok_append(strtok_t *st, const char *token)
 {
 	strtok_t *new;
 
-	if (!(new = mem_alloc(sizeof(strtok_t))))
+	if (!(new = malloc(sizeof(strtok_t))))
 		return -1;
 
 	if (!(new->token = str_dup(token))) {
-		mem_free(new);
+		free(new);
 		return -1;
 	}
 
@@ -152,8 +153,8 @@ void strtok_delete(strtok_t *st, const char *token)
 
 		if (str_equal(p->token, token)) {
 			list_del(pos);
-			mem_free(p->token);
-			mem_free(p);
+			free(p->token);
+			free(p);
 		}
 	}
 }
